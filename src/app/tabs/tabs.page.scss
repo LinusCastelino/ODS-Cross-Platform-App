@@ -1,1 +1,30 @@
+:host {
+    ion-toolbar{
+        --background: black;
+        --color: white;
+        text-align: center;
 
+        ion-title{
+            font-size: 140%;
+            font-weight: 1000;
+            -webkit-padding-start: unset;
+            -webkit-padding-end: unset;
+            padding-inline-start: unset;
+            padding-inline-end: unset;
+            padding-left: unset;
+            padding-right: unset;
+        }
+    }
+}
+
+ion-header{
+    height: 8%;
+}
+
+ion-toolbar{
+    height: 100%;
+}
+
+ion-tabs{
+    padding-top: 14%;
+}
