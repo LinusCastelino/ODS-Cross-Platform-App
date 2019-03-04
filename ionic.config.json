@@ -1,5 +1,7 @@
 {
   "name": "ods-cross-platform-app",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
