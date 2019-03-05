@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import Axios from "axios";
 import {url, getType, getTypeFromUri} from './constants';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { timeout } from 'rxjs/operators';
+
+const context = '/api/stork';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +14,6 @@ export class APICallsService {
   constructor(private httpService:HttpClient) { }
   
   FETCH_TIMEOUT : number = 10000;
-
 
   axios = Axios.create({
     timeout: this.FETCH_TIMEOUT,
@@ -153,15 +154,15 @@ export class APICallsService {
     fail: (errorMessage:string){}
   */
   public login(email, password){
-    var URL = 'http://localhost:8080'+url+'user';
-    let headers = new HttpHeaders();
-    headers.append('Content-Type','application/json');
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json');
+
     let body = JSON.stringify({action: 'login',email: email,password: password});
-    console.log("In apicalls")
-    return this.httpService.post(URL,body,{headers:headers});
+    console.log(URL);
+    return this.httpService.post(URL,body,{headers:headers, withCredentials: true});
 
 
-    // var callback = accept;
+    // var callback = accept; 
 
     // this.axios.post(url+'user', {
     //     action: 'login',

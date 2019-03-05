@@ -36,12 +36,10 @@ export class LoginPage implements OnInit {
     console.log("In LoginAPI")
     this.apiService.login("vanditsa@buffalo.edu","asdasd").subscribe(
     resp => {
-      if(resp.status == 200){
-        console.log("Success")
-      }
+      console.log("Success", resp);
     },
     err => {
-      console.log("Fail")
+      console.log("Fail");
     });
     
   }
