@@ -1,0 +1,49 @@
+:host {
+    ion-toolbar{
+        --background: black;
+        --color: white;
+        text-align: center;
+
+        ion-title{
+            font-size: 140%;
+            font-weight: 1000;
+            -webkit-padding-start: unset;
+            -webkit-padding-end: unset;
+            padding-inline-start: unset;
+            padding-inline-end: unset;
+            padding-left: unset;
+            padding-right: unset;
+        }
+    }
+}
+
+ion-header{
+    height: 8%;
+}
+
+ion-toolbar{
+    height: 100%;
+}
+#logInBlock{
+    width: 100%;
+    display: none;
+  padding: 50px 0;
+  text-align: center;
+//   background-color: white;
+  margin-top: 20px;
+}
+#signUpBlock{
+    width: 100%;
+    display: none;
+  padding: 50px 0;
+  text-align: center;
+//   background-color: white;
+  margin-top: 20px;
+}
+.center {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}

@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import Axios from "axios";
 import {url, getType, getTypeFromUri} from './constants';
-
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { timeout } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
 
 export class APICallsService {
 
-  constructor() { }
-
+  constructor(private httpService:HttpClient) { }
+  
   FETCH_TIMEOUT : number = 10000;
 
 
@@ -151,22 +152,31 @@ export class APICallsService {
     accept: (successMessage:string){}
     fail: (errorMessage:string){}
   */
-  public login(email, password, accept, fail){
-    var callback = accept;
+  public login(email, password){
+    var URL = 'http://localhost:8080'+url+'user';
+    let headers = new HttpHeaders();
+    headers.append('Content-Type','application/json');
+    let body = JSON.stringify({action: 'login',email: email,password: password});
+    console.log("In apicalls")
+    return this.httpService.post(URL,body,{headers:headers});
 
-    this.axios.post(url+'user', {
-        action: 'login',
-        email: email,
-        password: password,
-    }).then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
+
+    // var callback = accept;
+
+    // this.axios.post(url+'user', {
+    //     action: 'login',
+    //     email: email,
+    //     password: password,
+    // }).then((response) => {
+    //   if(!(response.status === 200))
+    //     callback = fail;
+    //   this.statusHandle(response, callback);
+    // })
+    // .catch((error) => {
         
-        this.statusHandle(error, fail);
-      });
+    //     this.statusHandle(error, fail);
+    //   });
+
   }
 
   public isAdmin(email, hash, accept, fail){
