@@ -1,0 +1,25 @@
+ion-content{
+
+    --padding-top: 50%;
+
+    ion-label{
+        color : white;
+        font-size: 2rem;
+        // margin-left: 10%;
+        // margin-right: 2%;
+        padding: 16%;
+    }
+
+    .row{
+        padding : 10%;
+        margin-top: 30%;
+
+        ion-img{
+            width: 50%;
+            padding-left: 5%;
+            padding-right: 5%;
+            float: left;
+        }
+    }
+    
+}

@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Storage } from '@ionic/storage';
-import { Router } from "@angular/router"
 
 @Component({
   selector: 'app-first-load',
@@ -9,34 +7,10 @@ import { Router } from "@angular/router"
 })
 export class FirstLoadPage implements OnInit {
 
-  constructor(private storage : Storage, private router : Router) { 
-
-    this.storage.get('firstLoad').then(firstLoad => {
-      if(firstLoad === null)
-        storage.set('firstLoad', true);
-      else{
-        if(firstLoad === true){
-          // not the first time this app has been loaded
-          // user has already seen the carousel
-          this.storage.get('loggedIn').then(loggedIn =>{
-            if(loggedIn === true){
-              // user log in credentials are stored in the local storage
-              // redirect user to transfer page
-              this.router.navigate(['/tabs']);
-            }
-            else{
-              // no log in info
-              // redirect user to log in page
-              this.router.navigate(['/login']);
-            }
-          });
-        }
-      }
-    });
+  constructor() { 
   }
 
   ngOnInit() {
-    
       var slides = document.querySelector('ion-slides');
       slides.options = {
       effect: 'flip'

@@ -30,6 +30,8 @@ export const SCP_TYPE = "scp://";
 export const sideLeft = "left";
 export const sideRight = "right";
 
+export const splashTimeout = 2000;
+
 export const showText={
 	dropbox: "DropBox",
 	googledrive: "GoogleDrive",
