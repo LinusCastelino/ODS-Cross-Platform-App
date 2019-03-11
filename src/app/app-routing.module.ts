@@ -7,7 +7,7 @@ const routes: Routes = [
   { path: 'banner', loadChildren: './banner/banner.module#BannerPageModule' },
   { path: 'first-load', loadChildren: './first-load/first-load.module#FirstLoadPageModule' },
   { path: 'tabs', loadChildren: './tabs/tabs.module#TabsPageModule' },
-  // { path: 'transfer', loadChildren: './transfer/transfer.module#TransferPageModule' },
+  { path: 'transfer', loadChildren: './transfer/transfer.module#TransferPageModule' },
   // { path: 'queue', loadChildren: './queue/queue.module#QueuePageModule' },
   // { path: 'admin', loadChildren: './admin/admin.module#AdminPageModule' },
   // { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
