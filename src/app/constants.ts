@@ -32,6 +32,8 @@ export const sideRight = "right";
 
 export const splashTimeout = 2000;
 
+export const supportedProtocols = ["Dropbox", "Google Drive", "SFTP", "FTP", "Grid FTP", "HTTP", "SSH"];
+
 export const showText={
 	dropbox: "DropBox",
 	googledrive: "GoogleDrive",

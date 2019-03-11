@@ -36,7 +36,7 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/tabs/transfer',
+        redirectTo: 'transfer',
         pathMatch: 'full'
       }
     ]
@@ -44,6 +44,11 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: '/transfer',
+    pathMatch: 'full'
+  },
+  {
+    path: 'transfer',
+    redirectTo: 'tabs/transfer',
     pathMatch: 'full'
   }
 ];

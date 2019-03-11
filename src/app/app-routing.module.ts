@@ -12,6 +12,7 @@ const routes: Routes = [
   // { path: 'admin', loadChildren: './admin/admin.module#AdminPageModule' },
   // { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
 ];
+
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
