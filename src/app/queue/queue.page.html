@@ -1,12 +1,12 @@
 <ion-header style="background-color:black; border: black; border-radius:5px">
   <ion-toolbar>
-    <ion-title style="color:blanchedalmond">queue</ion-title>
+    <ion-title style="color:black">queue</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
   <ion-grid>
-    <ion-row style="background-color:aqua; border: black; border-radius:5px">
+    <ion-row style="color:rgb(248, 244, 244); background-color: rgb(44, 30, 30); border-radius:5px">
       <ion-col align-self-center> 
         JobId
       </ion-col>
@@ -17,7 +17,19 @@
         Action
       </ion-col>
     </ion-row>
-
+    <ion-row style="background-color:rgb(255, 255, 255); border: rgb(53, 52, 52); border-radius:5px">
+      <ion-col align-self-center> 
+        Id
+      </ion-col>
+      <ion-col align-self-center>
+        <ion-progress-bar value="1" buffer="1.1" reversed="false" type="determinate"></ion-progress-bar>
+      </ion-col>
+      <ion-col align-self-center>
+        <ion-icon name="information-circle" (click)="infoJob('11')"></ion-icon>
+        <ion-icon name="refresh" (click)="restartJob('11')"></ion-icon>
+        <ion-icon name="trash" (click)="deleteJob('11')"></ion-icon>
+      </ion-col>
+    </ion-row>
     
   
     </ion-grid>

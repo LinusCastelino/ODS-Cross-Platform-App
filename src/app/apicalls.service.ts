@@ -251,8 +251,8 @@ export class APICallsService {
   /*
     Desc: Extract all transfers for the user
   */
-  public queue(accept, fail){
-    var callback = accept;
+  public queue(email,hash){
+  /*  var callback = accept;
 
     this.axios.post(url+'q', {
         status: 'all'
@@ -265,6 +265,20 @@ export class APICallsService {
     .catch((error) => {
         fail(error);
       });
+    */
+    email = "vanditsa@buffalo.edu";
+    hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d"
+    var cookie = "email="+email+"; hash="+hash
+    console.log("cookie",cookie)
+    var URL = context+'/q';
+    var headers = new HttpHeaders().set('Cookie',cookie);
+    //.append('Content-Type','application/json').
+
+    let body = JSON.stringify({status: 'all'});
+    // console.log(URL);
+    return this.httpService.post(URL,body,{headers:headers, withCredentials: true});
+
+
   }
 
   public submit(src, srcEndpoint, dest, destEndpoint, options,accept, fail){
@@ -508,8 +522,19 @@ export class APICallsService {
   }
 
 
-  public restartJob(jobID, accept, fail){
-    var callback = accept;
+  public restartJob(jobID, email, hash){
+    jobID = 12;
+    email = "vanditsa@buffalo.edu";
+    hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d"
+    var cookie = "email="+email+"; hash="+hash
+    console.log("cookie",cookie)
+    var URL = context+'/restart';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Cookie',cookie);
+
+    let body = JSON.stringify({status: 'all'});
+    // console.log(URL);
+    return this.httpService.post(URL,body,{headers:headers, withCredentials: true});
+    /*var callback = accept;
     this.axios.post(url+'restart',{
       job_id: jobID
     })
@@ -521,7 +546,7 @@ export class APICallsService {
     .catch((error) => {
         
         this.statusHandle(error, fail);
-      });
+      });*/
   }
 
   public openOAuth(url){
