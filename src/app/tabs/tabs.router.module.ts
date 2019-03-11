@@ -36,14 +36,19 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/tabs/transfer',
+        redirectTo: 'transfer',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/transfer',
+    redirectTo: 'tabs/transfer',
+    pathMatch: 'full'
+  },
+  {
+    path: 'transfer',
+    redirectTo: 'tabs/transfer',
     pathMatch: 'full'
   }
 ];
