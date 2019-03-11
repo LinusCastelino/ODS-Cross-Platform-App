@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { APICallsService } from '../apicalls.service';
 
 @Component({
   selector: 'app-queue',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class QueuePage implements OnInit {
 
-  constructor() { }
+  constructor(private apiService:APICallsService) {  }
 
   ngOnInit() {
   }
