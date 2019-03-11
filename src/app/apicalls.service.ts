@@ -158,7 +158,7 @@ export class APICallsService {
     var headers = new HttpHeaders().append('Content-Type','application/json');
 
     let body = JSON.stringify({action: 'login',email: email,password: password});
-    console.log(URL);
+    // console.log(URL);
     return this.httpService.post(URL,body,{headers:headers, withCredentials: true});
 
 
