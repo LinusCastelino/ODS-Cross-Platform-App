@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: 'transfer', loadChildren: './transfer/transfer.module#TransferPageModule' },
   // { path: 'queue', loadChildren: './queue/queue.module#QueuePageModule' },
   // { path: 'admin', loadChildren: './admin/admin.module#AdminPageModule' },
-  // { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
+  { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
 ];
 
 @NgModule({
