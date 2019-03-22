@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { APICallsService } from '../apicalls.service';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
+import { CookieService } from 'angular2-cookie/core'
 
 @Component({
   selector: 'app-login',
@@ -10,7 +11,8 @@ import { Router } from '@angular/router';
 })
 export class LoginPage implements OnInit {
 
-  constructor(private apiService:APICallsService, private storage : Storage, private router:Router) { }
+  constructor(private apiService:APICallsService, private storage : Storage, private router:Router,
+              private cookieService: CookieService) { }
 
   ngOnInit() {
   }
@@ -43,6 +45,8 @@ export class LoginPage implements OnInit {
     this.apiService.login(username,password).subscribe(
     resp => {
       // console.log("Success", resp);
+      this.cookieService.put('email',resp.email);
+      this.cookieService.put('hash', resp.hash);
       this.storage.set('email',resp.email);
       this.storage.set('hash',resp.hash);
       this.storage.set('loggedIn',true);
@@ -69,20 +73,6 @@ export class LoginPage implements OnInit {
       console.log("No MATCH");
     }
 
-  //   this.apiService.login(username,password).subscribe(
-  //   resp => {
-  //     console.log("Success", resp);
-  //     // this.storage.set('email',resp.email);
-  //     // this.storage.set('hash',resp.hash);
-  //     // this.storage.set('loggedIn',true);
-  //     // console.log(this.storage.get('email'));
-  //     // console.log(this.storage.get('hash'));
-  //     // console.log(this.storage.get('loggedIn'));
-  //     this.router.navigate(['/tabs']);
-  //   },
-  //   err => {
-  //     console.log("Fail");
-  //   });
   }
 
 }

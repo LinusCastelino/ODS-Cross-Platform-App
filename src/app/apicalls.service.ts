@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import Axios from "axios";
 import {url, getType, getTypeFromUri} from './constants';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+import { ILoginResponse } from './models/ILoginResponse';
 
 const context = '/api/stork';
 
@@ -153,32 +156,13 @@ export class APICallsService {
     accept: (successMessage:string){}
     fail: (errorMessage:string){}
   */
-  public login(email, password){
+  public login(email, password): Observable<ILoginResponse>{
     var URL = context+'/user';
     var headers = new HttpHeaders().append('Content-Type','application/json');
-
     let body = JSON.stringify({action: 'login',email: email,password: password});
-    // console.log(URL);
-    return this.httpService.post(URL,body,{headers:headers, withCredentials: true});
-
-
-    // var callback = accept; 
-
-    // this.axios.post(url+'user', {
-    //     action: 'login',
-    //     email: email,
-    //     password: password,
-    // }).then((response) => {
-    //   if(!(response.status === 200))
-    //     callback = fail;
-    //   this.statusHandle(response, callback);
-    // })
-    // .catch((error) => {
-        
-    //     this.statusHandle(error, fail);
-    //   });
-
+    return this.httpService.post<ILoginResponse>(URL,body,{headers:headers, withCredentials: true});
   }
+
 
   public isAdmin(email, hash, accept, fail){
     var callback = accept;
@@ -528,8 +512,8 @@ export class APICallsService {
     window.open(url, 'oAuthWindow');
   }
 
-  public openDropboxOAuth(){
-    this.openOAuth("/api/stork/oauth?type=dropbox");
+  public getDropboxOAuthLink(){
+    return "/api/stork/oauth?type=dropbox";
   }
 
   public openGoogleDriveOAuth(){
