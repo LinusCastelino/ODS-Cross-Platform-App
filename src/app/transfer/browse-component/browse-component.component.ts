@@ -21,8 +21,8 @@ export class BrowseComponentComponent implements OnInit {
   public click(endpoint){
     console.log(endpoint + " selected.");
     if(endpoint === "Dropbox"){
-      // var browserRef = window.cordova.InAppBrowser.open(this.apiService.getDropboxOAuthLink());
-      window.open(this.apiService.getDropboxOAuthLink());
+      var browserRef = window.cordova.InAppBrowser.open(this.apiService.getDropboxOAuthLink());
+      // window.open(this.apiService.getDropboxOAuthLink());
     }
     else if(endpoint === "Google Drive"){
 

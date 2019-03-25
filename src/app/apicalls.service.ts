@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
 
 import { ILoginResponse } from './models/ILoginResponse';
 
-const context = '/api/stork';
+const endpoint = 'http://10.84.51.116:8080';
+const context = endpoint + '/api/stork';
 
 @Injectable({
   providedIn: 'root'
@@ -158,9 +159,12 @@ export class APICallsService {
   */
   public login(email, password): Observable<ILoginResponse>{
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json');
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                   .append('Access-Control-Allow-Origin','*');
+                                  //  .append('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
+                                  //  .append('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
     let body = JSON.stringify({action: 'login',email: email,password: password});
-    return this.httpService.post<ILoginResponse>(URL,body,{headers:headers, withCredentials: true});
+    return this.httpService.post<ILoginResponse>(URL,body,{headers:headers});
   }
 
 
@@ -513,7 +517,7 @@ export class APICallsService {
   }
 
   public getDropboxOAuthLink(){
-    return "/api/stork/oauth?type=dropbox";
+    return endpoint + "/api/stork/oauth?type=dropbox";
   }
 
   public openGoogleDriveOAuth(){
