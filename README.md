@@ -12,11 +12,9 @@ http://www.buffalo.edu/news/releases/2017/07/012.html
 
 Team Members -
 
+Prof. Alan Hunt (ahunt@buffalo.edu) - Course lead and project mentor
 Linus Castelino (linuscas@buffalo.edu) - System Architect and Developer
 
 Harsh Gandhi (harshnar@buffalo.edu) - Developer
 
 Atul Singh (asingh68@buffalo.edu) - Developer
-
-
-Prof. Alan Hunt (ahunt@buffalo.edu) - Course lead and project mentor
