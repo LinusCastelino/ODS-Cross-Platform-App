@@ -54,6 +54,8 @@ export class LoginPage implements OnInit {
       // console.log(this.storage.get('hash'));
       // console.log(this.storage.get('loggedIn'));
       this.router.navigate(['/tabs']);
+
+      console.log("Cookie values - " + this.cookieService.get('email') + " " + this.cookieService.get('hash'));
     },
     err => {
       console.log("Fail");

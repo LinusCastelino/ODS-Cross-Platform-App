@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { supportedProtocols } from '../../constants';
+import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
 
 declare var window: any;
@@ -13,7 +14,7 @@ export class BrowseComponentComponent implements OnInit {
 
   supportedProtocols : string[] = supportedProtocols;
 
-  constructor(private apiService : APICallsService) { }
+  constructor(private apiService : APICallsService, private storage : Storage) { }
 
   ngOnInit() {
   }
@@ -21,8 +22,14 @@ export class BrowseComponentComponent implements OnInit {
   public click(endpoint){
     console.log(endpoint + " selected.");
     if(endpoint === "Dropbox"){
-      var browserRef = window.cordova.InAppBrowser.open(this.apiService.getDropboxOAuthLink());
-      // window.open(this.apiService.getDropboxOAuthLink());
+      this.storage.get('email')
+          .then(email=>{
+              this.storage.get('hash')
+                  .then(hash=>{
+                      var browserRef = window.cordova.InAppBrowser.open(this.apiService.getDropboxOAuthLink() 
+                                       + "&email=" + email + "&hash=" + hash)});
+                  });
+      
     }
     else if(endpoint === "Google Drive"){
 
