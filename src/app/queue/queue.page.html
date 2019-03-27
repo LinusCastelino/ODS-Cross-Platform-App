@@ -1,3 +1,5 @@
+<link rel="stylesheet/less" type="text/css" href="modal.less" />
+
 <ion-header style="background-color:black; border: black; border-radius:5px">
   <ion-toolbar>
     <ion-title style="color:black">queue</ion-title>
@@ -30,7 +32,13 @@
         <ion-icon name="trash" (click)="deleteJob('11')"></ion-icon>
       </ion-col>
     </ion-row>
-    
+
+  
+      <h1>A Custom Modal!</h1>
+      <p>Home page text: <input type="text" [(ngModel)]="bodyText" /></p>
+      <button (click)="openModal('custom-modal-1')">Open Modal 1</button>
+      <button (click)="closeModal('custom-modal-1');">Close</button>
+  
   
     </ion-grid>
 </ion-content>

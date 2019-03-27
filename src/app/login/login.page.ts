@@ -39,8 +39,8 @@ export class LoginPage implements OnInit {
     this.apiService.login("vanditsa@buffalo.edu","asdasd").subscribe(
     resp => {
       console.log("Success", resp);
-      this.storage.set('email',resp.email);
-      this.storage.set('hash',resp.hash);
+      //this.storage.set('email',resp.email);
+      //this.storage.set('hash',resp.hash);
       this.storage.set('loggedIn',true);
       // console.log(this.storage.get('email'));
       // console.log(this.storage.get('hash'));

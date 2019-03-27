@@ -531,7 +531,7 @@ export class APICallsService {
     var URL = context+'/restart';
     var headers = new HttpHeaders().append('Content-Type','application/json').append('Cookie',cookie);
 
-    let body = JSON.stringify({status: 'all'});
+    let body = JSON.stringify({job_id: jobID});
     // console.log(URL);
     return this.httpService.post(URL,body,{headers:headers, withCredentials: true});
     /*var callback = accept;
