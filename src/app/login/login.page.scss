@@ -26,7 +26,7 @@ ion-toolbar{
 }
 #logInBlock{
     width: 100%;
-    display: none;
+    display: block;
   padding: 50px 0;
   text-align: center;
 //   background-color: white;
@@ -39,6 +39,9 @@ ion-toolbar{
   text-align: center;
 //   background-color: white;
   margin-top: 20px;
+}
+#loginBlockButton{
+  display: none;
 }
 .center {
     margin-top: auto;

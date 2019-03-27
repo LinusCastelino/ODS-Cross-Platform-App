@@ -11,11 +11,7 @@
             </ion-item>
 
             <div id="srcEndpoint" *ngIf="srcEndpointOpen" class="dropdown">
-                <ion-item *ngFor="let supportedProtocol of supportedProtocols">
-                    <ion-label class="protocol-label">
-                        {{supportedProtocol}}
-                    </ion-label>
-                </ion-item>
+                <app-browse-component></app-browse-component>
             </div>
         </ion-item-group>
     </div>
@@ -30,12 +26,8 @@
                 </ion-label>
             </ion-item>
 
-            <div id="srcEndpoint" *ngIf="destEndpointOpen" class="dropdown">
-                <ion-item *ngFor="let supportedProtocol of supportedProtocols">
-                    <ion-label class="protocol-label">
-                        {{supportedProtocol}}
-                    </ion-label>
-                </ion-item>
+            <div id="destEndpoint" *ngIf="destEndpointOpen" class="dropdown">
+                <app-browse-component></app-browse-component>
             </div>
         </ion-item-group>
     </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Storage } from '@ionic/storage';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
@@ -7,9 +7,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfilePage implements OnInit {
 
-  constructor() { }
-
+  constructor(private storage : Storage) { }
+  email:any;
+  profile:boolean=false;
+  
   ngOnInit() {
+    var self = this;
+    this.getEmail('email').then(function(value){
+  self.email = value;
+  
+   console.log(self.email);
+   self.profile = true;
+  });
   }
-
+getEmail(data):any{
+  return this.storage.get(data).then(function(value) {
+    return value;
+  });
+  }
 }
