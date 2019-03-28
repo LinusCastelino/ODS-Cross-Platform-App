@@ -1,3 +1,43 @@
 <ion-content padding>
-  Hello from admin page!
-</ion-content>
+    <ion-grid>
+      <ion-row class="queueHeader">
+          <ion-col align-self-center size="4"> 
+              Owner
+            </ion-col>
+        <ion-col align-self-center size="2"> 
+          JobId
+        </ion-col>
+        <ion-col align-self-center size="4">
+          Progress
+        </ion-col>
+        <ion-col align-self-center size="2" style="text-align:center">
+          Action
+        </ion-col>
+      </ion-row>
+  
+      <ion-row *ngFor="let x of qResp; let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'" >
+  
+        <ion-col align-self-center size="4"> 
+          {{x.owner}}
+        </ion-col>
+        <ion-col align-self-center size="2"> 
+            {{x.job_id}}
+          </ion-col>
+        <ion-col align-self-center size="4">
+            <ion-progress-bar  *ngIf="x.progressbar > 0 && x.progressbar < 1" color="primary" value={{x.progressbar}}></ion-progress-bar>
+            <ion-progress-bar  *ngIf="x.progressbar == 1" color="success" value={{x.progressbar}}></ion-progress-bar>
+            <ion-progress-bar  *ngIf="x.progressbar == 0" color="danger" value="1"></ion-progress-bar>
+        </ion-col>
+  
+        <ion-col align-self-center size="2" justify-content-center style="text-align:center">
+            <ion-icon name="information-circle" (click)="infoJob(x.job_id)"></ion-icon>
+            <ion-icon *ngIf="x.status == processing" name="close-circle" (click)="cancelJob(x.job_id)"></ion-icon>
+            <ion-icon  *ngIf="x.status != processing" name="refresh" (click)="restartJob(x.job_id)"></ion-icon>
+            <ion-icon *ngIf="x.status != processing" name="trash" (click)="deleteJob(x.job_id)"></ion-icon>
+          </ion-col>
+  
+      </ion-row>    
+    
+      </ion-grid>
+  </ion-content>
+  

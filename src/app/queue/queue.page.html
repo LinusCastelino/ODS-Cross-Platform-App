@@ -1,44 +1,38 @@
-<link rel="stylesheet/less" type="text/css" href="modal.less" />
-
-<ion-header style="background-color:black; border: black; border-radius:5px">
-  <ion-toolbar>
-    <ion-title style="color:black">queue</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content padding>
   <ion-grid>
-    <ion-row style="color:rgb(248, 244, 244); background-color: rgb(44, 30, 30); border-radius:5px">
-      <ion-col align-self-center> 
+    <ion-row class="queueHeader">
+      <ion-col align-self-center size="2"> 
         JobId
       </ion-col>
-      <ion-col align-self-center>
+      <ion-col align-self-center size="6">
         Progress
       </ion-col>
-      <ion-col align-self-center>
+      <ion-col align-self-center size="4" style="text-align:center">
         Action
       </ion-col>
     </ion-row>
-    <ion-row style="background-color:rgb(255, 255, 255); border: rgb(53, 52, 52); border-radius:5px">
-      <ion-col align-self-center> 
-        Id
-      </ion-col>
-      <ion-col align-self-center>
-        <ion-progress-bar value="1" buffer="1.1" reversed="false" type="determinate"></ion-progress-bar>
-      </ion-col>
-      <ion-col align-self-center>
-        <ion-icon name="information-circle" (click)="infoJob('11')"></ion-icon>
-        <ion-icon name="refresh" (click)="restartJob('11')"></ion-icon>
-        <ion-icon name="trash" (click)="deleteJob('11')"></ion-icon>
-      </ion-col>
-    </ion-row>
 
-  
-      <h1>A Custom Modal!</h1>
-      <p>Home page text: <input type="text" [(ngModel)]="bodyText" /></p>
-      <button (click)="openModal('custom-modal-1')">Open Modal 1</button>
-      <button (click)="closeModal('custom-modal-1');">Close</button>
-  
-  
+    <ion-row *ngFor="let x of qResp; let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'">
+
+      <ion-col align-self-center size="2"> 
+        {{x.job_id}}
+      </ion-col>
+
+      <ion-col align-self-center size="6">
+        <ion-progress-bar  *ngIf="x.progressbar > 0 && x.progressbar < 1" color="primary" value={{x.progressbar}}></ion-progress-bar>
+        <ion-progress-bar  *ngIf="x.progressbar == 1" color="success" value={{x.progressbar}}></ion-progress-bar>
+        <ion-progress-bar  *ngIf="x.progressbar == 0" color="danger" value="1"></ion-progress-bar>
+      </ion-col>
+
+      <ion-col align-self-center size="4" justify-content-center style="text-align:center">
+        <ion-icon name="information-circle" (click)="infoJob(x.job_id)"></ion-icon>
+        <ion-icon *ngIf="x.status == processing" name="close-circle" (click)="cancelJob(x.job_id)"></ion-icon>
+        <ion-icon  *ngIf="x.status != processing" name="refresh" (click)="restartJob(x.job_id)"></ion-icon>
+        <ion-icon *ngIf="x.status != processing" name="trash" (click)="deleteJob(x.job_id)"></ion-icon>
+      </ion-col>
+
+    </ion-row>
+    
     </ion-grid>
 </ion-content>

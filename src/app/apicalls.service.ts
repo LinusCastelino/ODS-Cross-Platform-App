@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import Axios from "axios";
 import {url, getType, getTypeFromUri} from './constants';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, MonoTypeOperatorFunction } from 'rxjs';
 
 import { ILoginResponse } from './models/ILoginResponse';
+import { IQueueResp } from './models/IQueueResp';
 
-const endpoint = 'http://10.84.51.116:8080';
+const endpoint = 'http://127.0.0.1:8080';
 const context = endpoint + '/api/stork';
 
 @Injectable({
@@ -163,6 +164,7 @@ export class APICallsService {
                                    .append('Access-Control-Allow-Origin','*');
                                   //  .append('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
                                   //  .append('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+    console.log("headers",headers)
     let body = JSON.stringify({action: 'login',email: email,password: password});
     return this.httpService.post<ILoginResponse>(URL,body,{headers:headers});
   }
@@ -240,33 +242,12 @@ export class APICallsService {
     Desc: Extract all transfers for the user
   */
   public queue(email,hash){
-  /*  var callback = accept;
-
-    this.axios.post(url+'q', {
-        status: 'all'
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        fail(error);
-      });
-    */
-    email = "vanditsa@buffalo.edu";
-    hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d"
-    var cookie = "email="+email+"; hash="+hash
-    console.log("cookie",cookie)
     var URL = context+'/q';
-    var headers = new HttpHeaders().set('Cookie',cookie);
-    //.append('Content-Type','application/json').
-
-    let body = JSON.stringify({status: 'all'});
-    // console.log(URL);
-    return this.httpService.post(URL,body,{headers:headers, withCredentials: true});
-
-
+    let body = JSON.stringify({status: 'all',email: email,password: hash});
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                  .append('Access-Control-Allow-Origin','*');
+    return this.httpService.post(URL,body,{headers:headers});
+    //return this.httpService.get(URL,{headers,params});
   }
 
   public submit(src, srcEndpoint, dest, destEndpoint, options,accept, fail){
@@ -470,26 +451,12 @@ export class APICallsService {
       });
   }
 
-  public cancelJob(jobID, accept, fail){
-    var callback = accept;
-    fetch(url+'cancel', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        job_id: jobID
-      }),
-    })
-    .then((response) => {
-      if(!response.ok) 
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        fail(error);
-      });
+  public cancelJob(jobID, email, hash){
+    var URL = context+'/cancel';
+    let body = JSON.stringify({job_id: jobID,email: email,password: hash});
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                  .append('Access-Control-Allow-Origin','*');
+    return this.httpService.post(URL,body,{headers:headers});
   }
 
   public deleteCredential(uri, accept, fail){
@@ -511,31 +478,24 @@ export class APICallsService {
 
 
   public restartJob(jobID, email, hash){
-    jobID = 12;
-    email = "vanditsa@buffalo.edu";
-    hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d"
-    var cookie = "email="+email+"; hash="+hash
-    console.log("cookie",cookie)
+    console.log(jobID,email,hash);
     var URL = context+'/restart';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Cookie',cookie);
-
-    let body = JSON.stringify({job_id: jobID});
-    // console.log(URL);
-    return this.httpService.post(URL,body,{headers:headers, withCredentials: true});
-    /*var callback = accept;
-    this.axios.post(url+'restart',{
-      job_id: jobID
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        
-        this.statusHandle(error, fail);
-      });*/
+    let body = JSON.stringify({job_id: jobID,email: email,password: hash});
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                  .append('Access-Control-Allow-Origin','*');
+    return this.httpService.post(URL,body,{headers:headers});
   }
+
+  public getClientInfo(email, hash){
+    console.log(email,hash);
+    var URL = context+'/user';
+    let body = JSON.stringify({action:"getAdministrators",email: email,password: hash});
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                  .append('Access-Control-Allow-Origin','*');
+    return this.httpService.post(URL,body,{headers:headers});
+  }
+
+
 
   public openOAuth(url){
     window.open(url, 'oAuthWindow');
