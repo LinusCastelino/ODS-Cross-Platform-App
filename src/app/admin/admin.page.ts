@@ -10,6 +10,7 @@ import { AlertController } from '@ionic/angular';
 })
 export class AdminPage implements OnInit {
   private qResp : any[] = [];
+  private clientList : any[] = [];
   email = "vanditsa@buffalo.edu";
   hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d";
 
@@ -25,7 +26,12 @@ export class AdminPage implements OnInit {
     console.log("cancel");
     this.apiService.getClientInfo(this.email,this.hash).subscribe(
       resp => {
-        console.log("Success", resp);
+        //console.log("Success", resp);
+        var temp : any[] = Object.keys(resp);
+        temp.map((x)=>{
+          this.clientList.push(resp[x]);
+        });
+        console.log("Client", this.clientList);
       },
       err => {
         console.log("Fail",err);
@@ -50,7 +56,7 @@ export class AdminPage implements OnInit {
           this.qResp.push(resp[x]);
       });
       this.qResp.sort((a, b) => { return b.job_id - a.job_id});
-      console.log(this.qResp);
+      //console.log(this.qResp);
     },
     err => {
       console.log("Fail",err);

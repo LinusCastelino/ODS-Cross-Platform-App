@@ -7,7 +7,7 @@ import { Observable, MonoTypeOperatorFunction } from 'rxjs';
 import { ILoginResponse } from './models/ILoginResponse';
 import { IQueueResp } from './models/IQueueResp';
 
-const endpoint = 'http://127.0.0.1:8080';
+const endpoint = 'http://10.84.23.130:8080';
 const context = endpoint + '/api/stork';
 
 @Injectable({
@@ -489,7 +489,7 @@ export class APICallsService {
   public getClientInfo(email, hash){
     console.log(email,hash);
     var URL = context+'/user';
-    let body = JSON.stringify({action:"getAdministrators",email: email,password: hash});
+    let body = JSON.stringify({action:"getUsers",email: email,password: hash});
     var headers = new HttpHeaders().append('Content-Type','application/json')
                                   .append('Access-Control-Allow-Origin','*');
     return this.httpService.post(URL,body,{headers:headers});

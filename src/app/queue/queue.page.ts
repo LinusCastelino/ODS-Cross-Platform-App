@@ -5,7 +5,7 @@ import { IQueueResp } from '../models/IQueueResp';
 import { queryRefresh } from '@angular/core/src/render3';
 import { AlertController } from '@ionic/angular';
 import { interval } from 'rxjs';
-
+import * as _ from 'lodash';
 
 
 @Component({
@@ -18,14 +18,15 @@ export class QueuePage implements OnInit {
 
   //private bodyText: string;
   private qResp : any[] = [];
+  searchQuery = "";
   email = "vanditsa@buffalo.edu";
   hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d";
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController) {
-    // interval(2000).subscribe(x => {
-    //   this.qResp = [];
-    //   this.queue();
-    // });
+    interval(6000).subscribe(x => {
+      this.qResp = [];
+      this.queue();
+    });
   }
 
   ngOnInit() {
@@ -33,7 +34,24 @@ export class QueuePage implements OnInit {
   }
 
   
+  public searchJob(){
+    //console.log(event)
+    console.log(this.searchQuery)
+  }
 
+  public filterList(itemList: any[]): any[] {
+    let result: any[] = [];
+    if(this.searchQuery == ""){
+      result = itemList;
+    }else{
+      itemList.forEach(element => {
+        if(element.job_id == this.searchQuery){
+          result.push(element);
+        }
+      });
+    }
+    return result;
+  }
   public queue(){
     console.log("Queue")
     //var email = this.storage.get('email');
@@ -49,8 +67,17 @@ export class QueuePage implements OnInit {
           }else{
             resp[x].progressbar = 0.0;
           }
-
-          this.qResp.push(resp[x]);
+          //  var flag = false;
+          //  this.qResp.forEach(element => {
+          //    flag = _.isEqual(element, resp[x]);
+          //    console.log(flag);
+          //  });
+          // if(!flag){
+            this.qResp.push(resp[x]);
+          // }else{
+          //   console.log("Match");
+          // }
+          
       });
       this.qResp.sort((a, b) => { return b.job_id - a.job_id});
       //console.log(this.qResp);

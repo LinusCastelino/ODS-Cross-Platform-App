@@ -1,4 +1,40 @@
 <ion-content padding>
+<!-- Client Information Grid -->
+<ion-grid>
+    <ion-row class="queueHeader">
+        <ion-col align-self-center size="6"> 
+            Users
+          </ion-col>
+      <ion-col align-self-center size="4"> 
+          Validation
+      </ion-col>
+      
+      <ion-col align-self-center size="2" style="text-align:center">
+        Info
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngFor="let x of clientList; let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'" >
+
+      <ion-col align-self-center size="7"> 
+        {{x.email}}
+      </ion-col>
+      
+      <ion-col align-self-center size="3">
+          <ion-icon *ngIf="x.validated" name="checkmark-circle-outline"></ion-icon>
+          <ion-icon *ngIf="!x.validated" name="close-circle-outline"></ion-icon>
+      </ion-col>
+
+      <ion-col align-self-center size="2" justify-content-center style="text-align:center">
+          <ion-icon name="information-circle" ></ion-icon>
+      </ion-col>
+
+    </ion-row>    
+  
+    </ion-grid>
+
+  <!-- Queue from all the users  -->
+
     <ion-grid>
       <ion-row class="queueHeader">
           <ion-col align-self-center size="4"> 
@@ -39,5 +75,8 @@
       </ion-row>    
     
       </ion-grid>
+
+
+
   </ion-content>
   
