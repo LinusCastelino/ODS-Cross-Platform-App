@@ -7,7 +7,7 @@ import { Observable, MonoTypeOperatorFunction } from 'rxjs';
 import { ILoginResponse } from './models/ILoginResponse';
 import { IQueueResp } from './models/IQueueResp';
 
-const endpoint = 'http://10.84.23.130:8080';
+const endpoint = 'http://127.0.0.1:8080';
 const context = endpoint + '/api/stork';
 
 @Injectable({
@@ -505,12 +505,12 @@ export class APICallsService {
     return endpoint + "/api/stork/oauth?type=dropbox";
   }
 
-  public openGoogleDriveOAuth(){
-    this.openOAuth("/api/stork/oauth?type=googledrive");
+  public getGoogleDriveOAuthLink(){
+    return endpoint + "/api/stork/oauth?type=googledrive";
   }
 
-  public openGridFtpOAuth(){
-    this.openOAuth("/api/stork/oauth?type=gridftp");
+  public getGridFtpOAuthLink(){
+    return endpoint + "/api/stork/oauth?type=gridftp";
   }
 
   public registerUser(emailId) {
