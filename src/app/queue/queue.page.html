@@ -2,12 +2,12 @@
 <ion-content padding>
   <ion-grid>
       <ion-row>
-          <ion-col size="12" col-3 style="padding: unset">
-              <ion-searchbar style="padding: unset; border-radius: 2px" color="dark" [(ngModel)]="searchQuery" (change)="searchJob()" autocorrect="off" placeholder="Search by JobId"></ion-searchbar>
+          <ion-col size="12" col-3 style="padding: unset; border-radius: 4px;">
+              <ion-searchbar style="padding: unset;" color="dark" [(ngModel)]="searchQuery" (change)="searchJob()" autocorrect="off" placeholder="Search by JobId"></ion-searchbar>
           </ion-col>
        </ion-row>
 
-    <ion-row class="queueHeader">
+    <ion-row class="queueHeader" style="margin-top: 5px; ">
       <ion-col align-self-center size="2"> 
         JobId
       </ion-col>
@@ -19,7 +19,7 @@
       </ion-col>
     </ion-row>
 
-    <ion-row *ngFor="let x of filterList(qResp); let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'">
+    <ion-row *ngFor="let x of filterList(qResp) | paginate: { itemsPerPage: 15, currentPage: p }; let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'">
 
       <ion-col align-self-center size="2"> 
         {{x.job_id}}
@@ -39,6 +39,6 @@
       </ion-col>
 
     </ion-row>
-
+    <ion-row><ion-col col-3><pagination-controls (pageChange)="p = $event" maxSize="3"></pagination-controls></ion-col></ion-row>
     </ion-grid>
 </ion-content>

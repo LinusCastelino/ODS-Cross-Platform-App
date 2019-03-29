@@ -51,7 +51,7 @@
         </ion-col>
       </ion-row>
   
-      <ion-row *ngFor="let x of qResp; let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'" >
+      <ion-row *ngFor="let x of qResp | paginate: { itemsPerPage: 10, currentPage: p }; let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'" >
   
         <ion-col align-self-center size="4"> 
           {{x.owner}}
@@ -73,10 +73,8 @@
           </ion-col>
   
       </ion-row>    
-    
-      </ion-grid>
-
-
+    <ion-row><ion-col col-3><pagination-controls (pageChange)="p = $event" maxSize="3"></pagination-controls></ion-col></ion-row>
+    </ion-grid>
 
   </ion-content>
   

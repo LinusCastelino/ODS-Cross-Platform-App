@@ -11,8 +11,8 @@ import { AlertController } from '@ionic/angular';
 export class AdminPage implements OnInit {
   private qResp : any[] = [];
   private clientList : any[] = [];
-  email = "vanditsa@buffalo.edu";
-  hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d";
+  email = "";
+  hash = "";
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController) {
   }
@@ -20,7 +20,15 @@ export class AdminPage implements OnInit {
   ngOnInit() {
     this.queue();
     this.getClientInfo();
-  }
+    var self = this;
+    this.getData('email').then(function(value){self.email = value;});
+    this.getData('hash').then(function(value){self.email = value;});
+    }
+  getData(data):any{
+      return this.storage.get(data).then(function(value) {
+      return value;
+      });
+    }
 
   public getClientInfo(){
     console.log("cancel");

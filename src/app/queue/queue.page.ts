@@ -6,7 +6,7 @@ import { queryRefresh } from '@angular/core/src/render3';
 import { AlertController } from '@ionic/angular';
 import { interval } from 'rxjs';
 import * as _ from 'lodash';
-
+//import {NgxPaginationModule} from 'ngx-pagination';
 
 @Component({
   selector: 'app-queue',
@@ -14,24 +14,35 @@ import * as _ from 'lodash';
   styleUrls: ['./queue.page.scss'],
 
 })
+
+
 export class QueuePage implements OnInit {
 
   //private bodyText: string;
   private qResp : any[] = [];
   searchQuery = "";
-  email = "vanditsa@buffalo.edu";
-  hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d";
+  email = "";
+  hash = "";
+  p: number = 1;
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController) {
     interval(6000).subscribe(x => {
-      this.qResp = [];
-      this.queue();
+      //this.qResp = [];
+      //this.queue();
     });
   }
 
   ngOnInit() {
     this.queue();
-  }
+    var self = this;
+    this.getData('email').then(function(value){self.email = value;});
+    this.getData('hash').then(function(value){self.email = value;});
+    }
+    getData(data):any{
+      return this.storage.get(data).then(function(value) {
+      return value;
+      });
+    }
 
   
   public searchJob(){
@@ -158,3 +169,4 @@ export class QueuePage implements OnInit {
 		return displaySpeed;
 	}
 }
+
