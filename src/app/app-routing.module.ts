@@ -9,7 +9,7 @@ const routes: Routes = [
   { path: 'tabs', loadChildren: './tabs/tabs.module#TabsPageModule' },
   { path: 'transfer', loadChildren: './transfer/transfer.module#TransferPageModule' },
   // { path: 'admin', loadChildren: './admin/admin.module#AdminPageModule' },
-  // { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
+
   { path: 'queue', loadChildren: './queue/queue.module#QueuePageModule' },
   { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
 ];
