@@ -3,6 +3,8 @@ import { APICallsService } from '../apicalls.service';
 import { Storage } from '@ionic/storage';
 import { IQueueResp } from '../models/IQueueResp';
 import { AlertController } from '@ionic/angular';
+import { interval } from 'rxjs';
+
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.page.html',
@@ -13,23 +15,42 @@ export class AdminPage implements OnInit {
   private clientList : any[] = [];
   email = "";
   hash = "";
+  public innerWidth: any;
+  public innerHeight: any;
+  rowsperPage : number = 10;
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController) {
+    interval(6000).subscribe(x => {
+      this.qResp = [];
+      this.queue();
+    });
   }
 
   ngOnInit() {
-    this.queue();
-    this.getClientInfo();
     var self = this;
-    this.getData('email').then(function(value){self.email = value;});
-    this.getData('hash').then(function(value){self.email = value;});
-    }
+    this.getData('email').then(function(value){
+      self.email = value;
+      self.getData('hash').then(function(value){
+        self.hash = value;
+        console.log(self.email, self.hash);
+        self.queue();
+        self.getClientInfo();
+      });
+    });
+
+    this.innerWidth = window.innerWidth;
+    this.innerHeight = window.innerHeight;
+    console.log(this.innerWidth,this.innerHeight);
+    this.getNumRows(this.innerHeight);
+  }
   getData(data):any{
       return this.storage.get(data).then(function(value) {
       return value;
       });
     }
-
+  getNumRows(height){
+    this.rowsperPage = (height-270)/50;
+  }
   public getClientInfo(){
     console.log("cancel");
     this.apiService.getClientInfo(this.email,this.hash).subscribe(
