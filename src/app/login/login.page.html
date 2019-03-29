@@ -1,70 +1,55 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-title>OneDataShare</ion-title>
-    </ion-toolbar>
+<ion-toolbar>
+    <ion-title>OneDataShare</ion-title>
+</ion-toolbar>
 </ion-header>
 <ion-content padding>
-        <h4 text-center margin-top>Log In Page Temperary Text</h4>
-        <div class="center" >
-        <div id="logInBlock" >
-                <ion-row text-center>
-                        <ion-col text-center>
-                                <ion-item>
-                                        <ion-label stacked>Email ID</ion-label>
-                                        <ion-input [(ngModel)]="emailId"></ion-input>
-                                      </ion-item>
+    <h4 text-center margin-top>Log In Page Temperory Text</h4>
+    <div class="center" >
+    <div id="logInBlock" >
+            <ion-row text-center>
+                    <ion-col text-center>
+                                  <form (submit)="loginAPI($event)">
+                                    <div class="form-group">
+                                      
+                                      <input type="text" class="form-control" id="loginEmail" aria-describedby="emailHelp" placeholder="Email Id">
+                                    </div>
+                                    <div class="form-group">
+                                      
+                                      <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+                                    </div>
                                     
-                                      <ion-item>
-                                        <ion-label stacked>Password</ion-label>
-                                        <ion-input type="password" [(ngModel)]="password"></ion-input>
-                                      </ion-item>
-                                    
-                                      <div text-center margin-top >
-                                            <ion-button shape="round" fill="outline" color="light"(click)="loginAPI()">Submit</ion-button>
-                                        <!-- <button ion-button margin-right (click)="signUp()">
-                                          SIGN UP
-                                        </button>
-                                    
-                                        <button ion-button color="secondary" (click)="signIn()">
-                                          SIGN IN
-                                        </button> -->
-                                      </div>
-                        </ion-col>
-                      </ion-row>
-        </div>
-        <ion-button expand="block" (click)="logIn()">Log In</ion-button>
-        <div id="signUpBlock" >
-                <ion-row text-center>
-                        <ion-col text-center>
-                                <ion-item>
-                                        <ion-label stacked>Email ID</ion-label>
-                                        <ion-input [(ngModel)]="emailId"></ion-input>
-                                      </ion-item>
-                                    
-                                      <ion-item>
-                                        <ion-label stacked>Password</ion-label>
-                                        <ion-input type="password" [(ngModel)]="password"></ion-input>
-                                      </ion-item>
-                                      <ion-item>
-                                            <ion-label stacked>Confirm Password</ion-label>
-                                            <ion-input type="password" [(ngModel)]="password"></ion-input>
-                                          </ion-item>
-                                    
-                                      <div text-center margin-top >
-                                            <ion-button shape="round" fill="outline" color="light">Submit</ion-button>
-                                        <!-- <button ion-button margin-right (click)="signUp()">
-                                          SIGN UP
-                                        </button>
-                                    
-                                        <button ion-button color="secondary" (click)="signIn()">
-                                          SIGN IN
-                                        </button> -->
-                                      </div>
-                        </ion-col>
-                      </ion-row>
-        </div>
-        <ion-button expand="block" (click)="signUp()">Sign Up</ion-button>
+                                    <button type="submit" class="btn btn-primary">Log In</button>
+                                  </form>
+                    </ion-col>
+                  </ion-row>
     </div>
+    
+    <div id="signUpBlock" >
+            <ion-row text-center>
+                <ion-col text-center>
+                    <form (submit)="signupApi($event)">
+                      <div class="form-group">
+                        
+                        <input type="text" class="form-control" id="signupEmail" aria-describedby="emailHelp" placeholder="Email Id">
+                      </div>
+                      <div class="form-group">
+                        
+                        <input type="password" class="form-control" id="signupPassword" placeholder="Password">
+                      </div>
+                      <div class="form-group">
+                        
+                        <input type="password" class="form-control" id="signupConfirmPassword" placeholder="Confirm Password">
+                      </div>
+                      
+                      <button type="submit" class="btn btn-primary">Sign Up</button>
+                    </form>
+                  </ion-col>
+                  </ion-row>
+    </div>
+    <ion-button id="loginBlockButton" expand="block" (click)="logInBlock()">Log In</ion-button>
+    <ion-button id="signUpBlockButton" expand="block" (click)="signUpBlock()">Sign Up</ion-button>
+</div>
 
-        
+    
 </ion-content>

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { supportedProtocols } from '../constants';
 import { ToastController } from '@ionic/angular';
 
 @Component({
@@ -12,8 +11,6 @@ export class TransferPage implements OnInit {
   srcEndpointOpen : boolean = false;
   destEndpointOpen : boolean = false;
   transferSettingsOpen : boolean = false;
-
-  supportedProtocols : string[] = supportedProtocols;
 
   constructor(private toastController : ToastController) { }
 

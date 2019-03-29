@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
+import { CookieService } from 'angular2-cookie/services/cookies.service';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -22,6 +23,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
+  providers: [CookieService],
   declarations: [LoginPage, ForgotPasswordComponent]
 })
 export class LoginPageModule {}

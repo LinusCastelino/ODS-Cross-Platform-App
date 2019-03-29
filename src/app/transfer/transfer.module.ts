@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { TransferPage } from './transfer.page';
+import { BrowseComponentComponent } from './browse-component/browse-component.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [TransferPage]
+  declarations: [TransferPage, BrowseComponentComponent]
 })
 export class TransferPageModule {}

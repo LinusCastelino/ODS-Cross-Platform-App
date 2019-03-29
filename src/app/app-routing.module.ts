@@ -11,6 +11,7 @@ const routes: Routes = [
   // { path: 'admin', loadChildren: './admin/admin.module#AdminPageModule' },
   // { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
   { path: 'queue', loadChildren: './queue/queue.module#QueuePageModule' },
+  { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
 ];
 
 @NgModule({
