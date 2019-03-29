@@ -5,8 +5,10 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { ILoginResponse } from './models/ILoginResponse';
-
-const endpoint = 'http://10.84.51.116:8080';
+import{ IUser } from './models/IUser';
+import { EmailValidator } from '@angular/forms';
+// const endpoint = 'http://127.0.0.1:8080'; 
+const endpoint = 'http://10.84.65.92:8080';
 const context = endpoint + '/api/stork';
 
 @Injectable({
@@ -86,20 +88,17 @@ export class APICallsService {
     fail: (errorMessage:string){}
   */
 
-  public resetPasswordSendCode(email, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'user', {
-        action: 'sendVerificationCode',
-        email: email
-    }).then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    }).catch((error) => {
-        this.statusHandle(error, fail);
-      });
+  public resetPasswordSendCode(email){
+    console.log("in resetpass");
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                   .append('Access-Control-Allow-Origin','*');
+                                  //  .append('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
+                                  //  .append('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+    let body = JSON.stringify({action: 'sendVerificationCode',email: email});
+    return this.httpService.post(URL,body,{headers:headers});
   }
+  
 
 
   /*
@@ -109,20 +108,13 @@ export class APICallsService {
     fail: (errorMessage:string){}
   */
 
-  public resetPasswordVerifyCode(email,code, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'user', {
-        action: 'verifyCode',
-        email: email,
-        code: code
-    }).then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    }).catch((error) => {
-        this.statusHandle(error, fail);
-      });
+  public resetPasswordVerifyCode(email,code){
+    console.log("In resetPasswordVerifyCode");
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                   .append('Access-Control-Allow-Origin','*');
+    let body = JSON.stringify({action: 'verifyCode',email: email,code:code});
+    return this.httpService.post(URL,body,{headers:headers});
   }
 
   /*
@@ -132,22 +124,12 @@ export class APICallsService {
     fail: (errorMessage:string){}
   */
 
-  public resetPassword(email,code,password, cpassword, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'user', {
-        action: 'setPassword',
-        email: email,
-        code: code,
-        password: password,
-        confirmPassword: cpassword
-    }).then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    }).catch((error) => {
-        this.statusHandle(error, fail);
-      });
+  public resetPassword(email,code,password, cpassword){
+    console.log("In resetPassword");
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
+    let body = JSON.stringify({action: 'setPassword',email: email,code:code,password: password,confirmPassword: cpassword});    
+    return this.httpService.post(URL,body,{headers:headers});
   }
 
 
@@ -159,30 +141,17 @@ export class APICallsService {
   */
   public login(email, password): Observable<ILoginResponse>{
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                   .append('Access-Control-Allow-Origin','*');
-                                  //  .append('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
-                                  //  .append('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
     let body = JSON.stringify({action: 'login',email: email,password: password});
     return this.httpService.post<ILoginResponse>(URL,body,{headers:headers});
   }
 
 
-  public isAdmin(email, hash, accept, fail){
-    var callback = accept;
-    this.axios.post(url+'user', {
-        action: 'isAdmin',
-        email: email,
-        hash: hash,
-    }).then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        
-        this.statusHandle(error, fail);
-      });
+  public isAdmin(email, hash){
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
+    let body = JSON.stringify({action: 'isAdmin',email: email,password: hash});
+    return this.httpService.post(URL,body,{headers:headers});
   }
 
   public history(uri, accept, fail){
@@ -433,27 +402,21 @@ export class APICallsService {
       });
   }
 
+  public getUser(email):Observable<IUser>{
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
+    let body = JSON.stringify({action: 'getUser',email: email});
+    return this.httpService.post<IUser>(URL,body,{headers:headers});
+  }
+
   /*
     Desc: Change Password
   */
-  public changePassword(oldPassword, newPassword,confirmPassword, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'user', {
-      action: "resetPassword",
-        password: oldPassword, 
-        newPassword: newPassword,
-        confirmPassword: confirmPassword
-
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        fail(error);
-      });
+  public changePassword(oldPassword, newPassword,confirmPassword,email,hash){
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
+    let body = JSON.stringify({action: 'resetPassword',password: oldPassword,newPassword:newPassword,confirmPassword: confirmPassword,email:email,hash:hash});    
+    return this.httpService.post(URL,body,{headers:headers});
   }
 
   public cancelJob(jobID, accept, fail){
@@ -528,23 +491,12 @@ export class APICallsService {
     this.openOAuth("/api/stork/oauth?type=gridftp");
   }
 
-  public registerUser(emailId) {
-    return this.axios.post(url+'user', {
-        action: "register",
-        email : emailId
-      })
-      .then((response) => {
-        if(!(response.status === 200))
-          throw new Error("Failed to register user")
-        else {
-            return response
-        }
-      })
-      .catch((error) => {
-        //this.statusHandle(error, fail);
-        console.error("Error while registering user");
-        return {status : 500}
-      });
+  public registerUser(email,firstName,lastName,organization) {
+    console.log("In registerUser");
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
+    let body = JSON.stringify({action: 'register',email: email,firstName:firstName,lastName: lastName,organization: organization});    
+    return this.httpService.post(URL,body,{headers:headers});
   }
 
 

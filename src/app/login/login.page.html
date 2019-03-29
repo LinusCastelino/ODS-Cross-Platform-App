@@ -6,13 +6,13 @@
 <ion-content padding>
     <h4 text-center margin-top>Log In Page Temperory Text</h4>
     <div class="center" >
-    <div id="logInBlock" >
+    <div id="logInBlock" *ngIf="logInFlag">
             <ion-row text-center>
                     <ion-col text-center>
                                   <form (submit)="loginAPI($event)">
                                     <div class="form-group">
                                       
-                                      <input type="text" class="form-control" id="loginEmail" aria-describedby="emailHelp" placeholder="Email Id">
+                                      <input type="text" class="form-control" id="loginEmail" placeholder="Email Id">
                                     </div>
                                     <div class="form-group">
                                       
@@ -21,25 +21,28 @@
                                     
                                     <button type="submit" class="btn btn-primary">Log In</button>
                                   </form>
+                                  <ion-label (click)="forgotPasswordLable()">Forgot Password?</ion-label>
+                                    
                     </ion-col>
                   </ion-row>
     </div>
     
-    <div id="signUpBlock" >
+    <div id="signUpBlock" *ngIf="signUpFlag" >
             <ion-row text-center>
                 <ion-col text-center>
                     <form (submit)="signupApi($event)">
                       <div class="form-group">
                         
-                        <input type="text" class="form-control" id="signupEmail" aria-describedby="emailHelp" placeholder="Email Id">
+                        <input type="text" class="form-control" id="signupEmail" placeholder="Email Id">
                       </div>
                       <div class="form-group">
-                        
-                        <input type="password" class="form-control" id="signupPassword" placeholder="Password">
+                        <input type="text" class="form-control" id="firstName" placeholder="First Name">
                       </div>
                       <div class="form-group">
-                        
-                        <input type="password" class="form-control" id="signupConfirmPassword" placeholder="Confirm Password">
+                          <input type="text" class="form-control" id="lastName" placeholder="Last Name">
+                        </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control" id="organization" placeholder="Organization Name">
                       </div>
                       
                       <button type="submit" class="btn btn-primary">Sign Up</button>
@@ -47,8 +50,48 @@
                   </ion-col>
                   </ion-row>
     </div>
-    <ion-button id="loginBlockButton" expand="block" (click)="logInBlock()">Log In</ion-button>
-    <ion-button id="signUpBlockButton" expand="block" (click)="signUpBlock()">Sign Up</ion-button>
+    <div id="forgotPassword" *ngIf="forgotPasswordFlag">
+        <ion-row text-center>
+            <ion-col text-center>
+                <form (submit)="forgotPasswordApi($event)">
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="forgotPasswordEmail" placeholder="Email Id">
+                  </div>
+                  <button type="submit" class="btn btn-primary padding margin">Next</button>
+                </form>
+                <ion-label *ngIf="emailErrorFP">Email Id doues not exists.</ion-label>
+              </ion-col>
+              </ion-row>
+</div>
+<div id="verificationCodeBlock" *ngIf="verificationCodeFlag">
+    <ion-row text-center>
+        <ion-col text-center>
+            <form (submit)="enterCodeApi($event)">
+              <div class="form-group">
+                <input type="text" class="form-control" id="verificationCode" placeholder="Reset Password Code">
+              </div>
+              <button type="submit" class="btn btn-primary padding margin">Submit Code</button>
+            </form>
+          </ion-col>
+          </ion-row>
+</div>
+<div id="resetPasswordBlock" *ngIf="resetPasswordFlag">
+    <ion-row text-center>
+        <ion-col text-center>
+            <form (submit)="resetPasswordApi($event)">
+              <div class="form-group">
+                <input type="password" class="form-control" id="newPassword" placeholder="Enter new password">
+              </div>
+              <div class="form-group">
+                  <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password">
+                </div>
+              <button type="submit" class="btn btn-primary padding margin">Reset Password</button>
+            </form>
+          </ion-col>
+          </ion-row>
+</div>
+    <ion-button id="loginBlockButton" expand="block" *ngIf="loginBlockButtonFlag" (click)="logInBlock()">Log In</ion-button>
+    <ion-button id="signUpBlockButton" expand="block" *ngIf="signUpBlockButtonFlag" (click)="signUpBlock()">Sign Up</ion-button>
 </div>
 
     
