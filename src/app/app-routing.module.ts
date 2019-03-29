@@ -8,8 +8,9 @@ const routes: Routes = [
   { path: 'first-load', loadChildren: './first-load/first-load.module#FirstLoadPageModule' },
   { path: 'tabs', loadChildren: './tabs/tabs.module#TabsPageModule' },
   { path: 'transfer', loadChildren: './transfer/transfer.module#TransferPageModule' },
-  // { path: 'queue', loadChildren: './queue/queue.module#QueuePageModule' },
   // { path: 'admin', loadChildren: './admin/admin.module#AdminPageModule' },
+
+  { path: 'queue', loadChildren: './queue/queue.module#QueuePageModule' },
   { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' }
 ];
 
