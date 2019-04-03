@@ -17,35 +17,54 @@ export class BrowseComponentComponent implements OnInit {
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
+  userEmail : string ;
+  pwdHash : string ;
+
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
   gDriveOAuthRedirect : string = "";
   globusOAuthRedirect : string = "";
 
-  constructor(private apiService : APICallsService, private storage : Storage) { }
+  constructor(private apiService : APICallsService, private storage : Storage) { 
+    this.storage.get('email')
+        .then(email=>{
+          this.userEmail = email;
+        });
+    this.storage.get('hash')
+        .then(hash=>{
+          this.pwdHash = hash;
+        });
+  }
 
   ngOnInit() {
   }
 
+
+  public checkExistingCredsAndRedirect(endpoint, oAuthLink){
+    this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
+      console.log("Credentials list : ", credList);
+
+      var checker = (key) : boolean => {
+        return credList[key].name.toLowerCase().indexOf(endpoint.toLowerCase()) != -1;
+      };
+
+      if(Object.keys(credList).some(checker)){
+        console.log("Credential for " + endpoint + " already exists");
+      }
+      else{
+        this.oAuthInit(oAuthLink);
+      }
+
+    },
+    err =>{
+      console.log("Error occurred while querying the credentials list");
+      console.log(err.data);
+    });
+  }
+
   public click(endpoint){
     console.log(endpoint + " selected.");
-    if(endpoint === "Dropbox"){  
-      this.performOAuth(this.apiService.getDropboxOAuthLink())
-          .then((oAuthResp)=>{
-            //console.log(oAuthResp);    // contains state and code
-            try{
-              this.apiService.completeOAuth(oAuthResp).subscribe();
-            }
-            catch(err){
-              // this error will occur since we are not handling Render.redirect return value
-              console.log("Expected error occurred");
-            }
-
-            console.log("OAuth completed!!!");
-
-          })
-          .catch(err=>{
-            console.log("OAuth error : ", err);
-          });
+    if(endpoint === "Dropbox"){ 
+      this.checkExistingCredsAndRedirect(endpoint, this.apiService.getDropboxOAuthLink());
     }
     else if(endpoint === "Google Drive"){
       this.performOAuth(this.apiService.getGoogleDriveOAuthLink())
@@ -79,6 +98,26 @@ export class BrowseComponentComponent implements OnInit {
     }
   }
 
+
+  public oAuthInit(oAuthLink){
+    this.performOAuth(oAuthLink)
+        .then((oAuthResp)=>{
+          //console.log(oAuthResp);    // contains state and code
+          try{
+            this.apiService.completeOAuth(oAuthResp).subscribe();
+          }
+          catch(err){
+            // this error will occur since we are not handling Render.redirect return value
+            console.log("Expected error occurred");
+          }
+
+          console.log("OAuth completed!!!");
+
+        })
+        .catch(err=>{
+          console.log("OAuth error : ", err);
+        });
+  }
 
   /***
    * This method opens the OAuth window for Dropbox, Google Drive and Globus

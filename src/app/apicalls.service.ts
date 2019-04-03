@@ -9,7 +9,7 @@ import { ILoginResponse } from './models/ILoginResponse';
 import{ IUser } from './models/IUser';
 // import { IQueueResp } from './models/IQueueResp';
 // import { EmailValidator } from '@angular/forms';
-const endpoint = 'http://192.168.1.226:8080';
+const endpoint = 'http://10.84.57.1:8080';
 
 const context = endpoint + '/api/stork';
 
@@ -193,18 +193,13 @@ export class APICallsService {
   /*
     Desc: List credentials for dropbox and googledrive
   */
-  public dropboxCredList(accept, fail){
-    var callback = accept;
-    this.axios.get(url+'cred?action=list')
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        
-        this.statusHandle(error, fail);
-      });
+  public getCredList(email, hash) : Observable<any>{
+    let URL = context + "/cred";
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                  .append('Access-Control-Allow-Origin','*');
+    let reqParams = new HttpParams().set("action", "list")
+                                    .set("email", email).set("hash", hash);
+    return this.httpService.get<any>(URL,{headers: headers,params: reqParams});
   }
 
   /*
