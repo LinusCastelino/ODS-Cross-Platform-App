@@ -9,7 +9,7 @@ import { ILoginResponse } from './models/ILoginResponse';
 import{ IUser } from './models/IUser';
 // import { IQueueResp } from './models/IQueueResp';
 // import { EmailValidator } from '@angular/forms';
-const endpoint = 'http://10.84.65.92:8080';
+const endpoint = 'http://192.168.1.226:8080';
 
 const context = endpoint + '/api/stork';
 
@@ -460,9 +460,25 @@ export class APICallsService {
 
 
 
-  public openOAuth(url){
-    window.open(url, 'oAuthWindow');
+  // public openOAuth(url){
+  //   window.open(url, 'oAuthWindow');
+  // }
+
+  public completeOAuth(params : string){
+    let URL = context + "/oauth";
+    var headers = new HttpHeaders().append('Content-Type','application/json')
+                                  .append('Access-Control-Allow-Origin','*');
+    let paramArr = params.split("&"); 
+    let state = paramArr[0].split("=")[1];
+    let code = paramArr[1].split("=")[1];
+    let email = paramArr[2].split("=")[1];
+    let hash = paramArr[3].split("=")[1];
+    let reqParams = new HttpParams().set("state", state).set("code", code)
+                                    .set("email", email).set("hash", hash);
+    return this.httpService.get(URL,{headers: headers,params: reqParams});
   }
+
+
 
   public getDropboxOAuthLink(){
     return endpoint + "/api/stork/oauth?type=dropbox";

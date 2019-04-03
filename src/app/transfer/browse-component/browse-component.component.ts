@@ -31,7 +31,17 @@ export class BrowseComponentComponent implements OnInit {
     if(endpoint === "Dropbox"){  
       this.performOAuth(this.apiService.getDropboxOAuthLink())
           .then((oAuthResp)=>{
-            console.log(oAuthResp);
+            //console.log(oAuthResp);    // contains state and code
+            try{
+              this.apiService.completeOAuth(oAuthResp).subscribe();
+            }
+            catch(err){
+              // this error will occur since we are not handling Render.redirect return value
+              console.log("Expected error occurred");
+            }
+
+            console.log("OAuth completed!!!");
+
           })
           .catch(err=>{
             console.log("OAuth error : ", err);
@@ -88,7 +98,7 @@ export class BrowseComponentComponent implements OnInit {
                   if((event.url).indexOf(this.dropboxOAuthRedirect) === 0){
                     browserRef.removeEventListener(this.exitEvent, (event) => {});
                     browserRef.close();
-                    resolve((event.url).split("?")[1]);
+                    resolve((event.url).split("?")[1] + "&email=" + email + "&hash=" + hash);
                   }
                 });
               });
