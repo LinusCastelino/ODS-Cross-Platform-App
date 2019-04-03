@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { APICallsService } from '../apicalls.service';
 import { Storage } from '@ionic/storage';
-import { IQueueResp } from '../models/IQueueResp';
-import { queryRefresh } from '@angular/core/src/render3';
+//import { IQueueResp } from '../models/IQueueResp';
+//import { queryRefresh } from '@angular/core/src/render3';
 import { AlertController } from '@ionic/angular';
 import { interval } from 'rxjs';
 import * as _ from 'lodash';
-//import {NgxPaginationModule} from 'ngx-pagination';
+//import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-queue',
@@ -21,9 +21,14 @@ export class QueuePage implements OnInit {
   //private bodyText: string;
   private qResp : any[] = [];
   searchQuery = "";
-  email = "";
-  hash = "";
+  //email = "vanditsa@buffalo.edu";
+  //hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d";
   p: number = 1;
+  rowsperPage : number = 10;
+  email : any = "";
+  hash :any = "";
+  public innerWidth: any;
+  public innerHeight: any;
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController) {
     interval(6000).subscribe(x => {
@@ -33,17 +38,36 @@ export class QueuePage implements OnInit {
   }
 
   ngOnInit() {
-    this.queue();
     var self = this;
-    this.getData('email').then(function(value){self.email = value;});
-    this.getData('hash').then(function(value){self.email = value;});
-    }
-    getData(data):any{
+    this.getData('email').then(function(value){
+      self.email = value;
+      self.getData('hash').then(function(value){
+        self.hash = value;
+        console.log(self.email, self.hash);
+        self.queue();
+      });
+    });
+
+    this.innerWidth = window.innerWidth;
+    this.innerHeight = window.innerHeight;
+    console.log(this.innerWidth,this.innerHeight);
+    this.getNumRows(this.innerHeight);
+  }
+
+  getNumRows(height){
+    this.rowsperPage = (height-225)/40;
+  }
+  
+  getData(data):any{
       return this.storage.get(data).then(function(value) {
       return value;
       });
-    }
+  }
 
+  // @HostListener('window:resize', ['$event'])
+  // onResize(event) {
+  //   this.innerWidth = window.innerWidth;
+  // }
   
   public searchJob(){
     //console.log(event)
