@@ -23,6 +23,8 @@ export class BrowseComponentComponent implements OnInit {
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
   globusOAuthRedirect : string = "";
 
+  googleDriveClientID : string = "1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com";
+
   constructor(private apiService : APICallsService, private storage : Storage) { 
     this.storage.get('email')
         .then(email=>{
@@ -120,7 +122,8 @@ export class BrowseComponentComponent implements OnInit {
 
       window.plugins.googleplus.login(
         {
-          'webClientId': '1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com',
+          'scopes': 'https://www.googleapis.com/auth/drive',
+          'webClientId': this.googleDriveClientID,
           'offline': true 
         },
         resp => {
