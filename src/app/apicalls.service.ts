@@ -459,15 +459,10 @@ export class APICallsService {
   //   window.open(url, 'oAuthWindow');
   // }
 
-  public completeOAuth(params : string){
+  public completeOAuth(state : string, code : string, email : string, hash : string){
     let URL = context + "/oauth";
     var headers = new HttpHeaders().append('Content-Type','application/json')
                                   .append('Access-Control-Allow-Origin','*');
-    let paramArr = params.split("&"); 
-    let state = paramArr[0].split("=")[1];
-    let code = paramArr[1].split("=")[1];
-    let email = paramArr[2].split("=")[1];
-    let hash = paramArr[3].split("=")[1];
     let reqParams = new HttpParams().set("state", state).set("code", code)
                                     .set("email", email).set("hash", hash);
     return this.httpService.get(URL,{headers: headers,params: reqParams});
