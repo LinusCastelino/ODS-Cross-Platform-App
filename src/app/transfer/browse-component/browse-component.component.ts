@@ -21,7 +21,6 @@ export class BrowseComponentComponent implements OnInit {
   pwdHash : string ;
 
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
-  gDriveOAuthRedirect : string = "";
   globusOAuthRedirect : string = "";
 
   constructor(private apiService : APICallsService, private storage : Storage) { 
@@ -67,13 +66,25 @@ export class BrowseComponentComponent implements OnInit {
       this.checkExistingCredsAndRedirect(endpoint, this.apiService.getDropboxOAuthLink());
     }
     else if(endpoint === "Google Drive"){
-      this.performOAuth(this.apiService.getGoogleDriveOAuthLink())
-        .then((token)=>{
-          console.log(token);
-        })
-        .catch(err=>{
-          console.log("OAuth error : ", err);
-        });
+      // this.performOAuth(this.apiService.getGoogleDriveOAuthLink())
+      //   .then((token)=>{
+      //     console.log(token);
+      //   })
+      //   .catch(err=>{
+      //     console.log("OAuth error : ", err);
+      //   });
+      window.plugins.googleplus.login(
+        {
+          'webClientId': '1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com',
+          'offline': true 
+        },
+        resp => {
+          console.log("Google OAuth response - " + JSON.stringify(resp)); // do something useful instead of alerting
+        },
+        err => {
+          console.log("Error occurred while performing Google OAuth " + err.data);
+        }
+    );
     }
     else if(endpoint === "SFTP"){
 
