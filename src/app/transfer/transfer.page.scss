@@ -19,3 +19,12 @@
 ion-icon{
     float: right;
 }
+
+.browse-component-wrapper{
+    max-height: 300px;
+    overflow: scroll;
+}
+
+.border{
+    border : solid lightblue !important;
+}

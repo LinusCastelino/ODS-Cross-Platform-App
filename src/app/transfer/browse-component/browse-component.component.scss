@@ -1,3 +1,16 @@
 .protocol-label{
     text-align: center;
 }
+
+.browse-component-wrapper{
+    max-height: 300px;
+    overflow: scroll;
+}
+
+ion-card{
+    margin : unset;
+    margin-left: 0.5px;
+    margin-right: 1.1px;
+    border-radius: unset;
+    --background : white;
+}

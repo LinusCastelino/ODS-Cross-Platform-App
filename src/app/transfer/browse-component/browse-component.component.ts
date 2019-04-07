@@ -14,6 +14,7 @@ export class BrowseComponentComponent implements OnInit {
 
   supportedProtocols : string[] = supportedProtocols;
 
+  mode : string = 'select-endpoint';
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
@@ -34,6 +35,8 @@ export class BrowseComponentComponent implements OnInit {
         .then(hash=>{
           this.pwdHash = hash;
         });
+
+    console.log('Mode : ' + this.mode);
   }
 
   ngOnInit() {
@@ -60,6 +63,7 @@ export class BrowseComponentComponent implements OnInit {
 
   public click(endpoint){
     console.log(endpoint + " selected.");
+    this.mode = 'endpoint-selected';
     if(endpoint === "Dropbox"){ 
       if(this.checkIfCredentialsExist(endpoint)){
         console.log("Credential for " + endpoint + " already exists");

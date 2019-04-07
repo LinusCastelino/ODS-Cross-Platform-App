@@ -1,5 +1,15 @@
-<ion-item *ngFor="let supportedProtocol of supportedProtocols">
-  <ion-label class="protocol-label" (click)="click(supportedProtocol)">
-      {{supportedProtocol}}
-  </ion-label>
-</ion-item>
+<div class="browse-component-wrapper">
+  <ion-card>
+    <div *ngIf="mode === 'select-endpoint'">
+      <ion-item *ngFor="let supportedProtocol of supportedProtocols">
+        <ion-label class="protocol-label" (click)="click(supportedProtocol)">
+            {{supportedProtocol}}
+        </ion-label>
+      </ion-item>
+    </div>
+
+    <div *ngIf="mode === 'endpoint-selected'">
+      Hello
+    </div>
+  </ion-card>
+</div>

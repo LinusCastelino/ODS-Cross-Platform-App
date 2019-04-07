@@ -8,9 +8,9 @@ import { ToastController } from '@ionic/angular';
 })
 export class TransferPage implements OnInit {
 
-  srcEndpointOpen : boolean = false;
-  destEndpointOpen : boolean = false;
-  transferSettingsOpen : boolean = false;
+  srcEndpointOpen : boolean = true;
+  destEndpointOpen : boolean = true;
+  transferSettingsOpen : boolean = true;
 
   constructor(private toastController : ToastController) { }
 
@@ -19,22 +19,22 @@ export class TransferPage implements OnInit {
 
   public srcEndpointClick(){
     this.srcEndpointOpen = !(this.srcEndpointOpen);
-    if(this.srcEndpointOpen === true)
-      this.destEndpointOpen = this.transferSettingsOpen = false;
+    if(this.srcEndpointOpen === false)
+      this.destEndpointOpen = this.transferSettingsOpen = true;
   
   }
 
   public destEndpointClick(){
     this.destEndpointOpen = !(this.destEndpointOpen);
-    if(this.destEndpointOpen === true)
-      this.srcEndpointOpen = this.transferSettingsOpen = false;
+    if(this.destEndpointOpen === false)
+      this.srcEndpointOpen = this.transferSettingsOpen = true;
 
   }
 
   public transferSettingsClick(){
     this.transferSettingsOpen = !(this.transferSettingsOpen);
-    if(this.transferSettingsOpen === true)
-      this.srcEndpointOpen = this.destEndpointOpen = false;
+    if(this.transferSettingsOpen === false)
+      this.srcEndpointOpen = this.destEndpointOpen = true;
   }
 
   public intiatedTransfer(){
