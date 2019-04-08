@@ -8,9 +8,17 @@
       </ion-item>
     </div>
 
-    <div *ngIf="mode === 'creds-exit'">
-      <ion-item>
-        Add new 
+    <div *ngIf="mode === 'creds-exist'">
+      <ion-item class="font-style back-button-item" (click)="toggleMode()">
+        <div class="back-button-div">
+          <b>&lt; Back</b>
+        </div>
+      </ion-item>
+      <ion-item class="font-style" (click)="startAuthentication()">
+        Add new {{ selectedEndpoint }} account
+      </ion-item>
+      <ion-item *ngFor="let cred of selectedEndpointCreds" class="font-style">
+        {{ cred.name }}
       </ion-item>
     </div>
   </ion-card>

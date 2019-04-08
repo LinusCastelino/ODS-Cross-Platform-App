@@ -16,6 +16,7 @@ export class BrowseComponentComponent implements OnInit {
 
   mode : string = 'select-endpoint';
   selectedEndpoint : string;
+  selectedEndpointCreds : any;
 
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
@@ -44,9 +45,58 @@ export class BrowseComponentComponent implements OnInit {
   ngOnInit() {
   }
 
+  public click(endpoint){
+    console.log(endpoint + " selected.");
+    this.selectedEndpoint = endpoint;
 
-  public checkIfCredentialsExist(endpoint) : Promise<any>{
-    let val = endpoint.toLowerCase();
+    this.checkIfCredentialsExist()
+      .then((exists) => {
+        if(exists){
+          console.log("Credential for " + endpoint + " already exists");
+
+          this.getCredentials()
+              .then(creds =>{
+                console.log(creds);
+                this.mode = 'creds-exist';
+                this.selectedEndpointCreds = creds;
+              });
+        }
+        else{
+          this.startAuthentication();
+        }
+      });
+  }
+
+  public toggleMode(){
+    this.mode = 'select-endpoint';
+  }
+
+  public startAuthentication(){
+    if(this.selectedEndpoint === "Dropbox"){ 
+      this.oAuthInit(this.apiService.getDropboxOAuthLink());
+    }
+    else if(this.selectedEndpoint === "Google Drive"){
+      this.googleOAuthInit();
+    }
+    else if(this.selectedEndpoint === "SFTP"){
+
+    }
+    else if(this.selectedEndpoint === "FTP"){
+
+    }
+    else if(this.selectedEndpoint === "Grid FTP"){
+      this.oAuthInit(this.apiService.getGridFtpOAuthLink());
+    }
+    else if(this.selectedEndpoint === "HTTP"){
+
+    }
+    else if(this.selectedEndpoint === "SSH"){
+      
+    }
+  }
+
+  public checkIfCredentialsExist() : Promise<any>{
+    let val = this.selectedEndpoint.toLowerCase();
     return new Promise<any>((resolve, reject) =>{
       this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
         console.log("Credentials list : " + JSON.stringify(credList));
@@ -63,8 +113,8 @@ export class BrowseComponentComponent implements OnInit {
     })
   }
 
-  public getCredentials(endpoint) : Promise<any>{
-    let val = endpoint.toLowerCase();
+  public getCredentials() : Promise<any>{
+    let val = this.selectedEndpoint.toLowerCase();
     return new Promise<any>((resolve, reject) =>{
       this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
         // console.log("Credentials list : " + JSON.stringify(credList));
@@ -85,60 +135,6 @@ export class BrowseComponentComponent implements OnInit {
     })
   }
 
-
-  public click(endpoint){
-    console.log(endpoint + " selected.");
-    this.selectedEndpoint = endpoint;
-    if(endpoint === "Dropbox"){ 
-      this.checkIfCredentialsExist(endpoint)
-      .then((exists) => {
-        if(exists){
-          console.log("Credential for " + endpoint + " already exists");
-
-          this.getCredentials(endpoint)
-              .then(creds =>{
-                console.log(creds);
-
-                this.mode = 'creds-exist';
-
-
-              });
-        }
-        else{
-          this.oAuthInit(this.apiService.getDropboxOAuthLink());
-        }
-      });
-    }
-    else if(endpoint === "Google Drive"){
-      if(this.checkIfCredentialsExist(endpoint)){
-        console.log("Credential for " + endpoint + " already exists");
-      }
-      else{
-        this.googleOAuthInit();
-      }
-    }
-    else if(endpoint === "SFTP"){
-
-    }
-    else if(endpoint === "FTP"){
-
-    }
-    else if(endpoint === "Grid FTP"){
-      this.performOAuth(this.apiService.getGridFtpOAuthLink())
-        .then((token)=>{
-          console.log(token);
-        })
-        .catch(err=>{
-          console.log("OAuth error : ", err);
-        });
-    }
-    else if(endpoint === "HTTP"){
-
-    }
-    else if(endpoint === "SSH"){
-      
-    }
-  }
 
 
   public oAuthInit(oAuthLink){
