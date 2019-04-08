@@ -11,6 +11,7 @@ import{ IUser } from './models/IUser';
 // import { EmailValidator } from '@angular/forms';
 const endpoint = 'http://10.84.54.247:8080';
 
+
 const context = endpoint + '/api/stork';
 
 @Injectable({

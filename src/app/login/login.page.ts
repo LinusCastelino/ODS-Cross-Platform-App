@@ -3,6 +3,7 @@ import { APICallsService } from '../apicalls.service';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import { CookieService } from 'angular2-cookie/core';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ export class LoginPage implements OnInit {
   logInFlag:boolean = true;
   signUpFlag:boolean = false;
   forgotPasswordFlag:boolean = false;
-  emailErrorFP:boolean=false;
+  backTologinFlag:boolean = false;
   verificationCodeFlag:boolean = false;
   resetPasswordFlag:boolean = false;
 
@@ -23,7 +24,7 @@ export class LoginPage implements OnInit {
   code:string;
 
   constructor(private apiService:APICallsService, private storage : Storage, private router:Router,
-              private cookieService: CookieService) { }
+              private cookieService: CookieService, private toastController : ToastController) { }
 
   ngOnInit() {
   }
@@ -70,6 +71,7 @@ export class LoginPage implements OnInit {
     },
     err => {
       console.log("Fail");
+      this.raiseToast("Login Failed!");
     });
 
     
@@ -93,6 +95,7 @@ export class LoginPage implements OnInit {
     err=>
     {
       console.log("Fail");
+      this.raiseToast("Signup failed");
     })
 
 
@@ -103,6 +106,8 @@ export class LoginPage implements OnInit {
     this.forgotPasswordFlag=true;
     this.logInFlag=false;
     this.signUpBlockButtonFlag = false;
+    this.forgotPasswordFlag = true;
+    this.backTologinFlag = true;
   }
 
   public forgotPasswordApi(event){
@@ -115,12 +120,11 @@ export class LoginPage implements OnInit {
         this.username = username;
         this.verificationCodeFlag=true;
         this.forgotPasswordFlag=false;
-        this.emailErrorFP = false;
         console.log("Success");
       },
       err => {
         console.log("Fail");
-        this.emailErrorFP = true;
+        this.raiseToast("Invalid Credentials!");
       });
 
   }
@@ -152,14 +156,33 @@ export class LoginPage implements OnInit {
       resp=>{
         console.log("Success");
         this.resetPasswordFlag = false;
+        this.backTologinFlag = false;
         this.logInFlag = true;
+        this.signUpBlockButtonFlag=true;
       },
       err=>{
         console.log("Fail");
       }
     );
+  }
+  public backTologin(){
+    this.logInFlag = true;
+    this.signUpBlockButtonFlag = true;
+    this.backTologinFlag = false;
+    this.forgotPasswordFlag = false;
+    this.verificationCodeFlag = false;
+  }
 
-
+  public raiseToast(message:string){
+    this.presentToast(message);
+  }
+  async presentToast(message:string) {
+    const toast = await this.toastController.create({
+      message: message,
+      position: 'bottom',
+      duration: 2000
+    });
+    toast.present();
   }
 
 }
