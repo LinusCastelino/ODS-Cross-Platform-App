@@ -148,7 +148,7 @@ export class BrowseComponentComponent implements OnInit {
             var filter = (key) => {
               if(credList[key].name.toLowerCase().indexOf(val) != -1){
                 let cred = credList[key];
-                cred["UUID"] = key;
+                cred["deleteKey"] = key;
                 resultArr.push(cred);
               }
             };
@@ -168,9 +168,10 @@ export class BrowseComponentComponent implements OnInit {
 
           let resultArr : any[] = [];
           var filter = (key) => {
-            console.log(key + " " + val );
-            if(key.toLowerCase().indexOf(val) != -1)
-              resultArr.push(key);
+            if(key.toLowerCase().indexOf(val) != -1){
+              resultArr.push({'name' : key, 'deleteKey' : key});
+            }
+              
           };
 
           credList.forEach(filter);
@@ -258,7 +259,7 @@ export class BrowseComponentComponent implements OnInit {
     });
   }
 
-  public deleteCred(UUID : string){
-
+  public deleteCred(deleteKey : string){
+    console.log("Deleting " + deleteKey);
   }
 }    //class
