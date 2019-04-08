@@ -15,6 +15,8 @@ export class BrowseComponentComponent implements OnInit {
   supportedProtocols : string[] = supportedProtocols;
 
   mode : string = 'select-endpoint';
+  selectedEndpoint : string;
+
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
@@ -43,34 +45,69 @@ export class BrowseComponentComponent implements OnInit {
   }
 
 
-  public checkIfCredentialsExist(endpoint) : boolean{
-
-    this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
-      console.log("Credentials list : " + JSON.stringify(credList));
-      var checker = (key) : boolean => {
-        return credList[key].name.toLowerCase().indexOf(endpoint.toLowerCase()) != -1;
-      };
-      return Object.keys(credList).some(checker);
-    },
-    err =>{
-      console.log("Error occurred while querying the credentials list");
-      console.log(err.data);
-      return false;
-    });
-
-    return false;
+  public checkIfCredentialsExist(endpoint) : Promise<any>{
+    let val = endpoint.toLowerCase();
+    return new Promise<any>((resolve, reject) =>{
+      this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
+        console.log("Credentials list : " + JSON.stringify(credList));
+        var checker = (key) : boolean => {
+          return credList[key].name.toLowerCase().indexOf(val) != -1;
+        };
+        resolve(Object.keys(credList).some(checker));
+      },
+      err =>{
+        console.log("Error occurred while querying the credentials list");
+        console.log(err.data);
+        return false;
+      });
+    })
   }
+
+  public getCredentials(endpoint) : Promise<any>{
+    let val = endpoint.toLowerCase();
+    return new Promise<any>((resolve, reject) =>{
+      this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
+        // console.log("Credentials list : " + JSON.stringify(credList));
+
+        let resultArr : any[] = [];
+        var filter = (key) => {
+          if(credList[key].name.toLowerCase().indexOf(val) != -1)
+            resultArr.push(credList[key]);
+        };
+        Object.keys(credList).map(filter);
+        resolve(resultArr);
+      },
+      err =>{
+        console.log("Error occurred while querying the credentials list");
+        console.log(err.data);
+        return {};
+      });
+    })
+  }
+
 
   public click(endpoint){
     console.log(endpoint + " selected.");
-    this.mode = 'endpoint-selected';
+    this.selectedEndpoint = endpoint;
     if(endpoint === "Dropbox"){ 
-      if(this.checkIfCredentialsExist(endpoint)){
-        console.log("Credential for " + endpoint + " already exists");
-      }
-      else{
-        this.oAuthInit(this.apiService.getDropboxOAuthLink());
-      }
+      this.checkIfCredentialsExist(endpoint)
+      .then((exists) => {
+        if(exists){
+          console.log("Credential for " + endpoint + " already exists");
+
+          this.getCredentials(endpoint)
+              .then(creds =>{
+                console.log(creds);
+
+                this.mode = 'creds-exist';
+
+
+              });
+        }
+        else{
+          this.oAuthInit(this.apiService.getDropboxOAuthLink());
+        }
+      });
     }
     else if(endpoint === "Google Drive"){
       if(this.checkIfCredentialsExist(endpoint)){
