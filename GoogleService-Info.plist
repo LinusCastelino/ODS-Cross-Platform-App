@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1093251746493-9qgb4rkkdco1c3qg0p90em59nl0su9dt.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1093251746493-9qgb4rkkdco1c3qg0p90em59nl0su9dt</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDeR0ZftYC1DuEx5ssWxF-F5evVdL-8SCk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1093251746493</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>edu.buffalo.ods.ionic</string>
+	<key>PROJECT_ID</key>
+	<string>onedatashare-1531417250475</string>
+	<key>STORAGE_BUCKET</key>
+	<string>onedatashare-1531417250475.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1093251746493:ios:510beaa1d9ea7fe0</string>
+	<key>DATABASE_URL</key>
+	<string>https://onedatashare-1531417250475.firebaseio.com</string>
+</dict>
+</plist>

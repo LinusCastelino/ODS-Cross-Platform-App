@@ -1,5 +1,40 @@
-<ion-item *ngFor="let supportedProtocol of supportedProtocols">
-  <ion-label class="protocol-label" (click)="click(supportedProtocol)">
-      {{supportedProtocol}}
-  </ion-label>
-</ion-item>
+<div class="browse-component-wrapper">
+  <ion-card>
+    <ion-grid *ngIf="mode === 'select-endpoint'">
+      <ion-row *ngFor="let supportedProtocol of supportedProtocols">
+        <ion-item>
+          <ion-label class="protocol-label" (click)="click(supportedProtocol)">
+              {{supportedProtocol}}
+          </ion-label>
+        </ion-item>
+      </ion-row>
+    </ion-grid>
+
+    <div *ngIf="mode === 'creds-exist'">
+      <ion-grid>
+        <ion-row>
+          <ion-label (click)="toggleMode()" class="back-label">
+              <b>&lt; Back</b>
+          </ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-item class="font-style" (click)="startAuthentication()">
+              <ion-icon name="add"></ion-icon> &nbsp; &nbsp; Add new {{ selectedEndpoint }} account
+          </ion-item>
+        </ion-row>
+        <ion-row *ngFor="let cred of selectedEndpointCreds">
+          <ion-col size="10">
+            <ion-item class="font-style">
+                <ion-icon name="laptop"></ion-icon> &nbsp; &nbsp; {{ cred.name }}
+            </ion-item>
+          </ion-col>
+          <ion-col size="2">
+            <ion-item (click)="deleteCred(cred.UUID)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </ion-card>
+</div>
