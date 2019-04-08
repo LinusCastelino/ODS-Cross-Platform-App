@@ -51,11 +51,11 @@
    </ion-grid>
    <ion-grid>
       <ion-row>
-         <ion-col (size)="columnTwoSize" class="ion-col-button-resetPassword">
-            <button (click)="resetPassword()" class="btn btn-primary">Reset Password</button>
+         <ion-col size="6" class="ion-col-button-resetPassword">
+            <ion-button (click)="resetPassword()" expand="block" >Reset Password</ion-button>
          </ion-col>
-         <ion-col (size)="columnOneSize" class="ion-col-button-logout">
-            <button (click)="logOut()" class="btn btn-primary">Logout</button>
+         <ion-col size="6" class="ion-col-button-logout">
+            <ion-button (click)="logOut()" expand="block">Logout</ion-button>
          </ion-col>
       </ion-row>
    </ion-grid>
