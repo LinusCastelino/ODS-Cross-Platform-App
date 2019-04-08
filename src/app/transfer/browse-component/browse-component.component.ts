@@ -121,8 +121,12 @@ export class BrowseComponentComponent implements OnInit {
 
         let resultArr : any[] = [];
         var filter = (key) => {
-          if(credList[key].name.toLowerCase().indexOf(val) != -1)
-            resultArr.push(credList[key]);
+          if(credList[key].name.toLowerCase().indexOf(val) != -1){
+            let cred = credList[key];
+            cred["UUID"] = key;
+            resultArr.push(cred);
+          }
+            
         };
         Object.keys(credList).map(filter);
         resolve(resultArr);
@@ -208,4 +212,7 @@ export class BrowseComponentComponent implements OnInit {
     });
   }
 
+  public deleteCred(UUID : string){
+    
+  }
 }    //class
