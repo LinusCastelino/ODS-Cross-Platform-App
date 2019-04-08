@@ -156,20 +156,11 @@ export class APICallsService {
     return this.httpService.post(URL,body,{headers:headers});
   }
 
-  public history(uri, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'user', {
-        action: 'history',
-        uri: encodeURI(uri)
-    }).then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        this.statusHandle(error, fail);
-      });
+  public getFTPCreds(email, hash) : Observable<any>{
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
+    let body = JSON.stringify({action: 'history',email: email,password: hash, uri : ''});
+    return this.httpService.post<any>(URL,body,{headers:headers});
   }
 
 

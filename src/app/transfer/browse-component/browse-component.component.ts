@@ -53,7 +53,6 @@ export class BrowseComponentComponent implements OnInit {
       .then((exists) => {
         if(exists){
           console.log("Credential for " + endpoint + " already exists");
-
           this.getCredentials()
               .then(creds =>{
                 console.log(creds);
@@ -66,6 +65,7 @@ export class BrowseComponentComponent implements OnInit {
         }
       });
   }
+    
 
   public toggleMode(){
     this.mode = 'select-endpoint';
@@ -82,7 +82,7 @@ export class BrowseComponentComponent implements OnInit {
 
     }
     else if(this.selectedEndpoint === "FTP"){
-
+      console.log("Here");
     }
     else if(this.selectedEndpoint === "Grid FTP"){
       this.oAuthInit(this.apiService.getGridFtpOAuthLink());
@@ -97,47 +97,93 @@ export class BrowseComponentComponent implements OnInit {
 
   public checkIfCredentialsExist() : Promise<any>{
     let val = this.selectedEndpoint.toLowerCase();
-    return new Promise<any>((resolve, reject) =>{
-      this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
-        console.log("Credentials list : " + JSON.stringify(credList));
-        var checker = (key) : boolean => {
-          return credList[key].name.toLowerCase().indexOf(val) != -1;
-        };
-        resolve(Object.keys(credList).some(checker));
-      },
-      err =>{
-        console.log("Error occurred while querying the credentials list");
-        console.log(err.data);
-        return false;
+    
+    if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
+                    || this.selectedEndpoint === "GridFTP"){
+      return new Promise<any>((resolve, reject) =>{
+        this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
+          console.log("Credentials list : " + JSON.stringify(credList));
+          var checker = (key) : boolean => {
+            return credList[key].name.toLowerCase().indexOf(val) != -1;
+          };
+          resolve(Object.keys(credList).some(checker));
+        },
+        err =>{
+          console.log("Error occurred while querying the credentials list");
+          console.log(err.data);
+          return false;
+        });
       });
-    })
+    }
+    else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+      return new Promise<any>((resolve, reject) =>{
+        this.apiService.getFTPCreds(this.userEmail,this.pwdHash).subscribe(credList => {
+          console.log("Credentials list : " + JSON.stringify(credList));
+          var checker = (key) : boolean => {
+            return key.toLowerCase().indexOf(val) != -1;
+          };
+          resolve(credList.some(checker));
+        },
+        err =>{
+          console.log("Error occurred while querying the credentials list");
+          console.log(err.data);
+          return false;
+        });
+      });
+    }
   }
+
 
   public getCredentials() : Promise<any>{
-    let val = this.selectedEndpoint.toLowerCase();
     return new Promise<any>((resolve, reject) =>{
-      this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
-        // console.log("Credentials list : " + JSON.stringify(credList));
 
-        let resultArr : any[] = [];
-        var filter = (key) => {
-          if(credList[key].name.toLowerCase().indexOf(val) != -1){
-            let cred = credList[key];
-            cred["UUID"] = key;
-            resultArr.push(cred);
-          }
-            
-        };
-        Object.keys(credList).map(filter);
-        resolve(resultArr);
-      },
-      err =>{
-        console.log("Error occurred while querying the credentials list");
-        console.log(err.data);
-        return {};
-      });
-    })
-  }
+      let val = this.selectedEndpoint.toLowerCase();
+      if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
+                    || this.selectedEndpoint === "GridFTP"){
+        this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
+          // console.log("Credentials list : " + JSON.stringify(credList));
+          
+          let resultArr : any[] = [];
+          
+            var filter = (key) => {
+              if(credList[key].name.toLowerCase().indexOf(val) != -1){
+                let cred = credList[key];
+                cred["UUID"] = key;
+                resultArr.push(cred);
+              }
+            };
+
+            Object.keys(credList).map(filter);
+          resolve(resultArr);
+        },
+        err =>{
+          console.log("Error occurred while querying the credentials list");
+          console.log(err.data);
+          return {};
+        });
+      }
+      else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+        this.apiService.getFTPCreds(this.userEmail,this.pwdHash).subscribe(credList => {
+          // console.log("Credentials list : " + JSON.stringify(credList));
+
+          let resultArr : any[] = [];
+          var filter = (key) => {
+            console.log(key + " " + val );
+            if(key.toLowerCase().indexOf(val) != -1)
+              resultArr.push(key);
+          };
+
+          credList.forEach(filter);
+          resolve(resultArr);
+        },
+        err =>{
+          console.log("Error occurred while querying the credentials list");
+          console.log(err.data);
+          return {};
+        });
+      }
+  });
+}
 
 
 
@@ -213,6 +259,6 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public deleteCred(UUID : string){
-    
+
   }
 }    //class
