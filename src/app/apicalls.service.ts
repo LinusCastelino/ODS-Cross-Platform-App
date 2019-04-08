@@ -9,7 +9,7 @@ import { ILoginResponse } from './models/ILoginResponse';
 import{ IUser } from './models/IUser';
 // import { IQueueResp } from './models/IQueueResp';
 // import { EmailValidator } from '@angular/forms';
-const endpoint = 'http://10.84.54.247:8080';
+const endpoint = 'http://10.84.85.10:8080';
 
 
 const context = endpoint + '/api/stork';

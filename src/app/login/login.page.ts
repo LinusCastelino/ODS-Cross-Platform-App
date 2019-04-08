@@ -39,6 +39,7 @@ export class LoginPage implements OnInit {
     this.signUpFlag = true;
     this.loginBlockButtonFlag = true;
     this.signUpBlockButtonFlag = false;
+    this.backTologinFlag = true;
   }
   public loginAPI(event){
     console.log("In LoginAPI");
@@ -66,6 +67,7 @@ export class LoginPage implements OnInit {
           console.log("Is Admin Fail");
         }
       );
+      this.username = "";
       this.router.navigate(['/tabs']);
       // console.log("Cookie values - " + this.cookieService.get('email') + " " + this.cookieService.get('hash'));
     },

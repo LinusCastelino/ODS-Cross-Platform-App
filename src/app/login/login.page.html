@@ -61,9 +61,9 @@
              </ion-col>
           </ion-row>
           <ion-row>
-             <ion-col><ion-button id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
-             <ion-col>
-                <ion-button type="submit" >Next</ion-button>
+             <ion-col><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
+             <ion-col size="6">
+                <ion-button expand="block" type="submit" >Next</ion-button>
              </ion-col>
           </ion-row>
        </form>
@@ -72,13 +72,13 @@
        <form (submit)="enterCodeApi($event)">
           <ion-row>
              <ion-col>
-                <ion-input type="text" class="form-control" id="verificationCode" placeholder="Reset Password Code"></ion-input>
+                <ion-input type="text" class="form-control" id="verificationCode" placeholder="Verification Code"></ion-input>
              </ion-col>
           </ion-row>
           <ion-row>
-             <ion-col><ion-button id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
-             <ion-col>
-                <ion-button type="submit" >Submit Code</ion-button>
+             <ion-col size="6"><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
+             <ion-col size="6">
+                <ion-button expand="block" type="submit" >Submit Code</ion-button>
              </ion-col>
           </ion-row>
        </form>
@@ -96,13 +96,23 @@
              </ion-col>
           </ion-row>
           <ion-row>
-             <ion-col><ion-button id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
-             <ion-col>
-                <ion-button type="submit" >Reset Password</ion-button>
+             <ion-col size="6"><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
+             <ion-col size="6">
+                <ion-button expand="block" type="submit" >Reset Password</ion-button>
              </ion-col>
           </ion-row>
        </form>
     </ion-grid>
-    <ion-button id="loginBlockButton" expand="block" *ngIf="loginBlockButtonFlag" (click)="logInBlock()">Log In</ion-button>
-    <ion-button id="signUpBlockButton" expand="block" *ngIf="signUpBlockButtonFlag" (click)="signUpBlock()">Sign Up</ion-button>
+    <ion-grid class="center">
+      <ion-row>
+        <ion-col>
+            <ion-button id="loginBlockButton" expand="block" *ngIf="loginBlockButtonFlag" (click)="logInBlock()">Log In</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+            <ion-button id="signUpBlockButton" expand="block" *ngIf="signUpBlockButtonFlag" (click)="signUpBlock()">Sign Up</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
  </ion-content>
