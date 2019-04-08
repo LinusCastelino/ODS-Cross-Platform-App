@@ -33,6 +33,11 @@ export const sideRight = "right";
 export const splashTimeout = 2000;
 
 export const supportedProtocols = ["Dropbox", "GoogleDrive", "SFTP", "FTP", "GridFTP", "HTTP", "SSH"];
+export const protocolToUriMap = {
+	"Dropbox" : "dropbox:///",
+	"GoogleDrive" : "googledrive:/",
+	"FTP" : "ftp://" 
+}
 
 export const showText={
 	dropbox: "DropBox",

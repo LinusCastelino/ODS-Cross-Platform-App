@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { supportedProtocols } from '../../constants';
+import { supportedProtocols, protocolToUriMap } from '../../constants';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
 
@@ -148,7 +148,7 @@ export class BrowseComponentComponent implements OnInit {
             var filter = (key) => {
               if(credList[key].name.toLowerCase().indexOf(val) != -1){
                 let cred = credList[key];
-                cred["deleteKey"] = key;
+                cred["key"] = key;
                 resultArr.push(cred);
               }
             };
@@ -169,7 +169,7 @@ export class BrowseComponentComponent implements OnInit {
           let resultArr : any[] = [];
           var filter = (key) => {
             if(key.toLowerCase().indexOf(val) != -1){
-              resultArr.push({'name' : key, 'deleteKey' : key});
+              resultArr.push({'name' : key, 'key' : key});
             }
               
           };
@@ -261,5 +261,22 @@ export class BrowseComponentComponent implements OnInit {
 
   public deleteCred(deleteKey : string){
     console.log("Deleting " + deleteKey);
+  }
+
+  public listContents(credential : string){
+    let uri = protocolToUriMap[this.selectedEndpoint];
+    if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
+                    || this.selectedEndpoint === "GridFTP"){
+
+      this.apiService.listFiles(this.userEmail, this.pwdHash, uri, uri, 
+        {"uuid" : credential}, null).subscribe(resp =>{
+          console.log(resp);
+      });
+    }
+    else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+      this.apiService.listFiles(this.userEmail, this.pwdHash, credential, uri, null, null).subscribe(resp =>{
+        console.log(resp);
+      });
+    }
   }
 }    //class

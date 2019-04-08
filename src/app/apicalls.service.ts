@@ -232,27 +232,24 @@ export class APICallsService {
       });
   }
 
-  public listFiles(uri, endpoint, id, accept, fail){
-    var body = {
-        uri: encodeURI(uri),
-        depth: 1,
-        id: id,
-        //map: getMapFromEndpoint(endpoint),
-        type: getTypeFromUri(uri)
-      };
+  public listFiles(email, hash, uri, type, credential, id) : Observable<any>{
+    var URL = context+'/ls';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
+    let body = {
+      "email": email,
+      "password" : hash,
+      "uri" : encodeURI(uri),
+      "type" : encodeURI(type),
+      "depth" : 1
+    };
+  
+    if(id !== null && id !== undefined)
+      body["id"] = id;
+    
+    if(credential !== null && credential !== undefined)
+      body["credential"] = credential;
 
-    body = Object.keys(endpoint.credential).length > 0 ? {...body, /*credential: endpoint.credential*/} : body;      //############
-
-    var callback = accept;
-    this.axios.post(url+'ls', JSON.stringify(body))
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-        this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        this.statusHandle(error, fail);
-      });
+    return this.httpService.post<any>(URL,body,{headers:headers});
   }
 
   public share(uri, endpoint, accept, fail){
