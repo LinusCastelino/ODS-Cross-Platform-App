@@ -14,13 +14,17 @@ export class BrowseComponentComponent implements OnInit {
 
   supportedProtocols : string[] = supportedProtocols;
 
-  mode : string = 'select-endpoint';
+  select_endpoint_mode : string = 'select-endpoint'
+  creds_exist_mode : string = 'creds-exist';
+  mode : string = this.select_endpoint_mode;
+
   selectedEndpoint : string;
-  selectedEndpointCreds : any;
+  selectedEndpointCreds : [] = [];
 
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
+  reloadTag : string = 'reload';
   userEmail : string ;
   pwdHash : string ;
 
@@ -46,8 +50,10 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public click(endpoint){
-    console.log(endpoint + " selected.");
-    this.selectedEndpoint = endpoint;
+    if(endpoint !== this.reloadTag){
+      console.log(endpoint + " selected.");
+      this.selectedEndpoint = endpoint;
+    }
 
     this.checkIfCredentialsExist()
       .then((exists) => {
@@ -56,7 +62,7 @@ export class BrowseComponentComponent implements OnInit {
           this.getCredentials()
               .then(creds =>{
                 console.log(creds);
-                this.mode = 'creds-exist';
+                this.mode = this.creds_exist_mode;
                 this.selectedEndpointCreds = creds;
               });
         }
@@ -260,13 +266,16 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public deleteCred(deleteKey : string){
-    console.log("Deleting " + deleteKey);
     this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
       resp=>{
-        console.log("Success");      
+        console.log(deleteKey + " deleted successfully");
+        if(this.selectedEndpointCreds.length-1 === 0)
+          this.mode = this.select_endpoint_mode;
+        else
+          this.click(this.reloadTag);
       },
       err => {
-      console.log("Fail");
+        console.log("Error encountered while deleting " + deleteKey);
     });
   }
 

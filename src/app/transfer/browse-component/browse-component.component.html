@@ -1,6 +1,6 @@
 <div class="browse-component-wrapper">
   <ion-card>
-    <ion-grid *ngIf="mode === 'select-endpoint'">
+    <ion-grid *ngIf="mode === select_endpoint_mode">
       <ion-row *ngFor="let supportedProtocol of supportedProtocols">
         <ion-item>
           <ion-label class="protocol-label" (click)="click(supportedProtocol)">
@@ -10,7 +10,7 @@
       </ion-row>
     </ion-grid>
 
-    <div *ngIf="mode === 'creds-exist'">
+    <div *ngIf="mode === creds_exist_mode">
       <ion-grid>
         <ion-row>
           <ion-label (click)="toggleMode()" class="back-label">
