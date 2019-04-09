@@ -261,6 +261,13 @@ export class BrowseComponentComponent implements OnInit {
 
   public deleteCred(deleteKey : string){
     console.log("Deleting " + deleteKey);
+    this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
+      resp=>{
+        console.log("Success");      
+      },
+      err => {
+      console.log("Fail");
+    });
   }
 
   public listContents(credential : string){
