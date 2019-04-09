@@ -7,6 +7,7 @@ import { Observable, MonoTypeOperatorFunction } from 'rxjs';
 import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
+import { EmailValidator } from '@angular/forms';
 // import { IQueueResp } from './models/IQueueResp';
 // import { EmailValidator } from '@angular/forms';
 const endpoint = 'http://10.84.54.247:8080';
@@ -406,21 +407,11 @@ export class APICallsService {
     return this.httpService.post(URL,body,{headers:headers});
   }
 
-  public deleteCredential(uri, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'user', {
-      action: "deleteCredential",
-        uuid: uri
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        this.statusHandle(error, fail);
-      });
+  public deleteCredential(uri,email,hash){
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
+    let body = JSON.stringify({action: 'deleteCredential',uuid:uri,email: email,password: hash});
+    return this.httpService.post(URL,body,{headers:headers});
   }
 
 
