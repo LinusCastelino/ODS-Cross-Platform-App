@@ -82,7 +82,8 @@ export class BrowseComponentComponent implements OnInit {
 
     }
     else if(this.selectedEndpoint === "FTP"){
-      console.log("Here");
+      console.log("In FTP");
+      this.mode = 'ftp-auth';
     }
     else if(this.selectedEndpoint === "Grid FTP"){
       this.oAuthInit(this.apiService.getGridFtpOAuthLink());
@@ -261,13 +262,25 @@ export class BrowseComponentComponent implements OnInit {
 
   public deleteCred(deleteKey : string){
     console.log("Deleting " + deleteKey);
-    this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
-      resp=>{
-        console.log("Success");      
-      },
-      err => {
-      console.log("Fail");
-    });
+    if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
+                    || this.selectedEndpoint === "GridFTP"){
+                      this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
+                        resp=>{
+                          console.log("Success");      
+                        },
+                        err => {
+                        console.log("Fail");
+                      });
+                    }
+                    else{
+                      this.apiService.deleteHistory(deleteKey,this.userEmail,this.pwdHash).subscribe(
+                        resp=>{
+                          console.log("Success");      
+                        },
+                        err => {
+                        console.log("Fail");
+                      });
+                    }
   }
 
   public listContents(credential : string){
@@ -285,5 +298,14 @@ export class BrowseComponentComponent implements OnInit {
         console.log(resp);
       });
     }
+  }
+  public ftpNext(event){
+    event.preventDefault();
+    var target = event.target;
+    var url  = target.querySelector('#ftpUrl').value;
+    console.log("Implement next button");
+  }
+  public ftpBack(){
+    console.log("Implement back button");
   }
 }    //class

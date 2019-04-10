@@ -10,7 +10,7 @@ import{ IUser } from './models/IUser';
 import { EmailValidator } from '@angular/forms';
 // import { IQueueResp } from './models/IQueueResp';
 // import { EmailValidator } from '@angular/forms';
-const endpoint = 'http://192.168.0.14:8080';
+const endpoint = 'http://10.84.82.29:8080';
 
 
 const context = endpoint + '/api/stork';
@@ -165,22 +165,11 @@ export class APICallsService {
     return this.httpService.post<any>(URL,body,{headers:headers});
   }
 
-
-  public deleteHistory(uri, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'user', {
-      action: "deleteHistory",
-        uri: encodeURI(uri)
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        this.statusHandle(error, fail);
-      });
+  public deleteHistory(uri,email,hash){
+    var URL = context+'/user';
+    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
+    let body = JSON.stringify({action: 'deleteHistory',uri:uri,email: email,password: hash});
+    return this.httpService.post(URL,body,{headers:headers});
   }
 
   /*

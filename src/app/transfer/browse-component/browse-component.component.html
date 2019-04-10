@@ -36,5 +36,24 @@
         </ion-row>
       </ion-grid>
     </div>
+    <div *ngIf="mode === 'ftp-auth'" class="center ">
+      <form (ngSubmit)="ftpNext($event)">
+        <ion-row>
+            <ion-col>
+               <ion-input type="text" class="form-control" id="ftpUrl" value="ftp://"></ion-input>
+            </ion-col>
+         </ion-row>
+         <ion-row>
+            <ion-col size="3">
+              <ion-button id="ftpBack" expand="block" (click)="ftpBack()">Back</ion-button>
+            </ion-col>
+            <ion-col size="6">
+            </ion-col>
+            <ion-col size="3">
+              <ion-button type="submit" id="ftpNext" expand="block" >Next</ion-button>
+            </ion-col>
+         </ion-row>
+      </form>
+    </div>
   </ion-card>
 </div>
