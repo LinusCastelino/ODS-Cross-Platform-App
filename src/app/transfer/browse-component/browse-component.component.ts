@@ -37,6 +37,7 @@ export class BrowseComponentComponent implements OnInit {
   pwdHash : string ;
   selectedFolder : string;
   selectedFile : string;
+  displayProgressBar : boolean = false;
 
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
   globusOAuthRedirect : string = "";
@@ -59,12 +60,21 @@ export class BrowseComponentComponent implements OnInit {
   ngOnInit() {
   }
 
+  public showProgressBar(){
+    this.displayProgressBar = true;
+  }
+
+  public hideProgressBar(){
+    this.displayProgressBar = false;
+  }
+
   public click(endpoint){
     if(endpoint !== this.reloadTag){
       console.log(endpoint + " selected.");
       this.selectedEndpoint = endpoint;
     }
 
+    this.showProgressBar();
     this.checkIfCredentialsExist()
       .then((exists) => {
         if(exists){
@@ -74,9 +84,11 @@ export class BrowseComponentComponent implements OnInit {
                 console.log(creds);
                 this.mode = this.creds_exist_mode;
                 this.selectedEndpointCreds = creds;
+                this.hideProgressBar();
               });
         }
         else{
+          this.hideProgressBar();
           this.startAuthentication();
         }
       });
@@ -278,17 +290,20 @@ export class BrowseComponentComponent implements OnInit {
 
   public deleteCred(deleteKey : string){
     console.log("Deleting " + deleteKey);
+    this.showProgressBar();
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
       || this.selectedEndpoint === "GridFTP"){
         this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
           resp=>{
             console.log(deleteKey + " deleted successfully");
-        if(this.selectedEndpointCreds.length-1 === 0)
-          this.mode = this.select_endpoint_mode;
-        else
-          this.click(this.reloadTag);
+            if(this.selectedEndpointCreds.length-1 === 0)
+              this.mode = this.select_endpoint_mode;
+            else
+              this.click(this.reloadTag);
+            this.hideProgressBar();
           },
           err => {
+            this.hideProgressBar();
             console.log("Error encountered while deleting " + deleteKey);
         });
       }
@@ -296,12 +311,14 @@ export class BrowseComponentComponent implements OnInit {
         this.apiService.deleteHistory(deleteKey,this.userEmail,this.pwdHash).subscribe(
           resp=>{
             console.log(deleteKey + " deleted successfully");
-        if(this.selectedEndpointCreds.length-1 === 0)
-          this.mode = this.select_endpoint_mode;
-        else
-          this.click(this.reloadTag);    
+            if(this.selectedEndpointCreds.length-1 === 0)
+              this.mode = this.select_endpoint_mode;
+            else
+              this.click(this.reloadTag);    
+            this.hideProgressBar();
           },
           err => {
+            this.hideProgressBar();
             console.log("Error encountered while deleting " + deleteKey);
         });
       }
@@ -314,6 +331,7 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public loadContents(){
+    this.showProgressBar();
     let uri = protocolToUriMap[this.selectedEndpoint];
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
@@ -321,16 +339,20 @@ export class BrowseComponentComponent implements OnInit {
         {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1])
         .subscribe(resp =>{
           this.listContentsSuccess(resp);
+          this.hideProgressBar();
       },
       err => {
+        this.hideProgressBar();
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
     else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
       this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, null, null).subscribe(resp =>{
         this.listContentsSuccess(resp);
+        this.hideProgressBar();
       },
       err => {
+        this.hideProgressBar();
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }

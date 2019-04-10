@@ -1,5 +1,7 @@
 <div class="browse-component-wrapper">
   <ion-card>
+    <ion-progress-bar *ngIf="displayProgressBar" type="indeterminate"></ion-progress-bar>
+
     <ion-grid *ngIf="mode === select_endpoint_mode">
       <ion-row *ngFor="let supportedProtocol of supportedProtocols">
         <ion-item>

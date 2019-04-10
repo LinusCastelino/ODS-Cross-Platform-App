@@ -7,10 +7,7 @@ import { Observable } from 'rxjs';
 import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
-import { EmailValidator } from '@angular/forms';
-// import { IQueueResp } from './models/IQueueResp';
-// import { EmailValidator } from '@angular/forms';
-const endpoint = 'http://10.84.82.29:8080';
+const endpoint = 'http://10.84.39.155:8080';
 
 
 const context = endpoint + '/api/stork';
@@ -32,12 +29,6 @@ export class APICallsService {
     'Content-Type': 'application/json'
     }
   });
-
-
-
-
-
-
 
   /*
     Desc: Send a code to the user
