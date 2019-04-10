@@ -20,6 +20,7 @@ export class BrowseComponentComponent implements OnInit {
   browse_endpoint_contents : string = 'browse-contents';
   mode : string = this.select_endpoint_mode;
 
+  ftpUrl:string;
   selectedEndpoint : string;
   selectedCred : string;
   selectedEndpointCreds : [] = [];
@@ -281,19 +282,27 @@ export class BrowseComponentComponent implements OnInit {
       || this.selectedEndpoint === "GridFTP"){
         this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
           resp=>{
-            console.log("Success");      
+            console.log(deleteKey + " deleted successfully");
+        if(this.selectedEndpointCreds.length-1 === 0)
+          this.mode = this.select_endpoint_mode;
+        else
+          this.click(this.reloadTag);
           },
           err => {
-          console.log("Fail");
+            console.log("Error encountered while deleting " + deleteKey);
         });
       }
       else{
         this.apiService.deleteHistory(deleteKey,this.userEmail,this.pwdHash).subscribe(
           resp=>{
-            console.log("Success");      
+            console.log(deleteKey + " deleted successfully");
+        if(this.selectedEndpointCreds.length-1 === 0)
+          this.mode = this.select_endpoint_mode;
+        else
+          this.click(this.reloadTag);    
           },
           err => {
-          console.log("Fail");
+            console.log("Error encountered while deleting " + deleteKey);
         });
       }
   }
@@ -318,7 +327,7 @@ export class BrowseComponentComponent implements OnInit {
       });
     }
     else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-      this.apiService.listFiles(this.userEmail, this.pwdHash, this.selectedCred, uri, null, null).subscribe(resp =>{
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, null, null).subscribe(resp =>{
         this.listContentsSuccess(resp);
       },
       err => {
@@ -326,14 +335,8 @@ export class BrowseComponentComponent implements OnInit {
       });
     }
   }
-  public ftpNext(event){
-    event.preventDefault();
-    var target = event.target;
-    var url  = target.querySelector('#ftpUrl').value;
-    console.log("Implement next button");
-  }
-  public ftpBack(){
-    console.log("Implement back button");
+  public ftpNext(){
+    this.loadCred(null);
   }
 
   public listContentsSuccess(resp : any){
