@@ -38,6 +38,15 @@ export const protocolToUriMap = {
 	"GoogleDrive" : "googledrive:/",
 	"FTP" : "ftp://" 
 }
+export const ionicLogoMap ={
+	"Dropbox" : "logo-dropbox",
+	"GoogleDrive" : "logo-google",
+	"FTP" : "filing", 
+	"SFTP" : "lock", 
+	"GridFTP" : "grid", 
+	"HTTP" : "globe", 
+	"SSH" : "code-working"
+}
 
 export const showText={
 	dropbox: "DropBox",

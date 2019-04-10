@@ -1,16 +1,16 @@
 <div class="browse-component-wrapper">
   <ion-card>
-    <ion-grid *ngIf="mode === 'select-endpoint'">
+    <ion-grid *ngIf="mode === select_endpoint_mode">
       <ion-row *ngFor="let supportedProtocol of supportedProtocols">
         <ion-item>
           <ion-label class="protocol-label" (click)="click(supportedProtocol)">
-              {{supportedProtocol}}
+            <ion-icon name="{{ ionicLogoMap[supportedProtocol] }}"></ion-icon> &nbsp; &nbsp; {{supportedProtocol}}
           </ion-label>
         </ion-item>
       </ion-row>
     </ion-grid>
 
-    <div *ngIf="mode === 'creds-exist'">
+    <div *ngIf="mode === creds_exist_mode">
       <ion-grid>
         <ion-row>
           <ion-label (click)="toggleMode()" class="back-label">
@@ -24,7 +24,7 @@
         </ion-row>
         <ion-row *ngFor="let cred of selectedEndpointCreds">
           <ion-col size="10">
-            <ion-item class="font-style" (click)="listContents(cred.key)">
+            <ion-item class="font-style" (click)="loadCred(cred.key)">
                 <ion-icon name="laptop"></ion-icon> &nbsp; &nbsp; {{ cred.name }}
             </ion-item>
           </ion-col>
@@ -54,6 +54,47 @@
             </ion-col>
          </ion-row>
       </form>
+
+    <div *ngIf="mode === browse_endpoint_contents">
+      <ion-grid>
+        <ion-row>
+          <!-- <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col> -->
+        </ion-row>
+        <ion-row>
+          <ion-label (click)="contentWindowBack()" class="back-label">
+            <b>&lt; Back</b>
+          </ion-label>
+        </ion-row>
+        <ion-row *ngFor="let item of selectedCredContents">
+          <div *ngIf="item.file; else folder" class="content-listing-div" >
+            <ion-item class="font-style" (click)="fileSelected(item.name, item.id)">
+              <ion-icon name="document"></ion-icon> &nbsp; &nbsp; {{ item.name }}
+              <!-- 
+              {{ item.time }} &nbsp; &nbsp; {{ item.size }}
+              -->
+            </ion-item>
+          </div>
+          <ng-template #folder>
+            <ion-item (click)="folderSelected(item.name, item.id)" class="font-style">
+              <ion-icon name="folder"></ion-icon> &nbsp; &nbsp; {{ item.name }}
+            </ion-item>
+          </ng-template>
+        </ion-row>
+      </ion-grid>
     </div>
   </ion-card>
 </div>

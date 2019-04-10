@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { supportedProtocols, protocolToUriMap } from '../../constants';
+import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../constants';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
 
@@ -13,16 +13,29 @@ declare var window: any;
 export class BrowseComponentComponent implements OnInit {
 
   supportedProtocols : string[] = supportedProtocols;
+  ionicLogoMap : any = ionicLogoMap;
+  
+  select_endpoint_mode : string = 'select-endpoint'
+  creds_exist_mode : string = 'creds-exist';
+  browse_endpoint_contents : string = 'browse-contents';
+  mode : string = this.select_endpoint_mode;
 
-  mode : string = 'select-endpoint';
   selectedEndpoint : string;
-  selectedEndpointCreds : any;
+  selectedCred : string;
+  selectedEndpointCreds : [] = [];
+  selectedCredContents : [] = [];
+  selectedCredHistory : string[] = [];
+  driveItemIdHistory : string[] = [];
+
 
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
+  reloadTag : string = 'reload';
   userEmail : string ;
   pwdHash : string ;
+  selectedFolder : string;
+  selectedFile : string;
 
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
   globusOAuthRedirect : string = "";
@@ -46,8 +59,10 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public click(endpoint){
-    console.log(endpoint + " selected.");
-    this.selectedEndpoint = endpoint;
+    if(endpoint !== this.reloadTag){
+      console.log(endpoint + " selected.");
+      this.selectedEndpoint = endpoint;
+    }
 
     this.checkIfCredentialsExist()
       .then((exists) => {
@@ -56,7 +71,7 @@ export class BrowseComponentComponent implements OnInit {
           this.getCredentials()
               .then(creds =>{
                 console.log(creds);
-                this.mode = 'creds-exist';
+                this.mode = this.creds_exist_mode;
                 this.selectedEndpointCreds = creds;
               });
         }
@@ -263,39 +278,51 @@ export class BrowseComponentComponent implements OnInit {
   public deleteCred(deleteKey : string){
     console.log("Deleting " + deleteKey);
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
-                    || this.selectedEndpoint === "GridFTP"){
-                      this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
-                        resp=>{
-                          console.log("Success");      
-                        },
-                        err => {
-                        console.log("Fail");
-                      });
-                    }
-                    else{
-                      this.apiService.deleteHistory(deleteKey,this.userEmail,this.pwdHash).subscribe(
-                        resp=>{
-                          console.log("Success");      
-                        },
-                        err => {
-                        console.log("Fail");
-                      });
-                    }
+      || this.selectedEndpoint === "GridFTP"){
+        this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
+          resp=>{
+            console.log("Success");      
+          },
+          err => {
+          console.log("Fail");
+        });
+      }
+      else{
+        this.apiService.deleteHistory(deleteKey,this.userEmail,this.pwdHash).subscribe(
+          resp=>{
+            console.log("Success");      
+          },
+          err => {
+          console.log("Fail");
+        });
+      }
   }
 
-  public listContents(credential : string){
+  public loadCred(credential : string){
+    this.selectedCred = credential;
+    this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
+    this.loadContents();
+  }
+
+  public loadContents(){
     let uri = protocolToUriMap[this.selectedEndpoint];
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
-
-      this.apiService.listFiles(this.userEmail, this.pwdHash, uri, uri, 
-        {"uuid" : credential}, null).subscribe(resp =>{
-          console.log(resp);
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, 
+        {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1])
+        .subscribe(resp =>{
+          this.listContentsSuccess(resp);
+      },
+      err => {
+        console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
     else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-      this.apiService.listFiles(this.userEmail, this.pwdHash, credential, uri, null, null).subscribe(resp =>{
-        console.log(resp);
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.selectedCred, uri, null, null).subscribe(resp =>{
+        this.listContentsSuccess(resp);
+      },
+      err => {
+        console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
   }
@@ -308,4 +335,58 @@ export class BrowseComponentComponent implements OnInit {
   public ftpBack(){
     console.log("Implement back button");
   }
+
+  public listContentsSuccess(resp : any){
+    console.log(resp);
+    this.selectedCredContents = resp["files"];
+    this.mode = this.browse_endpoint_contents;
+  }
+
+  public fileSelected(fileName : string, id : string){
+    console.log("File " + fileName + " selected");
+    if(this.selectedFile !== fileName){
+      this.selectedFile = fileName;
+      this.selectedCredHistory.push(fileName);
+      if(this.selectedEndpoint === 'GoogleDrive')
+        this.driveItemIdHistory.push(id);
+    }
+  }
+
+  public folderSelected(folderName : string, id : string){
+    if(this.selectedFolder === folderName){
+      console.log("Folder " + folderName + " selected");
+      this.selectedCredHistory.push(folderName);
+      if(this.selectedEndpoint === 'GoogleDrive')
+        this.driveItemIdHistory.push(id);
+      this.loadContents();
+    }
+    else
+      this.selectedFolder = folderName;
+  }
+
+  public contentWindowBack(){
+    console.log(this.driveItemIdHistory);
+    this.selectedFolder = this.selectedCredHistory.pop();
+    this.driveItemIdHistory.pop();
+    if(this.selectedCredHistory.length === 0){
+      this.mode = this.creds_exist_mode;
+      this.driveItemIdHistory = [];
+    } 
+    else
+      this.loadContents(); 
+  }
+
+  public getDirURI() : string{
+    let uri : string = this.selectedCredHistory[0];
+
+    for(let i=1; i<this.selectedCredHistory.length; i++)
+      uri += this.selectedCredHistory[i] + '/';
+
+    if(this.selectedCredHistory.length === 1)
+      return uri;
+    else
+      return uri.substring(0, uri.length-1);
+  }
+
+
 }    //class
