@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
 import Axios from "axios";
-import {url, getType, getTypeFromUri} from './constants';
+import {url, getTypeFromUri} from './constants';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, MonoTypeOperatorFunction } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
-import { EmailValidator } from '@angular/forms';
-// import { IQueueResp } from './models/IQueueResp';
-// import { EmailValidator } from '@angular/forms';
-const endpoint = 'http://10.84.54.247:8080';
+const endpoint = 'http://192.168.1.226:8080';
 
 
 const context = endpoint + '/api/stork';
@@ -34,55 +31,9 @@ export class APICallsService {
   });
 
 
-  public statusHandle(response, callback){
-    //console.log(response)
-    const statusFirstDigit = Math.floor(response.status/100);
-    if(statusFirstDigit < 3){
-      // 100-200 success code=
-      callback(response.data);
-    }else
-    if(statusFirstDigit < 5){
-      // 300-499 redirect/user error code
-      callback(`${response.status} ${response.statusText}`);
-    }else{
-      // 500 error code
-      if(response.name == "PermissionDenied" /*&& store.getState().login*/){                  // ################
-        if (window.confirm('You have been logged out. Login again?'))                         // ################
-        {
-          // store.dispatch(logoutAction());
-        }
-      }
-      if (response.status === 408 || response.code === 'ECONNABORTED') {
-          callback(`Timeout 10000ms`)
-          return;
-        }
-      console.log(response)
-      const errorText = JSON.stringify(response.response.data);
-      callback(`500${response.response.statusText} ${errorText}`);
-    }
-  }
 
-  /*
-    Desc: Check if current email is a user
-    input: Email
-    accept: (successMessage:string){}
-    fail: (errorMessage:string){}
-  */
 
-  public checkLogin(email, accept, fail){
-    var callback = accept;
-    this.axios.post(url+'user', {
-        action: 'verifyUser',
-        email: email,
-    }).then((response) => {
-      console.log("login response", response)
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    }).catch((error) => {
-        this.statusHandle(error, fail);
-      });
-  }
+
 
 
   /*
@@ -91,19 +42,15 @@ export class APICallsService {
     accept: (successMessage:string){}
     fail: (errorMessage:string){}
   */
-
   public resetPasswordSendCode(email){
     console.log("in resetpass");
     var URL = context+'/user';
     var headers = new HttpHeaders().append('Content-Type','application/json')
                                    .append('Access-Control-Allow-Origin','*');
-                                  //  .append('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
-                                  //  .append('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
     let body = JSON.stringify({action: 'sendVerificationCode',email: email});
     return this.httpService.post(URL,body,{headers:headers});
   }
   
-
 
   /*
     Desc: Verify Code for the user
@@ -111,7 +58,6 @@ export class APICallsService {
     accept: (successMessage:string){}
     fail: (errorMessage:string){}
   */
-
   public resetPasswordVerifyCode(email,code){
     console.log("In resetPasswordVerifyCode");
     var URL = context+'/user';
@@ -165,24 +111,6 @@ export class APICallsService {
     return this.httpService.post<any>(URL,body,{headers:headers});
   }
 
-
-  public deleteHistory(uri, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'user', {
-      action: "deleteHistory",
-        uri: encodeURI(uri)
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        this.statusHandle(error, fail);
-      });
-  }
-
   /*
     Desc: List credentials for dropbox and googledrive
   */
@@ -225,11 +153,11 @@ export class APICallsService {
     }).then((response) => {
       if(!(response.status === 200))
         callback = fail;
-      this.statusHandle(response, callback);
+      // this.statusHandle(response, callback);
     })
     .catch((error) => {
         
-        this.statusHandle(error, fail);
+        // this.statusHandle(error, fail);
       });
   }
 
@@ -266,11 +194,11 @@ export class APICallsService {
     .then((response) => {
       if(!(response.status === 200))
         callback = fail;
-      this.statusHandle(response, callback);
+      // this.statusHandle(response, callback);
     })
     .catch((error) => {
         
-        this.statusHandle(error, fail);
+        // this.statusHandle(error, fail);
       });
   }
 
@@ -287,10 +215,10 @@ export class APICallsService {
     .then((response) => {
       if(!(response.status === 200))
         callback = fail;
-      this.statusHandle(response, callback);
+      // this.statusHandle(response, callback);
     })
     .catch((error) => {
-        this.statusHandle(error, fail);
+        // this.statusHandle(error, fail);
       });
   }
 
@@ -307,11 +235,11 @@ export class APICallsService {
     .then((response) => {
       if(!(response.status === 200))
         callback = fail;
-      this.statusHandle(response, callback);
+      // this.statusHandle(response, callback);
     })
     .catch((error) => {
         
-        this.statusHandle(error, fail);
+        // this.statusHandle(error, fail);
       });
   }
 
@@ -354,11 +282,11 @@ export class APICallsService {
     }).then((response) => {
       if(!(response.status === 200))
         callback = fail;
-      this.statusHandle(response, callback);
+      // this.statusHandle(response, callback);
     })
     .catch((error) => {
         
-        this.statusHandle(error, fail);
+        // this.statusHandle(error, fail);
       });
   }
 
@@ -374,11 +302,11 @@ export class APICallsService {
     .then((response) => {
       if(!(response.status === 200))
         callback = fail;
-      this.statusHandle(response, callback);
+      // this.statusHandle(response, callback);
     })
     .catch((error) => {
         
-        this.statusHandle(error, fail);
+        // this.statusHandle(error, fail);
       });
   }
 
@@ -433,11 +361,6 @@ export class APICallsService {
     return this.httpService.post(URL,body,{headers:headers});
   }
 
-
-
-  // public openOAuth(url){
-  //   window.open(url, 'oAuthWindow');
-  // }
 
   public completeOAuth(state : string, code : string, email : string, hash : string){
     let URL = context + "/oauth";

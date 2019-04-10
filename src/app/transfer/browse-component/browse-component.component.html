@@ -4,7 +4,7 @@
       <ion-row *ngFor="let supportedProtocol of supportedProtocols">
         <ion-item>
           <ion-label class="protocol-label" (click)="click(supportedProtocol)">
-              {{supportedProtocol}}
+            <ion-icon name="{{ ionicLogoMap[supportedProtocol] }}"></ion-icon> &nbsp; &nbsp; {{supportedProtocol}}
           </ion-label>
         </ion-item>
       </ion-row>
@@ -40,7 +40,21 @@
     <div *ngIf="mode === browse_endpoint_contents">
       <ion-grid>
         <ion-row>
-          <!-- placeholder for buttons -->
+          <!-- <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button expand="full" size="small"></ion-button>
+          </ion-col> -->
         </ion-row>
         <ion-row>
           <ion-label (click)="contentWindowBack()" class="back-label">
@@ -49,7 +63,7 @@
         </ion-row>
         <ion-row *ngFor="let item of selectedCredContents">
           <div *ngIf="item.file; else folder" class="content-listing-div" >
-            <ion-item class="font-style" (click)="fileSelected(item.name)">
+            <ion-item class="font-style" (click)="fileSelected(item.name, item.id)">
               <ion-icon name="document"></ion-icon> &nbsp; &nbsp; {{ item.name }}
               <!-- 
               {{ item.time }} &nbsp; &nbsp; {{ item.size }}
@@ -57,7 +71,7 @@
             </ion-item>
           </div>
           <ng-template #folder>
-            <ion-item (click)="folderSelected(item.name)" class="font-style">
+            <ion-item (click)="folderSelected(item.name, item.id)" class="font-style">
               <ion-icon name="folder"></ion-icon> &nbsp; &nbsp; {{ item.name }}
             </ion-item>
           </ng-template>

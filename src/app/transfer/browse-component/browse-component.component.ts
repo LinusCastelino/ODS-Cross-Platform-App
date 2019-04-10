@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { supportedProtocols, protocolToUriMap } from '../../constants';
+import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../constants';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
-import { stringify } from 'querystring';
 
 declare var window: any;
 
@@ -14,7 +13,8 @@ declare var window: any;
 export class BrowseComponentComponent implements OnInit {
 
   supportedProtocols : string[] = supportedProtocols;
-
+  ionicLogoMap : any = ionicLogoMap;
+  
   select_endpoint_mode : string = 'select-endpoint'
   creds_exist_mode : string = 'creds-exist';
   browse_endpoint_contents : string = 'browse-contents';
@@ -25,6 +25,7 @@ export class BrowseComponentComponent implements OnInit {
   selectedEndpointCreds : [] = [];
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
+  driveItemIdHistory : string[] = [];
 
 
   startEvent : string = "loadstart";
@@ -34,6 +35,7 @@ export class BrowseComponentComponent implements OnInit {
   userEmail : string ;
   pwdHash : string ;
   selectedFolder : string;
+  selectedFile : string;
 
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
   globusOAuthRedirect : string = "";
@@ -296,9 +298,9 @@ export class BrowseComponentComponent implements OnInit {
     let uri = protocolToUriMap[this.selectedEndpoint];
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
-
       this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, 
-        {"uuid" : this.selectedCred}, null).subscribe(resp =>{
+        {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1])
+        .subscribe(resp =>{
           this.listContentsSuccess(resp);
       },
       err => {
@@ -321,14 +323,22 @@ export class BrowseComponentComponent implements OnInit {
     this.mode = this.browse_endpoint_contents;
   }
 
-  public fileSelected(fileName : string){
+  public fileSelected(fileName : string, id : string){
     console.log("File " + fileName + " selected");
+    if(this.selectedFile !== fileName){
+      this.selectedFile = fileName;
+      this.selectedCredHistory.push(fileName);
+      if(this.selectedEndpoint === 'GoogleDrive')
+        this.driveItemIdHistory.push(id);
+    }
   }
 
-  public folderSelected(folderName : string){
+  public folderSelected(folderName : string, id : string){
     if(this.selectedFolder === folderName){
       console.log("Folder " + folderName + " selected");
       this.selectedCredHistory.push(folderName);
+      if(this.selectedEndpoint === 'GoogleDrive')
+        this.driveItemIdHistory.push(id);
       this.loadContents();
     }
     else
@@ -336,9 +346,13 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public contentWindowBack(){
-    this.selectedCredHistory.pop();
-    if(this.selectedCredHistory.length === 0)
+    console.log(this.driveItemIdHistory);
+    this.selectedFolder = this.selectedCredHistory.pop();
+    this.driveItemIdHistory.pop();
+    if(this.selectedCredHistory.length === 0){
       this.mode = this.creds_exist_mode;
+      this.driveItemIdHistory = [];
+    } 
     else
       this.loadContents(); 
   }
