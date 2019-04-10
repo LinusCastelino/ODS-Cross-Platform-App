@@ -16,10 +16,14 @@ export class BrowseComponentComponent implements OnInit {
 
   select_endpoint_mode : string = 'select-endpoint'
   creds_exist_mode : string = 'creds-exist';
+  browse_endpoint_contents : string = 'browse-contents';
   mode : string = this.select_endpoint_mode;
 
   selectedEndpoint : string;
+  selectedCred : string;
   selectedEndpointCreds : [] = [];
+  selectedCredContents : [] = [];
+
 
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
@@ -27,6 +31,7 @@ export class BrowseComponentComponent implements OnInit {
   reloadTag : string = 'reload';
   userEmail : string ;
   pwdHash : string ;
+  selectedFolder : string;
 
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
   globusOAuthRedirect : string = "";
@@ -279,20 +284,48 @@ export class BrowseComponentComponent implements OnInit {
     });
   }
 
-  public listContents(credential : string){
+  public loadCred(credential : string){
+    this.selectedCred = credential;
+    this.loadContents();
+  }
+
+  public loadContents(){
     let uri = protocolToUriMap[this.selectedEndpoint];
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
 
       this.apiService.listFiles(this.userEmail, this.pwdHash, uri, uri, 
-        {"uuid" : credential}, null).subscribe(resp =>{
-          console.log(resp);
+        {"uuid" : this.selectedCred}, null).subscribe(resp =>{
+          this.listContentsSuccess(resp);
+      },
+      err => {
+        console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
     else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-      this.apiService.listFiles(this.userEmail, this.pwdHash, credential, uri, null, null).subscribe(resp =>{
-        console.log(resp);
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.selectedCred, uri, null, null).subscribe(resp =>{
+        this.listContentsSuccess(resp);
+      },
+      err => {
+        console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
+  }
+
+  public listContentsSuccess(resp : any){
+    console.log(resp);
+    this.selectedCredContents = resp["files"];
+    this.mode = this.browse_endpoint_contents;
+  }
+
+  public fileSelected(fileName : string){
+    console.log("File " + fileName + " selected");
+  }
+
+  public folderSelected(folderName : string){
+    if(this.selectedFolder === folderName)
+      console.log("Folder " + folderName + " selected");
+    else
+      this.selectedFolder = folderName;
   }
 }    //class

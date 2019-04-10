@@ -24,7 +24,7 @@
         </ion-row>
         <ion-row *ngFor="let cred of selectedEndpointCreds">
           <ion-col size="10">
-            <ion-item class="font-style" (click)="listContents(cred.key)">
+            <ion-item class="font-style" (click)="loadCred(cred.key)">
                 <ion-icon name="laptop"></ion-icon> &nbsp; &nbsp; {{ cred.name }}
             </ion-item>
           </ion-col>
@@ -33,6 +33,35 @@
               <ion-icon name="trash"></ion-icon>
             </ion-item>
           </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <div *ngIf="mode === browse_endpoint_contents">
+      <ion-grid>
+        <ion-row>
+          <!-- placeholder for buttons -->
+        </ion-row>
+        <ion-row>
+          <!-- placeholder for back navigation -->
+        </ion-row>
+        <ion-row *ngFor="let item of selectedCredContents">
+          <div *ngIf="item.file; else folder">
+            <ion-item (click)="fileSelected(item.name)">
+              <ion-label>
+                <ion-icon name="document"></ion-icon> &nbsp; &nbsp; {{ item.name }}
+              </ion-label>
+              <!-- <br />
+              <ion-label>
+                {{ item.time }} &nbsp; &nbsp; {{ item.size }}
+              </ion-label> -->
+            </ion-item>
+          </div>
+          <ng-template #folder>
+            <ion-item (click)="folderSelected(item.name)">
+              <ion-icon name="folder"></ion-icon> &nbsp; &nbsp; {{ item.name }}
+            </ion-item>
+          </ng-template>
         </ion-row>
       </ion-grid>
     </div>

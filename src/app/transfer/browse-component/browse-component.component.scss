@@ -12,6 +12,7 @@ ion-card{
     margin : unset;
     margin-left: 0.5px;
     margin-right: 1.1px;
+    padding-right: 10px;
     border-radius: unset;
     --background : white;
 }
@@ -33,6 +34,10 @@ ion-grid{
 
 ion-col{
     padding: unset;
+}
+
+ion-row{
+    overflow: scroll;
 }
 
 ion-item{
