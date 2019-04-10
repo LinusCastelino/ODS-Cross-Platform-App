@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { supportedProtocols, protocolToUriMap } from '../../constants';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
+import { stringify } from 'querystring';
 
 declare var window: any;
 
@@ -23,6 +24,7 @@ export class BrowseComponentComponent implements OnInit {
   selectedCred : string;
   selectedEndpointCreds : [] = [];
   selectedCredContents : [] = [];
+  selectedCredHistory : string[] = [];
 
 
   startEvent : string = "loadstart";
@@ -286,6 +288,7 @@ export class BrowseComponentComponent implements OnInit {
 
   public loadCred(credential : string){
     this.selectedCred = credential;
+    this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
     this.loadContents();
   }
 
@@ -294,7 +297,7 @@ export class BrowseComponentComponent implements OnInit {
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
 
-      this.apiService.listFiles(this.userEmail, this.pwdHash, uri, uri, 
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, 
         {"uuid" : this.selectedCred}, null).subscribe(resp =>{
           this.listContentsSuccess(resp);
       },
@@ -323,9 +326,34 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public folderSelected(folderName : string){
-    if(this.selectedFolder === folderName)
+    if(this.selectedFolder === folderName){
       console.log("Folder " + folderName + " selected");
+      this.selectedCredHistory.push(folderName);
+      this.loadContents();
+    }
     else
       this.selectedFolder = folderName;
   }
+
+  public contentWindowBack(){
+    this.selectedCredHistory.pop();
+    if(this.selectedCredHistory.length === 0)
+      this.mode = this.creds_exist_mode;
+    else
+      this.loadContents(); 
+  }
+
+  public getDirURI() : string{
+    let uri : string = this.selectedCredHistory[0];
+
+    for(let i=1; i<this.selectedCredHistory.length; i++)
+      uri += this.selectedCredHistory[i] + '/';
+
+    if(this.selectedCredHistory.length === 1)
+      return uri;
+    else
+      return uri.substring(0, uri.length-1);
+  }
+
+
 }    //class

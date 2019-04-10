@@ -43,10 +43,12 @@
           <!-- placeholder for buttons -->
         </ion-row>
         <ion-row>
-          <!-- placeholder for back navigation -->
+          <ion-label (click)="contentWindowBack()" class="back-label">
+            <b>&lt; Back</b>
+          </ion-label>
         </ion-row>
         <ion-row *ngFor="let item of selectedCredContents">
-          <div *ngIf="item.file; else folder">
+          <div *ngIf="item.file; else folder" class="content-listing-div" >
             <ion-item class="font-style" (click)="fileSelected(item.name)">
               <ion-icon name="document"></ion-icon> &nbsp; &nbsp; {{ item.name }}
               <!-- 
