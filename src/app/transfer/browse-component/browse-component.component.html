@@ -47,18 +47,15 @@
         </ion-row>
         <ion-row *ngFor="let item of selectedCredContents">
           <div *ngIf="item.file; else folder">
-            <ion-item (click)="fileSelected(item.name)">
-              <ion-label>
-                <ion-icon name="document"></ion-icon> &nbsp; &nbsp; {{ item.name }}
-              </ion-label>
-              <!-- <br />
-              <ion-label>
-                {{ item.time }} &nbsp; &nbsp; {{ item.size }}
-              </ion-label> -->
+            <ion-item class="font-style" (click)="fileSelected(item.name)">
+              <ion-icon name="document"></ion-icon> &nbsp; &nbsp; {{ item.name }}
+              <!-- 
+              {{ item.time }} &nbsp; &nbsp; {{ item.size }}
+              -->
             </ion-item>
           </div>
           <ng-template #folder>
-            <ion-item (click)="folderSelected(item.name)">
+            <ion-item (click)="folderSelected(item.name)" class="font-style">
               <ion-icon name="folder"></ion-icon> &nbsp; &nbsp; {{ item.name }}
             </ion-item>
           </ng-template>
