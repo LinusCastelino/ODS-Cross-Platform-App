@@ -88,7 +88,6 @@ export class BrowseComponentComponent implements OnInit {
               });
         }
         else{
-          this.hideProgressBar();
           this.startAuthentication();
         }
       });
@@ -100,28 +99,37 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public startAuthentication(){
-    if(this.selectedEndpoint === "Dropbox"){ 
-      this.oAuthInit(this.apiService.getDropboxOAuthLink());
+    try{
+      if(this.selectedEndpoint === "Dropbox"){ 
+        this.oAuthInit(this.apiService.getDropboxOAuthLink());
+      }
+      else if(this.selectedEndpoint === "GoogleDrive"){
+        this.googleOAuthInit();
+      }
+      else if(this.selectedEndpoint === "SFTP"){
+  
+      }
+      else if(this.selectedEndpoint === "FTP"){
+        console.log("In FTP");
+        this.mode = 'ftp-auth';
+      }
+      else if(this.selectedEndpoint === "GridFTP"){
+        this.oAuthInit(this.apiService.getGridFtpOAuthLink());
+      }
+      else if(this.selectedEndpoint === "HTTP"){
+  
+      }
+      else if(this.selectedEndpoint === "SSH"){
+        
+      }
+      this.hideProgressBar();
     }
-    else if(this.selectedEndpoint === "Google Drive"){
-      this.googleOAuthInit();
+    catch(err){
+      this.hideProgressBar();
+      console.log("Error occurred while performing authentication");
+      console.log(err);
     }
-    else if(this.selectedEndpoint === "SFTP"){
-
-    }
-    else if(this.selectedEndpoint === "FTP"){
-      console.log("In FTP");
-      this.mode = 'ftp-auth';
-    }
-    else if(this.selectedEndpoint === "Grid FTP"){
-      this.oAuthInit(this.apiService.getGridFtpOAuthLink());
-    }
-    else if(this.selectedEndpoint === "HTTP"){
-
-    }
-    else if(this.selectedEndpoint === "SSH"){
-      
-    }
+    
   }
 
   public checkIfCredentialsExist() : Promise<any>{
@@ -139,7 +147,8 @@ export class BrowseComponentComponent implements OnInit {
         },
         err =>{
           console.log("Error occurred while querying the credentials list");
-          console.log(err.data);
+          console.log(err);
+          this.hideProgressBar();
           return false;
         });
       });
@@ -200,7 +209,6 @@ export class BrowseComponentComponent implements OnInit {
             if(key.toLowerCase().indexOf(val) != -1){
               resultArr.push({'name' : key, 'key' : key});
             }
-              
           };
 
           credList.forEach(filter);
@@ -212,10 +220,8 @@ export class BrowseComponentComponent implements OnInit {
           return {};
         });
       }
-  });
-}
-
-
+    });
+  }
 
   public oAuthInit(oAuthLink){
     this.performOAuth(oAuthLink)
@@ -226,9 +232,9 @@ export class BrowseComponentComponent implements OnInit {
           let code = paramArr[1].split("=")[1];
           this.completeOAuth(state, code);
           console.log("OAuth completed!!!");
-
         })
         .catch(err=>{
+          this.hideProgressBar();
           console.log("OAuth error : ", err);
         });
   }
@@ -237,19 +243,20 @@ export class BrowseComponentComponent implements OnInit {
     // Google does not allow OAuth using in-app browser
       // Using a separate plugin for Google OAuth 
 
-      window.plugins.googleplus.login(
-        {
-          'scopes': 'https://www.googleapis.com/auth/drive',
-          'webClientId': this.googleDriveClientID,
-          'offline': true 
-        },
-        resp => {
-          console.log("Google OAuth response - " + JSON.stringify(resp)); // do something useful instead of alerting
-          this.completeOAuth("GoogleDrive", resp["serverAuthCode"]);
-        },
-        err => {
-          console.log("Error occurred while performing Google OAuth " + err.data);
-        }
+    console.log("Starting Google OAuth");
+    window.plugins.googleplus.login(
+      {
+        'scopes': 'https://www.googleapis.com/auth/drive',
+        'webClientId': this.googleDriveClientID,
+        'offline': true 
+      },
+      resp => {
+        console.log("Google OAuth response - " + JSON.stringify(resp)); // do something useful instead of alerting
+        this.completeOAuth("GoogleDrive", resp["serverAuthCode"]);
+      },
+      err => {
+        console.log("Error occurred while performing Google OAuth " + err.data);
+      }
     );
   }
 
@@ -259,6 +266,7 @@ export class BrowseComponentComponent implements OnInit {
     }
     catch(err){
       // this error will occur since we are not handling Render.redirect return value
+      this.hideProgressBar();
       console.log("Expected error occurred");
     }
   }
@@ -268,7 +276,6 @@ export class BrowseComponentComponent implements OnInit {
    * Reference - https://www.thepolyglotdeveloper.com/2016/01/using-an-oauth-2-0-service-within-an-ionic-2-mobile-app/
    */
   public performOAuth(oauthLink : string) : Promise<any>{
-
     return new Promise((resolve, reject)=>{
       try{
         var browserRef :any= window.cordova.InAppBrowser.open(oauthLink 
@@ -280,9 +287,10 @@ export class BrowseComponentComponent implements OnInit {
             resolve((event.url).split("?")[1]);
           }
         });
-
       }
       catch(err){
+        console.log("Error occurred while opening In-App Browser for oauth");
+        this.hideProgressBar();
         reject(err);
       }
     });
@@ -326,7 +334,11 @@ export class BrowseComponentComponent implements OnInit {
 
   public loadCred(credential : string){
     this.selectedCred = credential;
-    this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
+    this.selectedCredHistory = [];
+    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP')
+      this.selectedCredHistory.push(this.selectedCred);
+    else
+      this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
     this.loadContents();
   }
 
@@ -358,7 +370,8 @@ export class BrowseComponentComponent implements OnInit {
     }
   }
   public ftpNext(){
-    this.loadCred(null);
+    console.log('Listing FTP server contents - '+ this.ftpUrl);
+    this.loadCred(this.ftpUrl);
   }
 
   public listContentsSuccess(resp : any){
@@ -403,6 +416,9 @@ export class BrowseComponentComponent implements OnInit {
 
   public getDirURI() : string{
     let uri : string = this.selectedCredHistory[0];
+
+    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP')
+      uri += '/';
 
     for(let i=1; i<this.selectedCredHistory.length; i++)
       uri += this.selectedCredHistory[i] + '/';

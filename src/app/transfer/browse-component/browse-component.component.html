@@ -14,7 +14,7 @@
 
     <div *ngIf="mode === creds_exist_mode">
       <ion-grid>
-        <ion-row>
+        <ion-row >
           <ion-label (click)="toggleMode()" class="back-label">
               <b>&lt; Back</b>
           </ion-label>
@@ -38,14 +38,15 @@
         </ion-row>
       </ion-grid>
     </div>
+
     <div *ngIf="mode === 'ftp-auth'" class="center ">
       <ion-row>
           <ion-label (click)="toggleMode()" class="back-label">
               <b>&lt; Back</b>
           </ion-label>
         </ion-row>
-    <ion-row>
-            <ion-input type="text" [ngModel]="ftpUrl" class="form-control"  value="ftp://"></ion-input>
+      <ion-row>
+          <ion-input type="text" [(ngModel)]="ftpUrl" class="form-control"  value="ftp://"></ion-input>
       </ion-row>
       <ion-row>
         <ion-label (click)="ftpNext()"  class="back-label">
@@ -53,6 +54,7 @@
         </ion-label>
       </ion-row>
     </div>
+
     <div *ngIf="mode === browse_endpoint_contents">
       <ion-grid>
         <ion-row>
