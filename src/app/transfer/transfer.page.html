@@ -15,6 +15,9 @@
             </div>
             <ion-card *ngIf="srcEndpointOpen && srcSelection !== null && srcSelection !== ''" class="current-selection">
                 Current Selection - <br /> {{ srcSelection }}
+                <ion-label (click)="clearSrcSelection()" class="clear-selection">
+                    <b><u>Clear Selection</u></b>
+                </ion-label>
             </ion-card>
         </ion-item-group>
     </div>
@@ -33,7 +36,10 @@
                 <app-browse-component (selectionEmitter)="handleDestSelection($event)"></app-browse-component>
             </div>
             <ion-card *ngIf="destEndpointOpen && destSelection !== null && destSelection !== ''" class="current-selection">
-                    Current Selection - <br /> {{ destSelection }}
+                Current Selection - <br /> {{ destSelection }}
+                <ion-label (click)="clearDestSelection()" class="clear-selection">
+                    <b>Clear Selection</b>
+                </ion-label>
             </ion-card>
         </ion-item-group>
     </div>

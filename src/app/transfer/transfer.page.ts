@@ -53,11 +53,18 @@ export class TransferPage implements OnInit {
   }
 
   public handleSrcSelection(selection : string){
-    console.log("Received " + selection);
     this.srcSelection = selection;
   }
 
   public handleDestSelection(selection : string){
     this.destSelection = selection;
+  }
+
+  public clearSrcSelection(){
+    this.srcSelection = null;
+  }
+
+  public clearDestSelection(){
+    this.destSelection = null;
   }
 }

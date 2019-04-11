@@ -32,8 +32,13 @@ ion-icon{
 .current-selection{
     width: 100%;
     background: #e3e4e5;
-    font-weight: bolder;
-    font-size: 0.7rem;
+    // font-weight: bolder;
+    font-size: 0.85rem;
     padding : 2%;
     margin: unset;
+}
+
+.clear-selection{
+    text-align: center;
+    margin-top: 2%
 }
