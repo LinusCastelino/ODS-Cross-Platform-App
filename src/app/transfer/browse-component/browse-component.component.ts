@@ -417,7 +417,8 @@ export class BrowseComponentComponent implements OnInit {
   public getDirURI() : string{
     let uri : string = this.selectedCredHistory[0];
 
-    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP')
+    if(this.selectedCredHistory.length > 1 && 
+      (this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP'))
       uri += '/';
 
     for(let i=1; i<this.selectedCredHistory.length; i++)

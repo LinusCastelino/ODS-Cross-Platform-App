@@ -170,7 +170,8 @@ export class APICallsService {
       "password" : hash,
       "uri" : encodeURI(uri),
       "type" : encodeURI(type),
-      "depth" : 1
+      "depth" : 1,
+      "id" : null
     };
   
     if(id !== null && id !== undefined)
