@@ -12,6 +12,9 @@ export class TransferPage implements OnInit {
   destEndpointOpen : boolean = true;
   transferSettingsOpen : boolean = true;
 
+  srcSelection : string = null;
+  destSelection : string = null;
+
   constructor(private toastController : ToastController) { }
 
   ngOnInit() {
@@ -28,7 +31,6 @@ export class TransferPage implements OnInit {
     this.destEndpointOpen = !(this.destEndpointOpen);
     if(this.destEndpointOpen === false)
       this.srcEndpointOpen = this.transferSettingsOpen = true;
-
   }
 
   public transferSettingsClick(){
@@ -48,5 +50,14 @@ export class TransferPage implements OnInit {
       duration: 2000
     });
     toast.present();
+  }
+
+  public handleSrcSelection(selection : string){
+    console.log("Received " + selection);
+    this.srcSelection = selection;
+  }
+
+  public handleDestSelection(selection : string){
+    this.destSelection = selection;
   }
 }

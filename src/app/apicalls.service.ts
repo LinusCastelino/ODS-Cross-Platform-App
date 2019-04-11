@@ -364,13 +364,13 @@ export class APICallsService {
   }
 
 
-  public completeOAuth(state : string, code : string, email : string, hash : string){
+  public completeOAuth(state : string, code : string, email : string, hash : string) : Observable<any>{
     let URL = context + "/oauth";
     var headers = new HttpHeaders().append('Content-Type','application/json')
                                   .append('Access-Control-Allow-Origin','*');
     let reqParams = new HttpParams().set("state", state).set("code", code)
                                     .set("email", email).set("hash", hash);
-    return this.httpService.get(URL,{headers: headers,params: reqParams});
+    return this.httpService.get<any>(URL,{headers: headers,params: reqParams});
   }
 
 

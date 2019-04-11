@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../constants';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
@@ -43,6 +43,8 @@ export class BrowseComponentComponent implements OnInit {
   globusOAuthRedirect : string = "";
 
   googleDriveClientID : string = "1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com";
+
+  @Output() selectionEmitter : EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private apiService : APICallsService, private storage : Storage) { 
     this.storage.get('email')
@@ -96,6 +98,7 @@ export class BrowseComponentComponent implements OnInit {
 
   public toggleMode(){
     this.mode = 'select-endpoint';
+    this.emitUpdate();
   }
 
   public startAuthentication(){
@@ -262,7 +265,9 @@ export class BrowseComponentComponent implements OnInit {
 
   public completeOAuth(state, code){
     try{
-      this.apiService.completeOAuth(state, code, this.userEmail, this.pwdHash).subscribe();
+      this.apiService.completeOAuth(state, code, this.userEmail, this.pwdHash).subscribe(() =>{
+        this.mode = this.select_endpoint_mode;
+      });
     }
     catch(err){
       // this error will occur since we are not handling Render.redirect return value
@@ -340,6 +345,8 @@ export class BrowseComponentComponent implements OnInit {
     else
       this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
     this.loadContents();
+
+    this.emitUpdate();
   }
 
   public loadContents(){
@@ -388,6 +395,8 @@ export class BrowseComponentComponent implements OnInit {
       if(this.selectedEndpoint === 'GoogleDrive')
         this.driveItemIdHistory.push(id);
     }
+
+    this.emitUpdate();
   }
 
   public folderSelected(folderName : string, id : string){
@@ -400,10 +409,11 @@ export class BrowseComponentComponent implements OnInit {
     }
     else
       this.selectedFolder = folderName;
+
+    this.emitUpdate();
   }
 
   public contentWindowBack(){
-    console.log(this.driveItemIdHistory);
     this.selectedFolder = this.selectedCredHistory.pop();
     this.driveItemIdHistory.pop();
     if(this.selectedCredHistory.length === 0){
@@ -412,6 +422,7 @@ export class BrowseComponentComponent implements OnInit {
     } 
     else
       this.loadContents(); 
+    this.emitUpdate();
   }
 
   public getDirURI() : string{
@@ -426,9 +437,14 @@ export class BrowseComponentComponent implements OnInit {
 
     if(this.selectedCredHistory.length === 1)
       return uri;
+    else if(uri === undefined || uri === null)
+      return null;
     else
       return uri.substring(0, uri.length-1);
   }
 
+  public emitUpdate(){
+    this.selectionEmitter.emit(this.getDirURI());
+  }
 
 }    //class

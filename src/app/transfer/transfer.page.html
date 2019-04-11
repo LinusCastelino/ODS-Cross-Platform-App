@@ -11,8 +11,11 @@
             </ion-item>
 
             <div id="srcEndpoint" [hidden]="srcEndpointOpen" class="dropdown">
-                <app-browse-component></app-browse-component>
+                <app-browse-component (selectionEmitter)="handleSrcSelection($event)"></app-browse-component>
             </div>
+            <ion-card *ngIf="srcEndpointOpen && srcSelection !== null && srcSelection !== ''" class="current-selection">
+                Current Selection - <br /> {{ srcSelection }}
+            </ion-card>
         </ion-item-group>
     </div>
 
@@ -27,8 +30,11 @@
             </ion-item>
 
             <div id="destEndpoint" [hidden]="destEndpointOpen" class="dropdown">
-                <app-browse-component></app-browse-component>
+                <app-browse-component (selectionEmitter)="handleDestSelection($event)"></app-browse-component>
             </div>
+            <ion-card *ngIf="destEndpointOpen && destSelection !== null && destSelection !== ''" class="current-selection">
+                    Current Selection - <br /> {{ destSelection }}
+            </ion-card>
         </ion-item-group>
     </div>
 
