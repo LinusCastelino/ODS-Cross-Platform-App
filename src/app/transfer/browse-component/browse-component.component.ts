@@ -403,16 +403,19 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public fileSelected(fileName : string, id : string){
-    if(this.selectedFile !== fileName){
-      console.log("File " + fileName + " selected");
-      this.selectedFile = fileName;
-      this.selectedCredHistory.push(fileName);
-      if(this.selectedEndpoint === 'GoogleDrive')
-        this.driveItemIdHistory.push(id);
-
-      this.selectedFolder = '';
+    if(this.type === 'source'){
+      if(this.selectedFile !== fileName){
+        console.log("File " + fileName + " selected");
+        this.selectedFile = fileName;
+        this.selectedCredHistory.push(fileName);
+        if(this.selectedEndpoint === 'GoogleDrive')
+          this.driveItemIdHistory.push(id);
+  
+        this.selectedFolder = '';
+      }
+      this.emitUpdate();
     }
-    this.emitUpdate();
+    
   }
 
   public folderSelected(folderName : string, id : string){
