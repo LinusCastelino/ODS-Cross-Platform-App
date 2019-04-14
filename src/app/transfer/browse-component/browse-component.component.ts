@@ -84,6 +84,15 @@ export class BrowseComponentComponent implements OnInit {
     this.mode = this.select_endpoint_mode;
   }
 
+  public exitEndpoint(){
+    this.ftpUrl = '';
+    this.selectedCred = '';
+    this.selectedCredContents = [];
+    this.selectedCredHistory = [];
+    this.driveItemIdHistory = [];
+    this.mode = this.creds_exist_mode;
+  }
+
   public click(endpoint){
     if(endpoint !== this.reloadTag){
       console.log(endpoint + " selected.");

@@ -74,12 +74,12 @@
             </ion-button>
           </ion-col>
           <ion-col class="endpoint-browse-options">
-            <ion-button expand="full" fill="clear" color="dark">
+            <ion-button expand="full" fill="clear" color="dark" (click)="loadContents()">
               <ion-icon name="refresh"></ion-icon>
             </ion-button>
           </ion-col>
           <ion-col class="endpoint-browse-options">
-            <ion-button expand="full">
+            <ion-button expand="full" (click)="exitEndpoint()">
               <ion-icon name="log-out"></ion-icon>
             </ion-button>
           </ion-col>

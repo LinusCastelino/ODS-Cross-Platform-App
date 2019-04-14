@@ -42,7 +42,7 @@ export class TransferPage implements OnInit {
       this.srcEndpointOpen = this.destEndpointOpen = true;
   }
 
-  public intiatedTransfer(){
+  public initiateTransfer(){
     this.presentToast();
   }
 
