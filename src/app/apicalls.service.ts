@@ -20,16 +20,9 @@ const context = endpoint + '/api/stork';
 export class APICallsService {
 
   constructor(private httpService:HttpClient) { }
-  
-  FETCH_TIMEOUT : number = 10000;
 
-  axios = Axios.create({
-    timeout: this.FETCH_TIMEOUT,
-    headers: {
-      Accept: 'application/json',
-    'Content-Type': 'application/json'
-    }
-  });
+  headers = new HttpHeaders().append('Content-Type','application/json')
+                             .append('Access-Control-Allow-Origin','*');
 
   /*
     Desc: Send a code to the user
@@ -40,10 +33,8 @@ export class APICallsService {
   public resetPasswordSendCode(email){
     console.log("in resetpass");
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                   .append('Access-Control-Allow-Origin','*');
     let body = JSON.stringify({action: 'sendVerificationCode',email: email});
-    return this.httpService.post(URL,body,{headers:headers});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
   
 
@@ -56,10 +47,8 @@ export class APICallsService {
   public resetPasswordVerifyCode(email,code){
     console.log("In resetPasswordVerifyCode");
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                   .append('Access-Control-Allow-Origin','*');
     let body = JSON.stringify({action: 'verifyCode',email: email,code:code});
-    return this.httpService.post(URL,body,{headers:headers});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
   /*
@@ -72,9 +61,9 @@ export class APICallsService {
   public resetPassword(email,code,password, cpassword){
     console.log("In resetPassword");
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
-    let body = JSON.stringify({action: 'setPassword',email: email,code:code,password: password,confirmPassword: cpassword});    
-    return this.httpService.post(URL,body,{headers:headers});
+    let body = JSON.stringify({action: 'setPassword',email: email,code:code,
+                                password: password,confirmPassword: cpassword});    
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
 
@@ -85,32 +74,28 @@ export class APICallsService {
     fail: (errorMessage:string){}
   */
   public login(email, password): Observable<ILoginResponse>{
-    var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
+    var URL = context+'/user';               
     let body = JSON.stringify({action: 'login',email: email,password: password});
-    return this.httpService.post<ILoginResponse>(URL,body,{headers:headers});
+    return this.httpService.post<ILoginResponse>(URL,body,{headers: this.headers});
   }
 
 
   public isAdmin(email, hash){
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
     let body = JSON.stringify({action: 'isAdmin',email: email,password: hash});
-    return this.httpService.post(URL,body,{headers:headers});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
   public getFTPCreds(email, hash) : Observable<any>{
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
     let body = JSON.stringify({action: 'history',email: email,password: hash, uri : ''});
-    return this.httpService.post<any>(URL,body,{headers:headers});
+    return this.httpService.post<any>(URL,body,{headers: this.headers});
   }
 
   public deleteHistory(uri,email,hash){
-    var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
+    var URL = context+'/user';               
     let body = JSON.stringify({action: 'deleteHistory',uri:uri,email: email,password: hash});
-    return this.httpService.post(URL,body,{headers:headers});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
   /*
@@ -118,11 +103,9 @@ export class APICallsService {
   */
   public getCredList(email, hash) : Observable<any>{
     let URL = context + "/cred";
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                  .append('Access-Control-Allow-Origin','*');
     let reqParams = new HttpParams().set("action", "list")
                                     .set("email", email).set("hash", hash);
-    return this.httpService.get<any>(URL,{headers: headers,params: reqParams});
+    return this.httpService.get<any>(URL,{headers: this.headers,params: reqParams});
   }
 
   /*
@@ -131,10 +114,7 @@ export class APICallsService {
   public queue(email,hash){
     var URL = context+'/q';
     let body = JSON.stringify({status: 'all',email: email,password: hash});
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                  .append('Access-Control-Allow-Origin','*');
-    return this.httpService.post(URL,body,{headers:headers});
-    //return this.httpService.get(URL,{headers,params});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
   public submit(src, srcEndpoint, dest, destEndpoint, options,accept, fail){
@@ -148,24 +128,23 @@ export class APICallsService {
       delete dest0["credential"];
     }
 
-    this.axios.post(url+'submit', {
-        // src: {...src0, type: getType(src0), map: getMapFromEndpoint(srcEndpoint)},        ################ TODO
-        // dest: {...dest0, type: getType(dest0), map: getMapFromEndpoint(destEndpoint)},    ################ TODO
-        options:options
-    }).then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      // this.statusHandle(response, callback);
-    })
-    .catch((error) => {
+    // this.axios.post(url+'submit', {
+    //     // src: {...src0, type: getType(src0), map: getMapFromEndpoint(srcEndpoint)},        ################ TODO
+    //     // dest: {...dest0, type: getType(dest0), map: getMapFromEndpoint(destEndpoint)},    ################ TODO
+    //     options:options
+    // }).then((response) => {
+    //   if(!(response.status === 200))
+    //     callback = fail;
+    //   // this.statusHandle(response, callback);
+    // })
+    // .catch((error) => {
         
-        // this.statusHandle(error, fail);
-      });
+    //     // this.statusHandle(error, fail);
+    //   });
   }
 
   public listFiles(email, hash, uri, type, credential, id) : Observable<any>{
-    var URL = context+'/ls';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
+    var URL = context+'/ls';              
     let body = {
       "email": email,
       "password" : hash,
@@ -181,117 +160,79 @@ export class APICallsService {
     if(credential !== null && credential !== undefined)
       body["credential"] = credential;
 
-    return this.httpService.post<any>(URL,body,{headers:headers});
+    return this.httpService.post<any>(URL,body,{headers: this.headers});
   }
 
   public share(uri, endpoint, accept, fail){
     var callback = accept;
 
-    this.axios.post(url+'share', {
-        credential: endpoint.credential,
-        uri: encodeURI(uri),
-        type: getTypeFromUri(uri),
-        // map: getMapFromEndpoint(endpoint),                    ################ TODO
+    // this.axios.post(url+'share', {
+    //     credential: endpoint.credential,
+    //     uri: encodeURI(uri),
+    //     type: getTypeFromUri(uri),
+    //     // map: getMapFromEndpoint(endpoint),                    ################ TODO
 
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      // this.statusHandle(response, callback);
-    })
-    .catch((error) => {
+    // })
+    // .then((response) => {
+    //   if(!(response.status === 200))
+    //     callback = fail;
+    //   // this.statusHandle(response, callback);
+    // })
+    // .catch((error) => {
         
-        // this.statusHandle(error, fail);
-      });
+    //     // this.statusHandle(error, fail);
+    //   });
   }
 
   public mkdir(uri,type, endpoint,  accept, fail){
     var callback = accept;
     // const id = getIdsFromEndpoint(endpoint);       ################ TODO
-    this.axios.post(url+'mkdir', {
-        credential: endpoint.credential,
-        uri: encodeURI(uri),
-        // id: id,                                  ################3333
-        type: type,
-        // map: getMapFromEndpoint(endpoint),       ################ TODO
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      // this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        // this.statusHandle(error, fail);
-      });
+    // this.axios.post(url+'mkdir', {
+    //     credential: endpoint.credential,
+    //     uri: encodeURI(uri),
+    //     // id: id,                                  ################3333
+    //     type: type,
+    //     // map: getMapFromEndpoint(endpoint),       ################ TODO
+    // })
+    // .then((response) => {
+    //   if(!(response.status === 200))
+    //     callback = fail;
+    //   // this.statusHandle(response, callback);
+    // })
+    // .catch((error) => {
+    //     // this.statusHandle(error, fail);
+    //   });
   }
 
   public deleteCall(uri, endpoint, id, accept, fail){
     console.log("screw")
     var callback = accept;
-    this.axios.post(url+'delete', {
-        credential: endpoint.credential,
-        uri: encodeURI(uri),
-        id: id,
-        type: getTypeFromUri(uri),
-        // map: getMapFromEndpoint(endpoint)               ################ TODO
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      // this.statusHandle(response, callback);
-    })
-    .catch((error) => {
+    // this.axios.post(url+'delete', {
+    //     credential: endpoint.credential,
+    //     uri: encodeURI(uri),
+    //     id: id,
+    //     type: getTypeFromUri(uri),
+    //     // map: getMapFromEndpoint(endpoint)               ################ TODO
+    // })
+    // .then((response) => {
+    //   if(!(response.status === 200))
+    //     callback = fail;
+    //   // this.statusHandle(response, callback);
+    // })
+    // .catch((error) => {
         
-        // this.statusHandle(error, fail);
-      });
+    //     // this.statusHandle(error, fail);
+    //   });
   }
 
 
-  public download(uri, credential){
-    console.log(uri)
-    this.axios.post(url+'download', {
-      credential: credential,
-      uri: encodeURI(uri)
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        console.log("Error in download API call");
-      else{
-        console.log(JSON.stringify(response));
-        var form = document.createElement('form');
-        form.action = response.data;
-        form.target = '_blank';
+  // public download(uri, credential){
+  //   // no download functionality on mobile app
+  // }
 
-        // console.log("Value contained in "+input.name+" : "+input.value);
-        // console.log("Form method :" + form.method);
-
-        form.style.display = 'none';
-        document.body.appendChild(form);
-        form.submit();
-      }
-    })
-    .catch((error) => {
-        console.log("Error encountered while generating download link");
-    });
-  }
-
-  public upload(uri, credential, accept, fail){
-    var callback = accept;
-
-    this.axios.post(url+'share', {
-        credential: credential,
-        uri: encodeURI(uri),
-        type: getTypeFromUri(uri)
-    }).then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      // this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-        
-        // this.statusHandle(error, fail);
-      });
-  }
+  // public upload(uri, credential, accept, fail){
+  //   // no upload functionality on mobile app
+  // }
 
   /*
     Desc: Retrieve all the available users
@@ -299,25 +240,24 @@ export class APICallsService {
   public getUsers(type, accept, fail){
     var callback = accept;
 
-    this.axios.post(url+'user', {
-        action: type
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        callback = fail;
-      // this.statusHandle(response, callback);
-    })
-    .catch((error) => {
+    // this.axios.post(url+'user', {
+    //     action: type
+    // })
+    // .then((response) => {
+    //   if(!(response.status === 200))
+    //     callback = fail;
+    //   // this.statusHandle(response, callback);
+    // })
+    // .catch((error) => {
         
-        // this.statusHandle(error, fail);
-      });
+    //     // this.statusHandle(error, fail);
+    //   });
   }
 
   public getUser(email):Observable<IUser>{
-    var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
+    var URL = context+'/user';               
     let body = JSON.stringify({action: 'getUser',email: email});
-    return this.httpService.post<IUser>(URL,body,{headers:headers});
+    return this.httpService.post<IUser>(URL,body,{headers: this.headers});
   }
 
   /*
@@ -325,17 +265,16 @@ export class APICallsService {
   */
   public changePassword(oldPassword, newPassword,confirmPassword,email,hash){
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
-    let body = JSON.stringify({action: 'resetPassword',password: oldPassword,newPassword:newPassword,confirmPassword: confirmPassword,email:email,hash:hash});    
-    return this.httpService.post(URL,body,{headers:headers});
+    let body = JSON.stringify({action: 'resetPassword',password: oldPassword,
+                              newPassword:newPassword,confirmPassword: confirmPassword,
+                              email:email,hash:hash});    
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
   public cancelJob(jobID, email, hash){
     var URL = context+'/cancel';
     let body = JSON.stringify({job_id: jobID,email: email,password: hash});
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                  .append('Access-Control-Allow-Origin','*');
-    return this.httpService.post(URL,body,{headers:headers});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
   public deleteCredential(uri,email,hash){
@@ -350,28 +289,22 @@ export class APICallsService {
     console.log(jobID,email,hash);
     var URL = context+'/restart';
     let body = JSON.stringify({job_id: jobID,email: email,password: hash});
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                  .append('Access-Control-Allow-Origin','*');
-    return this.httpService.post(URL,body,{headers:headers});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
   public getClientInfo(email, hash){
     console.log(email,hash);
     var URL = context+'/user';
     let body = JSON.stringify({action:"getUsers",email: email,password: hash});
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                  .append('Access-Control-Allow-Origin','*');
-    return this.httpService.post(URL,body,{headers:headers});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
 
   public completeOAuth(state : string, code : string, email : string, hash : string) : Observable<any>{
     let URL = context + "/oauth";
-    var headers = new HttpHeaders().append('Content-Type','application/json')
-                                  .append('Access-Control-Allow-Origin','*');
     let reqParams = new HttpParams().set("state", state).set("code", code)
                                     .set("email", email).set("hash", hash);
-    return this.httpService.get<any>(URL,{headers: headers,params: reqParams});
+    return this.httpService.get<any>(URL,{headers: this.headers, params: reqParams});
   }
 
 
@@ -389,51 +322,49 @@ export class APICallsService {
   }
 
   public registerUser(email,firstName,lastName,organization) {
-    console.log("In registerUser");
     var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');
     let body = JSON.stringify({action: 'register',email: email,firstName:firstName,lastName: lastName,organization: organization});    
-    return this.httpService.post(URL,body,{headers:headers});
+    return this.httpService.post(URL,body,{headers: this.headers});
   }
 
 
   public verifyRegistraionCode(emailId, code) {
-    return this.axios.post(url+'user', {
-        action: "verifyCode",
-        email : emailId,
-        code : code
-      })
-      .then((response) => {
-        return response;
-        //this.statusHandle(response, callback);
-      })
-      .catch((error) => {
-        //this.statusHandle(error, fail);
-        console.error("Error while verifying the registration code")
-        return {status : 500}
-      });
+    // return this.axios.post(url+'user', {
+    //     action: "verifyCode",
+    //     email : emailId,
+    //     code : code
+    //   })
+    //   .then((response) => {
+    //     return response;
+    //     //this.statusHandle(response, callback);
+    //   })
+    //   .catch((error) => {
+    //     //this.statusHandle(error, fail);
+    //     console.error("Error while verifying the registration code")
+    //     return {status : 500}
+    //   });
   }
 
   public setPassword(emailId, code, password, confirmPassword) {
-    return this.axios.post(url+'user', {
-        action: "setPassword",
-        email : emailId,
-        code : code,
-        password : password,
-        confirmPassword : confirmPassword
-    })
-    .then((response) => {
-      if(!(response.status === 200))
-        throw new Error("Failed to set password for users account")
-      else {
-        return response;
-      }
-      //this.statusHandle(response, callback);
-    })
-    .catch((error) => {
-      //this.statusHandle(error, fail);
-      return {status : 500}
-    });
+    // return this.axios.post(url+'user', {
+    //     action: "setPassword",
+    //     email : emailId,
+    //     code : code,
+    //     password : password,
+    //     confirmPassword : confirmPassword
+    // })
+    // .then((response) => {
+    //   if(!(response.status === 200))
+    //     throw new Error("Failed to set password for users account")
+    //   else {
+    //     return response;
+    //   }
+    //   //this.statusHandle(response, callback);
+    // })
+    // .catch((error) => {
+    //   //this.statusHandle(error, fail);
+    //   return {status : 500}
+    // });
   }
 
 }    //APICallsService
