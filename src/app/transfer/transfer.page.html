@@ -11,7 +11,11 @@
             </ion-item>
 
             <div id="srcEndpoint" [hidden]="srcEndpointOpen" class="dropdown">
-                <app-browse-component (selectionEmitter)="handleSrcSelection($event)" [type]="'source'" #source></app-browse-component>
+                <app-browse-component #source [componentType]="'source'" 
+                    (selectionEmitter)="handleSrcSelection($event)" (typeEmitter)="handleSrcType($event)" 
+                    (credentialEmitter)="handleSrcCredential($event)" (credHistoryEmitter)="handleSrcCredHistory($event)"
+                    (driveIdHistoryEmitter)="handleSrcDriveIdHistory($event)">
+                </app-browse-component>
             </div>
             <ion-card *ngIf="srcEndpointOpen && srcSelection !== null && srcSelection !== ''" class="current-selection">
                 Current Selection - <br /> {{ srcSelection }}
@@ -33,7 +37,11 @@
             </ion-item>
 
             <div id="destEndpoint" [hidden]="destEndpointOpen" class="dropdown">
-                <app-browse-component (selectionEmitter)="handleDestSelection($event)" [type]="'destination'" #destination></app-browse-component>
+                <app-browse-component #destination [componentType]="'destination'" 
+                    (selectionEmitter)="handleDestSelection($event)" (typeEmitter)="handleDestType($event)"
+                    (credentialEmitter)="handleDestCredential($event)" (credHistoryEmitter)="handleDestCredHistory($event)"
+                    (driveIdHistoryEmitter)="handleDestDriveIdHistory($event)">
+                </app-browse-component>
             </div>
             <ion-card *ngIf="destEndpointOpen && destSelection !== null && destSelection !== ''" class="current-selection">
                 Current Selection - <br /> {{ destSelection }}

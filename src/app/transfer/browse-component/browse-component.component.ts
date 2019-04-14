@@ -23,6 +23,7 @@ export class BrowseComponentComponent implements OnInit {
   ftpUrl:string = '';
   selectedEndpoint : string = '';
   selectedCred : string = '';
+  selectedEndpointType : string = '';
   selectedEndpointCreds : [] = [];
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
@@ -44,9 +45,13 @@ export class BrowseComponentComponent implements OnInit {
 
   googleDriveClientID : string = "1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com";
 
-  @Input() type : string;
+  @Input() componentType : string;
 
   @Output() selectionEmitter : EventEmitter<string> = new EventEmitter<string>();
+  @Output() credentialEmitter : EventEmitter<string> = new EventEmitter<string>();
+  @Output() typeEmitter : EventEmitter<string> = new EventEmitter<string>();
+  @Output() credHistoryEmitter : EventEmitter<string[]> = new EventEmitter<string[]>();
+  @Output() driveIdHistoryEmitter : EventEmitter<string[]> = new EventEmitter<string[]>();
 
   constructor(private apiService : APICallsService, private storage : Storage) { 
     this.storage.get('email')
@@ -62,7 +67,7 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('Type : ' + this.type);
+    console.log('Component Type : ' + this.componentType);
   }
 
   public showProgressBar(){
@@ -77,6 +82,7 @@ export class BrowseComponentComponent implements OnInit {
     this.ftpUrl = '';
     this.selectedEndpoint = '';
     this.selectedCred = '';
+    this.selectedEndpointType = '';
     this.selectedEndpointCreds = [];
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
@@ -97,6 +103,8 @@ export class BrowseComponentComponent implements OnInit {
     if(endpoint !== this.reloadTag){
       console.log(endpoint + " selected.");
       this.selectedEndpoint = endpoint;
+      this.selectedEndpointType = protocolToUriMap[this.selectedEndpoint];
+      this.typeEmitter.emit(this.selectedEndpointType);
     }
 
     this.showProgressBar();
@@ -361,15 +369,15 @@ export class BrowseComponentComponent implements OnInit {
       this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
     this.loadContents();
 
+    this.credentialEmitter.emit(credential);
     this.emitUpdate();
   }
 
   public loadContents(){
     this.showProgressBar();
-    let uri = protocolToUriMap[this.selectedEndpoint];
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
-      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, 
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType, 
         {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1])
         .subscribe(resp =>{
           this.listContentsSuccess(resp);
@@ -381,9 +389,10 @@ export class BrowseComponentComponent implements OnInit {
       });
     }
     else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, null, null).subscribe(resp =>{
-        this.listContentsSuccess(resp);
-        this.hideProgressBar();
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
+        null, null).subscribe(resp =>{
+          this.listContentsSuccess(resp);
+          this.hideProgressBar();
       },
       err => {
         this.hideProgressBar();
@@ -402,14 +411,14 @@ export class BrowseComponentComponent implements OnInit {
     this.mode = this.browse_endpoint_contents;
   }
 
-  public fileSelected(fileName : string, id : string){
-    if(this.type === 'source'){
-      if(this.selectedFile !== fileName){
-        console.log("File " + fileName + " selected");
-        this.selectedFile = fileName;
-        this.selectedCredHistory.push(fileName);
+  public fileSelected(item : any){
+    if(this.componentType === 'source'){
+      if(this.selectedFile !== item.name){
+        console.log("File " + item.name + " selected");
+        this.selectedFile = item.name;
+        this.selectedCredHistory.push(item.name);
         if(this.selectedEndpoint === 'GoogleDrive')
-          this.driveItemIdHistory.push(id);
+          this.driveItemIdHistory.push(item.id);
   
         this.selectedFolder = '';
       }
@@ -418,14 +427,14 @@ export class BrowseComponentComponent implements OnInit {
     
   }
 
-  public folderSelected(folderName : string, id : string){
-    if(this.selectedFolder !== folderName){
-      this.selectedFolder = folderName;
+  public folderSelected(item : any){
+    if(this.selectedFolder !== item.name){
+      this.selectedFolder = item.name;
       this.selectedFile = '';
-      console.log("Folder " + folderName + " selected");
-      this.selectedCredHistory.push(folderName);
+      console.log("Folder " + item.name + " selected");
+      this.selectedCredHistory.push(item.name);
       if(this.selectedEndpoint === 'GoogleDrive')
-        this.driveItemIdHistory.push(id);
+        this.driveItemIdHistory.push(item.id);
       this.loadContents();
     }
     this.emitUpdate();
@@ -471,6 +480,8 @@ export class BrowseComponentComponent implements OnInit {
 
   public emitUpdate(){
     this.selectionEmitter.emit(this.getDirURI());
+    this.credHistoryEmitter.emit(this.selectedCredHistory);
+    this.driveIdHistoryEmitter.emit(this.driveItemIdHistory);
   }
 
 }    //class
