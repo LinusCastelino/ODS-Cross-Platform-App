@@ -68,11 +68,11 @@
               <ion-icon name="trash"></ion-icon>
             </ion-button>
           </ion-col>
-          <ion-col class="endpoint-browse-options">
+          <!-- <ion-col class="endpoint-browse-options">
             <ion-button expand="full" fill="clear" color="dark">
               <ion-icon name="link"></ion-icon>
             </ion-button>
-          </ion-col>
+          </ion-col> -->
           <ion-col class="endpoint-browse-options">
             <ion-button expand="full" fill="clear" color="dark" (click)="loadContents()">
               <ion-icon name="refresh"></ion-icon>
@@ -89,21 +89,28 @@
             <b>&lt; Back</b>
           </ion-label>
         </ion-row>
-        <ion-row *ngFor="let item of selectedCredContents">
-          <div *ngIf="item.file; else folder" class="content-listing-div" >
-            <ion-item class="font-style" (click)="fileSelected(item)">
-              <ion-icon name="document"></ion-icon> &nbsp; &nbsp; {{ item.name }}
-              <!-- 
-              {{ item.time }} &nbsp; &nbsp; {{ item.size }}
-              -->
-            </ion-item>
-          </div>
-          <ng-template #folder>
-            <ion-item (click)="folderSelected(item)" class="font-style">
-              <ion-icon name="folder-open"></ion-icon> &nbsp; &nbsp; {{ item.name }}
-            </ion-item>
-          </ng-template>
-        </ion-row>
+        <div *ngIf="selectedCredContents.length === 0; else showContents">
+          <ion-label class="empty-dir-label">
+            --Empty Directory--
+          </ion-label>
+        </div>
+        <ng-template #showContents>
+          <ion-row *ngFor="let item of selectedCredContents">
+            <div *ngIf="item.file; else folder" class="content-listing-div" >
+              <ion-item class="font-style" (click)="fileSelected(item)">
+                <ion-icon name="document"></ion-icon> &nbsp; &nbsp; {{ item.name }}
+                <!-- 
+                {{ item.time }} &nbsp; &nbsp; {{ item.size }}
+                -->
+              </ion-item>
+            </div>
+            <ng-template #folder>
+              <ion-item (click)="folderSelected(item)" class="font-style">
+                <ion-icon name="folder-open"></ion-icon> &nbsp; &nbsp; {{ item.name }}
+              </ion-item>
+            </ng-template>
+          </ion-row>
+        </ng-template>
       </ion-grid>
     </div>
   </ion-card>
