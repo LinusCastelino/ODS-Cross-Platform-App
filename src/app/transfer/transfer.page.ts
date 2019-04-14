@@ -80,14 +80,24 @@ export class TransferPage implements OnInit {
     dest["type"] = this.destEndpointType;
 
     this.destCredHistory.push(this.srcCredHistory[this.srcCredHistory.length - 1])
-    src["uri"] = this.srcSelection;
+    src["uri"] = encodeURI(this.srcSelection);
     if(this.destCredHistory.length === 2)
-      dest["uri"] = this.destSelection + this.destCredHistory[1];
+      dest["uri"] = encodeURI(this.destSelection + this.destCredHistory[1]);
     else
-      dest["uri"] = this.destSelection + "/" + this.destCredHistory[this.destCredHistory.length - 1];
+      dest["uri"] = encodeURI(this.destSelection + "/" + this.destCredHistory[this.destCredHistory.length - 1]);
 
     src["map"] = this.createIdMap(this.srcCredHistory, this.srcDriveIdHistory);
     dest["map"] = this.createIdMap(this.destCredHistory, this.destDriveIdHistory);
+
+    if(this.srcDriveIdHistory.length > 0)
+      src["id"] = this.srcDriveIdHistory[this.srcDriveIdHistory.length - 1];
+    else
+      src["id"] = null;
+
+    if(this.destDriveIdHistory.length > 0)
+      dest["id"] = this.destDriveIdHistory[this.destDriveIdHistory.length - 1];
+    else
+      dest["id"] = null;
 
     // setting default options 
     // until optimization features are implemented
