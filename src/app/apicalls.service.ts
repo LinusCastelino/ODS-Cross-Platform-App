@@ -113,34 +113,20 @@ export class APICallsService {
   */
   public queue(email,hash){
     var URL = context+'/q';
-    let body = JSON.stringify({status: 'all',email: email,password: hash});
+    let body = JSON.stringify({status: 'all',email: email, password: hash});
     return this.httpService.post(URL,body,{headers: this.headers});
   }
 
-  public submit(src, srcEndpoint, dest, destEndpoint, options,accept, fail){
-    var callback = accept;
-    var src0 = Object.assign({}, src);
-    var dest0 = Object.assign({}, dest);
-    if(Object.keys( src0.credential ).length == 0){
-      delete src0["credential"];
-    }
-    if(Object.keys( dest0.credential ).length == 0){
-      delete dest0["credential"];
-    }
+  public submit(email, hash, src, dest, options) : Observable<any>{
+    // console.log("Src - ", src);
+    // console.log("Dest - ", dest);
+    // console.log("Options - ", options);
 
-    // this.axios.post(url+'submit', {
-    //     // src: {...src0, type: getType(src0), map: getMapFromEndpoint(srcEndpoint)},        ################ TODO
-    //     // dest: {...dest0, type: getType(dest0), map: getMapFromEndpoint(destEndpoint)},    ################ TODO
-    //     options:options
-    // }).then((response) => {
-    //   if(!(response.status === 200))
-    //     callback = fail;
-    //   // this.statusHandle(response, callback);
-    // })
-    // .catch((error) => {
-        
-    //     // this.statusHandle(error, fail);
-    //   });
+    var URL = context+'/submit';
+    let body = JSON.stringify({'email': email, 'password': hash,
+                               'src' : src, 'dest': dest, 'options': options});
+    console.log("Body - " , body);
+    return this.httpService.post<any>(URL,body,{headers: this.headers});
   }
 
   public listFiles(email, hash, uri, type, credential, id) : Observable<any>{

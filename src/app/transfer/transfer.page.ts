@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToastController } from '@ionic/angular';
+import { Storage } from '@ionic/storage';
+import { APICallsService } from '../apicalls.service';
 
 @Component({
   selector: 'app-transfer',
@@ -12,6 +14,9 @@ export class TransferPage implements OnInit {
   @ViewChild('destination') destComponent;
 
   TAG : string = 'Transfer Component';
+
+  userEmail : string ;
+  pwdHash : string ;
 
   srcEndpointOpen : boolean = true;
   srcSelection : string = null;
@@ -29,7 +34,18 @@ export class TransferPage implements OnInit {
 
   transferSettingsOpen : boolean = true;
 
-  constructor(private toastController : ToastController) { }
+  constructor(private toastController : ToastController, 
+              private apiService : APICallsService, private storage : Storage) {
+    this.storage.get('email')
+      .then(email=>{
+        this.userEmail = email;
+      });
+    this.storage.get('hash')
+      .then(hash=>{
+        this.pwdHash = hash;
+      });
+
+   }
 
   ngOnInit() {
   }
@@ -54,10 +70,28 @@ export class TransferPage implements OnInit {
   }
 
   public initiateTransfer(){
+    let src = {};
+    let dest = {};
+
+    src["credential"] = {"uuid" : this.srcCredential}; 
+    dest["credential"] = {"uuid" : this.destCredential};
+
+    src["type"] = this.srcEndpointType;
+    dest["type"] = this.destEndpointType;
+
+    this.destCredHistory.push(this.srcCredHistory[this.srcCredHistory.length - 1])
+    src["uri"] = this.srcSelection;
+    if(this.destCredHistory.length === 2)
+      dest["uri"] = this.destSelection + this.destCredHistory[1];
+    else
+      dest["uri"] = this.destSelection + "/" + this.destCredHistory[this.destCredHistory.length - 1];
+
+    src["map"] = this.createIdMap(this.srcCredHistory, this.srcDriveIdHistory);
+    dest["map"] = this.createIdMap(this.destCredHistory, this.destDriveIdHistory);
 
     // setting default options 
     // until optimization features are implemented
-    let opitons = {
+    let options = {
       compress: true,
       encrypt: true,
       optimizer: "None",
@@ -66,6 +100,7 @@ export class TransferPage implements OnInit {
       verify: true,
     }
 
+    this.apiService.submit(this.userEmail, this.pwdHash, src, dest, options).subscribe();
     this.presentToast();
   }
 
@@ -76,6 +111,26 @@ export class TransferPage implements OnInit {
       duration: 2000
     });
     toast.present();
+  }
+
+  public createIdMap(credHistory : string[], driveIdHistory : string[]) : Object[]{
+    let idMap : Object[] = [];
+    let path = credHistory[0];
+    let id = null;
+    let i : number = 0;
+    let arrLength = credHistory.length;
+    do{
+      idMap.push({"id" : id, "path" : path});
+      i++;
+      if(i === 1)
+        path += credHistory[i];
+      else
+        path += "/" + credHistory[i];
+      id = driveIdHistory[i-1];
+      id = (id === undefined)? null : id;
+    }while(i < arrLength-1);
+
+    return idMap;
   }
 
   public handleSrcSelection(selection : string){

@@ -24,6 +24,8 @@ export class BrowseComponentComponent implements OnInit {
   selectedEndpoint : string = '';
   selectedCred : string = '';
   selectedEndpointType : string = '';
+  selectedFolder : string;
+  selectedFile : string;
   selectedEndpointCreds : [] = [];
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
@@ -33,11 +35,9 @@ export class BrowseComponentComponent implements OnInit {
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
-  reloadTag : string = 'reload';
   userEmail : string ;
   pwdHash : string ;
-  selectedFolder : string;
-  selectedFile : string;
+  reloadTag : string = 'reload';
   displayProgressBar : boolean = false;
 
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
@@ -83,6 +83,8 @@ export class BrowseComponentComponent implements OnInit {
     this.selectedEndpoint = '';
     this.selectedCred = '';
     this.selectedEndpointType = '';
+    this.selectedFolder = null;
+    this.selectedFile = null;
     this.selectedEndpointCreds = [];
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
