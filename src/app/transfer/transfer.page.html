@@ -11,7 +11,7 @@
             </ion-item>
 
             <div id="srcEndpoint" [hidden]="srcEndpointOpen" class="dropdown">
-                <app-browse-component (selectionEmitter)="handleSrcSelection($event)"></app-browse-component>
+                <app-browse-component (selectionEmitter)="handleSrcSelection($event)" [type]="'source'" #source></app-browse-component>
             </div>
             <ion-card *ngIf="srcEndpointOpen && srcSelection !== null && srcSelection !== ''" class="current-selection">
                 Current Selection - <br /> {{ srcSelection }}
@@ -33,12 +33,12 @@
             </ion-item>
 
             <div id="destEndpoint" [hidden]="destEndpointOpen" class="dropdown">
-                <app-browse-component (selectionEmitter)="handleDestSelection($event)"></app-browse-component>
+                <app-browse-component (selectionEmitter)="handleDestSelection($event)" [type]="'destination'" #destination></app-browse-component>
             </div>
             <ion-card *ngIf="destEndpointOpen && destSelection !== null && destSelection !== ''" class="current-selection">
                 Current Selection - <br /> {{ destSelection }}
                 <ion-label (click)="clearDestSelection()" class="clear-selection">
-                    <b>Clear Selection</b>
+                    <b><u>Clear Selection</u></b>
                 </ion-label>
             </ion-card>
         </ion-item-group>
@@ -194,12 +194,6 @@
         </ion-item-group>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <ion-button (click)="intiatedTransfer()">Initiate Transfer</ion-button>
-            </div>
-        </div>
-    </div>
+    <ion-button (click)="intiatedTransfer()" expand="block" class="initiate-transfer-button">Initiate Transfer</ion-button>
 
 </ion-content>

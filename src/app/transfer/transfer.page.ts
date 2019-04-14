@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 
 @Component({
@@ -7,6 +7,9 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./transfer.page.scss']
 })
 export class TransferPage implements OnInit {
+
+  @ViewChild('source') sourceCompnent;
+  @ViewChild('destination') destComponent;
 
   srcEndpointOpen : boolean = true;
   destEndpointOpen : boolean = true;
@@ -62,9 +65,11 @@ export class TransferPage implements OnInit {
 
   public clearSrcSelection(){
     this.srcSelection = null;
+    this.sourceCompnent.clearSelection();
   }
 
   public clearDestSelection(){
     this.destSelection = null;
+    this.destComponent.clearSelection();
   }
 }

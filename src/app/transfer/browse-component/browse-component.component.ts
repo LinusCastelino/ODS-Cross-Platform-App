@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../constants';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
@@ -20,9 +20,9 @@ export class BrowseComponentComponent implements OnInit {
   browse_endpoint_contents : string = 'browse-contents';
   mode : string = this.select_endpoint_mode;
 
-  ftpUrl:string;
-  selectedEndpoint : string;
-  selectedCred : string;
+  ftpUrl:string = '';
+  selectedEndpoint : string = '';
+  selectedCred : string = '';
   selectedEndpointCreds : [] = [];
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
@@ -44,6 +44,8 @@ export class BrowseComponentComponent implements OnInit {
 
   googleDriveClientID : string = "1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com";
 
+  @Input() type : string;
+
   @Output() selectionEmitter : EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private apiService : APICallsService, private storage : Storage) { 
@@ -56,10 +58,11 @@ export class BrowseComponentComponent implements OnInit {
           this.pwdHash = hash;
         });
 
-    console.log('Mode : ' + this.mode);
+    // console.log('Mode : ' + this.mode);
   }
 
   ngOnInit() {
+    console.log('Type : ' + this.type);
   }
 
   public showProgressBar(){
@@ -68,6 +71,17 @@ export class BrowseComponentComponent implements OnInit {
 
   public hideProgressBar(){
     this.displayProgressBar = false;
+  }
+
+  public clearSelection(){
+    this.ftpUrl = '';
+    this.selectedEndpoint = '';
+    this.selectedCred = '';
+    this.selectedEndpointCreds = [];
+    this.selectedCredContents = [];
+    this.selectedCredHistory = [];
+    this.driveItemIdHistory = [];
+    this.mode = this.select_endpoint_mode;
   }
 
   public click(endpoint){
@@ -400,15 +414,16 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public folderSelected(folderName : string, id : string){
-    if(this.selectedFolder === folderName){
+    // if(this.selectedFolder === folderName){
+      this.selectedFolder = folderName
       console.log("Folder " + folderName + " selected");
       this.selectedCredHistory.push(folderName);
       if(this.selectedEndpoint === 'GoogleDrive')
         this.driveItemIdHistory.push(id);
       this.loadContents();
-    }
-    else
-      this.selectedFolder = folderName;
+    // }
+    // else
+    //   this.selectedFolder = folderName;
 
     this.emitUpdate();
   }

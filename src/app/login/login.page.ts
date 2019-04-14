@@ -59,7 +59,7 @@ export class LoginPage implements OnInit {
       
       this.apiService.isAdmin(username,resp.hash).subscribe(
         resp=>{
-          console.log(resp);
+          console.log('isAdmin - ' + resp);
           this.storage.set('isAdmin',resp);
           
           // this.tabsService.updateFlag(resp);
