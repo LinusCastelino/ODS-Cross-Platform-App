@@ -397,41 +397,46 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public listContentsSuccess(resp : any){
-    console.log(resp);
+    console.log('Listing contents - ', resp);
     this.selectedCredContents = resp["files"];
     this.mode = this.browse_endpoint_contents;
   }
 
   public fileSelected(fileName : string, id : string){
-    console.log("File " + fileName + " selected");
     if(this.selectedFile !== fileName){
+      console.log("File " + fileName + " selected");
       this.selectedFile = fileName;
       this.selectedCredHistory.push(fileName);
       if(this.selectedEndpoint === 'GoogleDrive')
         this.driveItemIdHistory.push(id);
-    }
 
+      this.selectedFolder = '';
+    }
     this.emitUpdate();
   }
 
   public folderSelected(folderName : string, id : string){
-    // if(this.selectedFolder === folderName){
-      this.selectedFolder = folderName
+    if(this.selectedFolder !== folderName){
+      this.selectedFolder = folderName;
+      this.selectedFile = '';
       console.log("Folder " + folderName + " selected");
       this.selectedCredHistory.push(folderName);
       if(this.selectedEndpoint === 'GoogleDrive')
         this.driveItemIdHistory.push(id);
       this.loadContents();
-    // }
-    // else
-    //   this.selectedFolder = folderName;
-
+    }
     this.emitUpdate();
   }
 
   public contentWindowBack(){
-    this.selectedFolder = this.selectedCredHistory.pop();
+    this.selectedFolder = '';
+    this.selectedCredHistory.pop();
     this.driveItemIdHistory.pop();
+    if(this.selectedFile !== ''){
+      this.selectedFile = '';
+      this.selectedCredHistory.pop();
+      this.driveItemIdHistory.pop();
+    }
     if(this.selectedCredHistory.length === 0){
       this.mode = this.creds_exist_mode;
       this.driveItemIdHistory = [];
@@ -439,6 +444,8 @@ export class BrowseComponentComponent implements OnInit {
     else
       this.loadContents(); 
     this.emitUpdate();
+
+    
   }
 
   public getDirURI() : string{
