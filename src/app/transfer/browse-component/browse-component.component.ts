@@ -327,37 +327,29 @@ export class BrowseComponentComponent implements OnInit {
   public deleteCred(deleteKey : string){
     console.log("Deleting " + deleteKey);
     this.showProgressBar();
+    let deleteAction = '';
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
       || this.selectedEndpoint === "GridFTP"){
-        this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
-          resp=>{
-            console.log(deleteKey + " deleted successfully");
-            if(this.selectedEndpointCreds.length-1 === 0)
-              this.mode = this.select_endpoint_mode;
-            else
-              this.click(this.reloadTag);
-            this.hideProgressBar();
-          },
-          err => {
-            this.hideProgressBar();
-            console.log("Error encountered while deleting " + deleteKey);
-        });
+        deleteAction = 'deleteCredential';
       }
       else{
-        this.apiService.deleteHistory(deleteKey,this.userEmail,this.pwdHash).subscribe(
-          resp=>{
-            console.log(deleteKey + " deleted successfully");
-            if(this.selectedEndpointCreds.length-1 === 0)
-              this.mode = this.select_endpoint_mode;
-            else
-              this.click(this.reloadTag);    
-            this.hideProgressBar();
-          },
-          err => {
-            this.hideProgressBar();
-            console.log("Error encountered while deleting " + deleteKey);
-        });
+        deleteAction = 'deleteHistory';
       }
+
+      this.apiService.deleteCredential(deleteAction, deleteKey,this.userEmail,this.pwdHash).subscribe(
+        resp=>{
+          console.log(deleteKey + " deleted successfully");
+          if(this.selectedEndpointCreds.length-1 === 0)
+            this.mode = this.select_endpoint_mode;
+          else
+            this.click(this.reloadTag);    
+          this.hideProgressBar();
+        },
+        err => {
+          this.hideProgressBar();
+          console.log("Error encountered while deleting " + deleteKey);
+          console.log(err);
+      });
   }
 
   public loadCred(credential : string){

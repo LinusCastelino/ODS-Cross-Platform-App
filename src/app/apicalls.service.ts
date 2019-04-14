@@ -92,9 +92,9 @@ export class APICallsService {
     return this.httpService.post<any>(URL,body,{headers: this.headers});
   }
 
-  public deleteHistory(uri,email,hash){
+  public deleteCredential(deleteAction, uri,email,hash){
     var URL = context+'/user';               
-    let body = JSON.stringify({action: 'deleteHistory',uri:uri,email: email,password: hash});
+    let body = JSON.stringify({action: deleteAction,uuid:uri,email: email,password: hash});
     return this.httpService.post(URL,body,{headers: this.headers});
   }
 
@@ -276,14 +276,6 @@ export class APICallsService {
     let body = JSON.stringify({job_id: jobID,email: email,password: hash});
     return this.httpService.post(URL,body,{headers: this.headers});
   }
-
-  public deleteCredential(uri,email,hash){
-    var URL = context+'/user';
-    var headers = new HttpHeaders().append('Content-Type','application/json').append('Access-Control-Allow-Origin','*');                
-    let body = JSON.stringify({action: 'deleteCredential',uuid:uri,email: email,password: hash});
-    return this.httpService.post(URL,body,{headers:headers});
-  }
-
 
   public restartJob(jobID, email, hash){
     console.log(jobID,email,hash);
