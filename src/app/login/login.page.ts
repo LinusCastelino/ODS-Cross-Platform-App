@@ -65,6 +65,7 @@ export class LoginPage implements OnInit {
           // this.tabsService.updateFlag(resp);
         },err=>{
           console.log("Is Admin Fail");
+          this.storage.set('isAdmin',resp);
         }
       );
       this.username = "";

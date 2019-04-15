@@ -60,6 +60,9 @@ getData(data):any{
   public resetPassword(){
     this.profileFlag=false;
     this.changePasswordFlag=true;
-
+  }
+  public backToProfile(){
+    this.profileFlag=true;
+    this.changePasswordFlag=false;
   }
 }

@@ -17,7 +17,7 @@
       <ion-label>Queue</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="admin">
+    <ion-tab-button tab="admin" *ngIf="isAdmin">
       <ion-icon name="send"></ion-icon>
       <ion-label>Admin</ion-label>
     </ion-tab-button>
