@@ -18,11 +18,8 @@ import * as _ from 'lodash';
 
 export class QueuePage implements OnInit {
 
-  //private bodyText: string;
   private qResp : any[] = [];
   searchQuery = "";
-  //email = "vanditsa@buffalo.edu";
-  //hash = "96ec973856c6b64e048ebea1231eff01c57e261ed404e365f3b01c04225fdc6d";
   p: number = 1;
   rowsperPage : number = 10;
   email : any = "";
@@ -50,7 +47,6 @@ export class QueuePage implements OnInit {
 
     this.innerWidth = window.innerWidth;
     this.innerHeight = window.innerHeight;
-    console.log(this.innerWidth,this.innerHeight);
     this.getNumRows(this.innerHeight);
   }
 
@@ -64,13 +60,8 @@ export class QueuePage implements OnInit {
       });
   }
 
-  // @HostListener('window:resize', ['$event'])
-  // onResize(event) {
-  //   this.innerWidth = window.innerWidth;
-  // }
   
   public searchJob(){
-    //console.log(event)
     console.log(this.searchQuery)
   }
 
@@ -88,7 +79,6 @@ export class QueuePage implements OnInit {
     return result;
   }
   public queue(){
-    console.log("Queue")
     //var email = this.storage.get('email');
     //var hash = this.storage.get('hash');
     this.apiService.queue(this.email,this.hash).subscribe(

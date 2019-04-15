@@ -70,53 +70,65 @@ export class TransferPage implements OnInit {
   }
 
   public initiateTransfer(){
-    let src = {};
-    let dest = {};
-
-    src["credential"] = {"uuid" : this.srcCredential}; 
-    dest["credential"] = {"uuid" : this.destCredential};
-
-    src["type"] = this.srcEndpointType;
-    dest["type"] = this.destEndpointType;
-
-    this.destCredHistory.push(this.srcCredHistory[this.srcCredHistory.length - 1])
-    src["uri"] = encodeURI(this.srcSelection);
-    if(this.destCredHistory.length === 2)
-      dest["uri"] = encodeURI(this.destSelection + this.destCredHistory[1]);
-    else
-      dest["uri"] = encodeURI(this.destSelection + "/" + this.destCredHistory[this.destCredHistory.length - 1]);
-
-    src["map"] = this.createIdMap(this.srcCredHistory, this.srcDriveIdHistory);
-    dest["map"] = this.createIdMap(this.destCredHistory, this.destDriveIdHistory);
-
-    if(this.srcDriveIdHistory.length > 0)
-      src["id"] = this.srcDriveIdHistory[this.srcDriveIdHistory.length - 1];
-    else
-      src["id"] = null;
-
-    if(this.destDriveIdHistory.length > 0)
-      dest["id"] = this.destDriveIdHistory[this.destDriveIdHistory.length - 1];
-    else
-      dest["id"] = null;
-
-    // setting default options 
-    // until optimization features are implemented
-    let options = {
-      compress: true,
-      encrypt: true,
-      optimizer: "None",
-      overwrite: true,
-      retry: 5,
-      verify: true,
+    if(this.srcSelection === null || this.srcSelection === '' ||
+       this.destSelection === null || this.destSelection === '' ||
+       this.srcCredential === null || this.destCredential === '' ||
+       this.destCredential === null || this.destCredential === ''){
+      // if initiate transfer button is clicked without selecting endpoints
+      this.presentToast('Please select valid source and destination endpoints.');
     }
+    else{
 
-    this.apiService.submit(this.userEmail, this.pwdHash, src, dest, options).subscribe();
-    this.presentToast();
+      let src = {};
+      let dest = {};
+
+      src["credential"] = {"uuid" : this.srcCredential}; 
+      dest["credential"] = {"uuid" : this.destCredential};
+
+      src["type"] = this.srcEndpointType;
+      dest["type"] = this.destEndpointType;
+
+      this.destCredHistory.push(this.srcCredHistory[this.srcCredHistory.length - 1])
+      src["uri"] = encodeURI(this.srcSelection);
+      if(this.destCredHistory.length === 2)
+        dest["uri"] = encodeURI(this.destSelection + this.destCredHistory[1]);
+      else
+        dest["uri"] = encodeURI(this.destSelection + "/" + this.destCredHistory[this.destCredHistory.length - 1]);
+
+      src["map"] = this.createIdMap(this.srcCredHistory, this.srcDriveIdHistory);
+      dest["map"] = this.createIdMap(this.destCredHistory, this.destDriveIdHistory);
+
+      if(this.srcDriveIdHistory.length > 0)
+        src["id"] = this.srcDriveIdHistory[this.srcDriveIdHistory.length - 1];
+      else
+        src["id"] = null;
+
+      if(this.destDriveIdHistory.length > 0)
+        dest["id"] = this.destDriveIdHistory[this.destDriveIdHistory.length - 1];
+      else
+        dest["id"] = null;
+
+      // setting default options 
+      // until optimization features are implemented
+      let options = {
+        compress: true,
+        encrypt: true,
+        optimizer: "None",
+        overwrite: true,
+        retry: 5,
+        verify: true,
+      }
+
+      this.apiService.submit(this.userEmail, this.pwdHash, src, dest, options).subscribe();
+      this.clearSrcSelection();
+      this.clearDestSelection();
+      this.presentToast('Transfer Initiated!\nPlease check Queue screen for progress.');
+    }
   }
 
-  async presentToast() {
+  async presentToast(msg : string) {
     const toast = await this.toastController.create({
-      message: 'Transfer Initiated!\nPlease check Queue screen for progress.',
+      message: msg,
       position: 'bottom',
       duration: 2000
     });
