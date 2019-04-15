@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-first-load',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FirstLoadPage implements OnInit {
 
-  constructor() { 
+  constructor(private router:Router) { 
   }
 
   ngOnInit() {
@@ -15,6 +16,10 @@ export class FirstLoadPage implements OnInit {
       slides.options = {
       effect: 'flip'
     }
+  }
+
+  public logInPage(){
+    this.router.navigate(['/login']);
   }
 
   

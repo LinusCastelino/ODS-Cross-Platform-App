@@ -48,34 +48,39 @@ export class LoginPage implements OnInit {
     var username  = target.querySelector('#loginEmail').value;
     var password  = target.querySelector('#loginPassword').value;
     this.apiService.login(username,password).subscribe(
-    resp => {
-      // console.log("Success", resp);
-      this.cookieService.put('email',resp.email);
-      this.cookieService.put('hash', resp.hash);
-      this.storage.set('email',resp.email);
-      this.storage.set('hash',resp.hash);
-      this.storage.set('loggedIn',true);
-      
-      
-      this.apiService.isAdmin(username,resp.hash).subscribe(
-        resp=>{
-          console.log(resp);
-          this.storage.set('isAdmin',resp);
-          
-          // this.tabsService.updateFlag(resp);
-        },err=>{
-          console.log("Is Admin Fail");
-          this.storage.set('isAdmin',resp);
-        }
-      );
-      this.username = "";
-      this.router.navigate(['/tabs']);
-      // console.log("Cookie values - " + this.cookieService.get('email') + " " + this.cookieService.get('hash'));
-    },
-    err => {
-      console.log("Fail");
-      this.raiseToast("Login Failed!");
-    });
+      resp => {
+        // console.log("Success", resp);
+        this.cookieService.put('email',resp.email);
+        this.cookieService.put('hash', resp.hash);
+        this.storage.set('email',resp.email)
+          .then(()=>{
+            this.storage.set('hash',resp.hash)
+              .then(() => {
+                this.storage.set('loggedIn',true)
+                  .then(() => {
+                    this.apiService.isAdmin(username,resp.hash).subscribe(
+                      resp=>{
+                        console.log('isAdmin - ' + resp);
+                        this.storage.set('isAdmin',resp).then(()=>{
+                          this.router.navigate(['/tabs']);
+                        });
+                      },err=>{
+                        console.log("Is Admin Fail");
+                        this.router.navigate(['/tabs']);
+                      }
+                    );
+                  });
+              });
+          }
+        );
+        this.username = "";
+        
+        // console.log("Cookie values - " + this.cookieService.get('email') + " " + this.cookieService.get('hash'));
+      },
+      err => {
+        console.log("Fail");
+        this.raiseToast("Login Failed!");
+      });
 
     
   }

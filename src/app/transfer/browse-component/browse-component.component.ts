@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../constants';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
@@ -20,9 +20,12 @@ export class BrowseComponentComponent implements OnInit {
   browse_endpoint_contents : string = 'browse-contents';
   mode : string = this.select_endpoint_mode;
 
-  ftpUrl:string;
-  selectedEndpoint : string;
-  selectedCred : string;
+  ftpUrl:string = '';
+  selectedEndpoint : string = '';
+  selectedCred : string = '';
+  selectedEndpointType : string = '';
+  selectedFolder : string;
+  selectedFile : string;
   selectedEndpointCreds : [] = [];
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
@@ -33,48 +36,82 @@ export class BrowseComponentComponent implements OnInit {
   exitEvent : string = "exit";
 
   reloadTag : string = 'reload';
-  userEmail : string ;
-  pwdHash : string ;
-  selectedFolder : string;
-  selectedFile : string;
+  displayProgressBar : boolean = false;
 
   dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
   globusOAuthRedirect : string = "";
 
   googleDriveClientID : string = "1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com";
 
-  constructor(private apiService : APICallsService, private storage : Storage) { 
-    this.storage.get('email')
-        .then(email=>{
-          this.userEmail = email;
-        });
-    this.storage.get('hash')
-        .then(hash=>{
-          this.pwdHash = hash;
-        });
+  @Input() componentType : string;
+  @Input() userEmail : string ;
+  @Input() pwdHash : string ;
 
-    console.log('Mode : ' + this.mode);
+  @Output() selectionEmitter : EventEmitter<string> = new EventEmitter<string>();
+  @Output() credentialEmitter : EventEmitter<string> = new EventEmitter<string>();
+  @Output() typeEmitter : EventEmitter<string> = new EventEmitter<string>();
+  @Output() credHistoryEmitter : EventEmitter<string[]> = new EventEmitter<string[]>();
+  @Output() driveIdHistoryEmitter : EventEmitter<string[]> = new EventEmitter<string[]>();
+
+  constructor(private apiService : APICallsService, private storage : Storage) { 
+    // console.log('Mode : ' + this.mode);
   }
 
   ngOnInit() {
+    console.log('Component Type : ' + this.componentType);
+  }
+
+  public showProgressBar(){
+    this.displayProgressBar = true;
+  }
+
+  public hideProgressBar(){
+    this.displayProgressBar = false;
+  }
+
+  public clearSelection(){
+    this.ftpUrl = '';
+    this.selectedEndpoint = '';
+    this.selectedCred = '';
+    this.selectedEndpointType = '';
+    this.selectedFolder = null;
+    this.selectedFile = null;
+    this.selectedEndpointCreds = [];
+    this.selectedCredContents = [];
+    this.selectedCredHistory = [];
+    this.driveItemIdHistory = [];
+    this.mode = this.select_endpoint_mode;
+  }
+
+  public exitEndpoint(){
+    this.ftpUrl = '';
+    this.selectedCred = '';
+    this.selectedCredContents = [];
+    this.selectedCredHistory = [];
+    this.driveItemIdHistory = [];
+    this.mode = this.creds_exist_mode;
   }
 
   public click(endpoint){
     if(endpoint !== this.reloadTag){
       console.log(endpoint + " selected.");
       this.selectedEndpoint = endpoint;
+      this.selectedEndpointType = protocolToUriMap[this.selectedEndpoint];
+      this.typeEmitter.emit(this.selectedEndpointType);
     }
 
+    this.showProgressBar();
     this.checkIfCredentialsExist()
-      .then((exists) => {
-        if(exists){
+      .then((creds) => {
+        if(creds){
           console.log("Credential for " + endpoint + " already exists");
-          this.getCredentials()
-              .then(creds =>{
+          // this.getCredentials()
+          //     .then(creds =>{
                 console.log(creds);
                 this.mode = this.creds_exist_mode;
                 this.selectedEndpointCreds = creds;
-              });
+                this.hideProgressBar();
+              // });
         }
         else{
           this.startAuthentication();
@@ -85,31 +122,41 @@ export class BrowseComponentComponent implements OnInit {
 
   public toggleMode(){
     this.mode = 'select-endpoint';
+    this.emitUpdate();
   }
 
   public startAuthentication(){
-    if(this.selectedEndpoint === "Dropbox"){ 
-      this.oAuthInit(this.apiService.getDropboxOAuthLink());
+    try{
+      if(this.selectedEndpoint === "Dropbox"){ 
+        this.oAuthInit(this.apiService.getDropboxOAuthLink());
+      }
+      else if(this.selectedEndpoint === "GoogleDrive"){
+        this.googleOAuthInit();
+      }
+      else if(this.selectedEndpoint === "SFTP"){
+  
+      }
+      else if(this.selectedEndpoint === "FTP"){
+        console.log("In FTP");
+        this.mode = 'ftp-auth';
+      }
+      else if(this.selectedEndpoint === "GridFTP"){
+        this.oAuthInit(this.apiService.getGridFtpOAuthLink());
+      }
+      else if(this.selectedEndpoint === "HTTP"){
+  
+      }
+      else if(this.selectedEndpoint === "SSH"){
+        
+      }
+      this.hideProgressBar();
     }
-    else if(this.selectedEndpoint === "Google Drive"){
-      this.googleOAuthInit();
+    catch(err){
+      this.hideProgressBar();
+      console.log("Error occurred while performing authentication");
+      console.log(err);
     }
-    else if(this.selectedEndpoint === "SFTP"){
-
-    }
-    else if(this.selectedEndpoint === "FTP"){
-      console.log("In FTP");
-      this.mode = 'ftp-auth';
-    }
-    else if(this.selectedEndpoint === "Grid FTP"){
-      this.oAuthInit(this.apiService.getGridFtpOAuthLink());
-    }
-    else if(this.selectedEndpoint === "HTTP"){
-
-    }
-    else if(this.selectedEndpoint === "SSH"){
-      
-    }
+    
   }
 
   public checkIfCredentialsExist() : Promise<any>{
@@ -120,47 +167,12 @@ export class BrowseComponentComponent implements OnInit {
       return new Promise<any>((resolve, reject) =>{
         this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
           console.log("Credentials list : " + JSON.stringify(credList));
+          
           var checker = (key) : boolean => {
             return credList[key].name.toLowerCase().indexOf(val) != -1;
           };
-          resolve(Object.keys(credList).some(checker));
-        },
-        err =>{
-          console.log("Error occurred while querying the credentials list");
-          console.log(err.data);
-          return false;
-        });
-      });
-    }
-    else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-      return new Promise<any>((resolve, reject) =>{
-        this.apiService.getFTPCreds(this.userEmail,this.pwdHash).subscribe(credList => {
-          console.log("Credentials list : " + JSON.stringify(credList));
-          var checker = (key) : boolean => {
-            return key.toLowerCase().indexOf(val) != -1;
-          };
-          resolve(credList.some(checker));
-        },
-        err =>{
-          console.log("Error occurred while querying the credentials list");
-          console.log(err.data);
-          return false;
-        });
-      });
-    }
-  }
-
-
-  public getCredentials() : Promise<any>{
-    return new Promise<any>((resolve, reject) =>{
-
-      let val = this.selectedEndpoint.toLowerCase();
-      if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
-                    || this.selectedEndpoint === "GridFTP"){
-        this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
-          // console.log("Credentials list : " + JSON.stringify(credList));
-          
-          let resultArr : any[] = [];
+          if(Object.keys(credList).some(checker)){
+            let resultArr : any[] = [];
           
             var filter = (key) => {
               if(credList[key].name.toLowerCase().indexOf(val) != -1){
@@ -171,39 +183,50 @@ export class BrowseComponentComponent implements OnInit {
             };
 
             Object.keys(credList).map(filter);
-          resolve(resultArr);
+            resolve(resultArr);
+          }
+          else
+            resolve(false);
         },
         err =>{
           console.log("Error occurred while querying the credentials list");
-          console.log(err.data);
-          return {};
+          console.log(err);
+          this.hideProgressBar();
+          return false;
         });
-      }
-      else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+      });
+    }
+    else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+      return new Promise<any>((resolve, reject) =>{
         this.apiService.getFTPCreds(this.userEmail,this.pwdHash).subscribe(credList => {
-          // console.log("Credentials list : " + JSON.stringify(credList));
-
-          let resultArr : any[] = [];
-          var filter = (key) => {
-            if(key.toLowerCase().indexOf(val) != -1){
-              resultArr.push({'name' : key, 'key' : key});
-            }
-              
+          console.log("Credentials list : " + JSON.stringify(credList));
+          
+          var checker = (key) : boolean => {
+            return key.toLowerCase().indexOf(val) != -1;
           };
 
-          credList.forEach(filter);
-          resolve(resultArr);
+          if(credList.some(checker)){
+            let resultArr : any[] = [];
+            var filter = (key) => {
+              if(key.toLowerCase().indexOf(val) != -1){
+                resultArr.push({'name' : key, 'key' : key});
+              }
+            };
+
+            credList.forEach(filter);
+            resolve(resultArr);
+          }
+          else
+            resolve(false);
         },
         err =>{
           console.log("Error occurred while querying the credentials list");
           console.log(err.data);
-          return {};
+          return false;
         });
-      }
-  });
-}
-
-
+      });
+    }
+  }
 
   public oAuthInit(oAuthLink){
     this.performOAuth(oAuthLink)
@@ -214,9 +237,9 @@ export class BrowseComponentComponent implements OnInit {
           let code = paramArr[1].split("=")[1];
           this.completeOAuth(state, code);
           console.log("OAuth completed!!!");
-
         })
         .catch(err=>{
+          this.hideProgressBar();
           console.log("OAuth error : ", err);
         });
   }
@@ -225,28 +248,32 @@ export class BrowseComponentComponent implements OnInit {
     // Google does not allow OAuth using in-app browser
       // Using a separate plugin for Google OAuth 
 
-      window.plugins.googleplus.login(
-        {
-          'scopes': 'https://www.googleapis.com/auth/drive',
-          'webClientId': this.googleDriveClientID,
-          'offline': true 
-        },
-        resp => {
-          console.log("Google OAuth response - " + JSON.stringify(resp)); // do something useful instead of alerting
-          this.completeOAuth("GoogleDrive", resp["serverAuthCode"]);
-        },
-        err => {
-          console.log("Error occurred while performing Google OAuth " + err.data);
-        }
+    console.log("Starting Google OAuth");
+    window.plugins.googleplus.login(
+      {
+        'scopes': 'https://www.googleapis.com/auth/drive',
+        'webClientId': this.googleDriveClientID,
+        'offline': true 
+      },
+      resp => {
+        console.log("Google OAuth response - " + JSON.stringify(resp)); // do something useful instead of alerting
+        this.completeOAuth("GoogleDrive", resp["serverAuthCode"]);
+      },
+      err => {
+        console.log("Error occurred while performing Google OAuth " + err.data);
+      }
     );
   }
 
   public completeOAuth(state, code){
     try{
-      this.apiService.completeOAuth(state, code, this.userEmail, this.pwdHash).subscribe();
+      this.apiService.completeOAuth(state, code, this.userEmail, this.pwdHash).subscribe(() =>{
+        this.mode = this.select_endpoint_mode;
+      });
     }
     catch(err){
       // this error will occur since we are not handling Render.redirect return value
+      this.hideProgressBar();
       console.log("Expected error occurred");
     }
   }
@@ -256,7 +283,6 @@ export class BrowseComponentComponent implements OnInit {
    * Reference - https://www.thepolyglotdeveloper.com/2016/01/using-an-oauth-2-0-service-within-an-ionic-2-mobile-app/
    */
   public performOAuth(oauthLink : string) : Promise<any>{
-
     return new Promise((resolve, reject)=>{
       try{
         var browserRef :any= window.cordova.InAppBrowser.open(oauthLink 
@@ -268,9 +294,10 @@ export class BrowseComponentComponent implements OnInit {
             resolve((event.url).split("?")[1]);
           }
         });
-
       }
       catch(err){
+        console.log("Error occurred while opening In-App Browser for oauth");
+        this.hideProgressBar();
         reject(err);
       }
     });
@@ -278,118 +305,154 @@ export class BrowseComponentComponent implements OnInit {
 
   public deleteCred(deleteKey : string){
     console.log("Deleting " + deleteKey);
+    this.showProgressBar();
+    let deleteAction = '';
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
       || this.selectedEndpoint === "GridFTP"){
-        this.apiService.deleteCredential(deleteKey,this.userEmail,this.pwdHash).subscribe(
-          resp=>{
-            console.log(deleteKey + " deleted successfully");
-        if(this.selectedEndpointCreds.length-1 === 0)
-          this.mode = this.select_endpoint_mode;
-        else
-          this.click(this.reloadTag);
-          },
-          err => {
-            console.log("Error encountered while deleting " + deleteKey);
-        });
+        deleteAction = 'deleteCredential';
       }
       else{
-        this.apiService.deleteHistory(deleteKey,this.userEmail,this.pwdHash).subscribe(
-          resp=>{
-            console.log(deleteKey + " deleted successfully");
-        if(this.selectedEndpointCreds.length-1 === 0)
-          this.mode = this.select_endpoint_mode;
-        else
-          this.click(this.reloadTag);    
-          },
-          err => {
-            console.log("Error encountered while deleting " + deleteKey);
-        });
+        deleteAction = 'deleteHistory';
       }
+
+      this.apiService.deleteCredential(deleteAction, deleteKey,this.userEmail,this.pwdHash).subscribe(
+        resp=>{
+          console.log(deleteKey + " deleted successfully");
+          if(this.selectedEndpointCreds.length-1 === 0)
+            this.mode = this.select_endpoint_mode;
+          else
+            this.click(this.reloadTag);    
+          this.hideProgressBar();
+        },
+        err => {
+          this.hideProgressBar();
+          console.log("Error encountered while deleting " + deleteKey);
+          console.log(err);
+      });
   }
 
   public loadCred(credential : string){
     this.selectedCred = credential;
-    this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
+    this.selectedCredHistory = [];
+    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP')
+      this.selectedCredHistory.push(this.selectedCred);
+    else
+      this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
     this.loadContents();
+
+    this.credentialEmitter.emit(credential);
+    this.emitUpdate();
   }
 
   public loadContents(){
-    let uri = protocolToUriMap[this.selectedEndpoint];
+    this.showProgressBar();
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
-      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, 
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType, 
         {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1])
         .subscribe(resp =>{
           this.listContentsSuccess(resp);
+          this.hideProgressBar();
       },
       err => {
+        this.hideProgressBar();
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
     else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), uri, null, null).subscribe(resp =>{
-        this.listContentsSuccess(resp);
+      this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
+        null, null).subscribe(resp =>{
+          this.listContentsSuccess(resp);
+          this.hideProgressBar();
       },
       err => {
+        this.hideProgressBar();
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
   }
   public ftpNext(){
-    this.loadCred(null);
+    console.log('Listing FTP server contents - '+ this.ftpUrl);
+    this.loadCred(this.ftpUrl);
   }
 
   public listContentsSuccess(resp : any){
-    console.log(resp);
+    console.log('Listing contents - ', resp);
     this.selectedCredContents = resp["files"];
     this.mode = this.browse_endpoint_contents;
   }
 
-  public fileSelected(fileName : string, id : string){
-    console.log("File " + fileName + " selected");
-    if(this.selectedFile !== fileName){
-      this.selectedFile = fileName;
-      this.selectedCredHistory.push(fileName);
-      if(this.selectedEndpoint === 'GoogleDrive')
-        this.driveItemIdHistory.push(id);
+  public fileSelected(item : any){
+    if(this.componentType === 'source'){
+      if(this.selectedFile !== item.name){
+        console.log("File " + item.name + " selected");
+        this.selectedFile = item.name;
+        this.selectedCredHistory.push(item.name);
+        if(this.selectedEndpoint === 'GoogleDrive')
+          this.driveItemIdHistory.push(item.id);
+  
+        this.selectedFolder = '';
+      }
+      this.emitUpdate();
     }
+    
   }
 
-  public folderSelected(folderName : string, id : string){
-    if(this.selectedFolder === folderName){
-      console.log("Folder " + folderName + " selected");
-      this.selectedCredHistory.push(folderName);
+  public folderSelected(item : any){
+    if(this.selectedFolder !== item.name){
+      this.selectedFolder = item.name;
+      this.selectedFile = '';
+      console.log("Folder " + item.name + " selected");
+      this.selectedCredHistory.push(item.name);
       if(this.selectedEndpoint === 'GoogleDrive')
-        this.driveItemIdHistory.push(id);
+        this.driveItemIdHistory.push(item.id);
       this.loadContents();
     }
-    else
-      this.selectedFolder = folderName;
+    this.emitUpdate();
   }
 
   public contentWindowBack(){
-    console.log(this.driveItemIdHistory);
-    this.selectedFolder = this.selectedCredHistory.pop();
+    this.selectedFolder = '';
+    this.selectedCredHistory.pop();
     this.driveItemIdHistory.pop();
+    if(this.selectedFile !== ''){
+      this.selectedFile = '';
+      this.selectedCredHistory.pop();
+      this.driveItemIdHistory.pop();
+    }
     if(this.selectedCredHistory.length === 0){
       this.mode = this.creds_exist_mode;
       this.driveItemIdHistory = [];
     } 
     else
       this.loadContents(); 
+    this.emitUpdate();
+
+    
   }
 
   public getDirURI() : string{
     let uri : string = this.selectedCredHistory[0];
+
+    if(this.selectedCredHistory.length > 1 && 
+      (this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP'))
+      uri += '/';
 
     for(let i=1; i<this.selectedCredHistory.length; i++)
       uri += this.selectedCredHistory[i] + '/';
 
     if(this.selectedCredHistory.length === 1)
       return uri;
+    else if(uri === undefined || uri === null)
+      return null;
     else
       return uri.substring(0, uri.length-1);
   }
 
+  public emitUpdate(){
+    this.selectionEmitter.emit(this.getDirURI());
+    this.credHistoryEmitter.emit(this.selectedCredHistory);
+    this.driveIdHistoryEmitter.emit(this.driveItemIdHistory);
+  }
 
 }    //class

@@ -3,12 +3,8 @@
     // text-align: center;
 }
 
-// .browse-component-wrapper{
-    
-// }
-
 ion-card{
-    max-height: 350px;
+    max-height: 400px;
     overflow: scroll;
     margin : unset;
     margin-left: 0.5px;
@@ -23,7 +19,7 @@ ion-card{
 }
 
 .font-style{
-    font-size: 0.7rem;
+    font-size: 0.85rem;
 }
 
 .back-label{
@@ -31,6 +27,8 @@ ion-card{
     text-align: center;
     background: #e3e4e5;
     font-weight: bolder;
+    padding : 2%;
+    height : 2rem;
 }
 
 ion-grid{
@@ -60,9 +58,25 @@ ion-item{
     // text-align: center;
 }
 ion-input{
-    margin-left: 1%;
-    margin-right: 1%;
+    margin: 1%;
 }
 .content-listing-div{
     width: 100%;
+}
+
+.endpoint-browse-options{
+    width: 25%;
+
+    ion-button{
+        margin: unset;
+        border: black 1px solid;
+        border-radius: 4px;
+    }
+}
+
+.empty-dir-label{
+    text-align: center;
+    font-weight: bolder;
+    margin-top: 2%;
+    margin-bottom: 1%;
 }

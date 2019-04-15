@@ -11,8 +11,18 @@
             </ion-item>
 
             <div id="srcEndpoint" [hidden]="srcEndpointOpen" class="dropdown">
-                <app-browse-component></app-browse-component>
+                <app-browse-component #source [componentType]="'source'" [userEmail]="userEmail" [pwdHash]="pwdHash"
+                    (selectionEmitter)="handleSrcSelection($event)" (typeEmitter)="handleSrcType($event)" 
+                    (credentialEmitter)="handleSrcCredential($event)" (credHistoryEmitter)="handleSrcCredHistory($event)"
+                    (driveIdHistoryEmitter)="handleSrcDriveIdHistory($event)">
+                </app-browse-component>
             </div>
+            <ion-card *ngIf="srcEndpointOpen && srcSelection !== null && srcSelection !== ''" class="current-selection">
+                Current Selection - <br /> {{ srcSelection }}
+                <ion-label (click)="clearSrcSelection()" class="clear-selection">
+                    <b><u>Clear Selection</u></b>
+                </ion-label>
+            </ion-card>
         </ion-item-group>
     </div>
 
@@ -20,15 +30,25 @@
         <ion-item-group>
             <ion-item (click)="destEndpointClick()" class="border">
                 <ion-label>
-                    Destination Endpoint
+                    Destination Endpoint (Directory)
                     <ion-icon *ngIf="destEndpointOpen" name="arrow-dropdown"></ion-icon>
                     <ion-icon *ngIf="!destEndpointOpen" name="arrow-dropup"></ion-icon>
                 </ion-label>
             </ion-item>
 
             <div id="destEndpoint" [hidden]="destEndpointOpen" class="dropdown">
-                <app-browse-component></app-browse-component>
+                <app-browse-component #destination [componentType]="'destination'" [userEmail]="userEmail" [pwdHash]="pwdHash"
+                    (selectionEmitter)="handleDestSelection($event)" (typeEmitter)="handleDestType($event)"
+                    (credentialEmitter)="handleDestCredential($event)" (credHistoryEmitter)="handleDestCredHistory($event)"
+                    (driveIdHistoryEmitter)="handleDestDriveIdHistory($event)">
+                </app-browse-component>
             </div>
+            <ion-card *ngIf="destEndpointOpen && destSelection !== null && destSelection !== ''" class="current-selection">
+                Current Selection - <br /> {{ destSelection }}
+                <ion-label (click)="clearDestSelection()" class="clear-selection">
+                    <b><u>Clear Selection</u></b>
+                </ion-label>
+            </ion-card>
         </ion-item-group>
     </div>
 
@@ -43,7 +63,10 @@
             </ion-item>
 
             <div id="srcEndpoint" [hidden]="transferSettingsOpen" class="dropdown">
-                <div class="browse-component-wrapper">
+                <ion-card class="current-selection">
+                    <b>Transfer optimizations will be released soon in near future!</b>
+                </ion-card>
+                <!-- <div class="browse-component-wrapper">
                     <ion-item-group>
                         <ion-item>
                             <ion-label>
@@ -177,17 +200,11 @@
                             </ion-range>
                         </ion-item>
                     </ion-item-group>
-                </div>
+                </div> -->
             </div>
         </ion-item-group>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <ion-button (click)="intiatedTransfer()">Initiate Transfer</ion-button>
-            </div>
-        </div>
-    </div>
+    <ion-button (click)="initiateTransfer()" expand="block" class="initiate-transfer-button">Initiate Transfer</ion-button>
 
 </ion-content>

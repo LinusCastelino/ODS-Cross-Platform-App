@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-tabs>
-
+  
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="transfer">
       <ion-icon name="flash"></ion-icon>
@@ -17,7 +17,7 @@
       <ion-label>Queue</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="admin" *ngIf="isAdmin">
+    <ion-tab-button *ngIf="isAdmin" tab="admin">
       <ion-icon name="send"></ion-icon>
       <ion-label>Admin</ion-label>
     </ion-tab-button>

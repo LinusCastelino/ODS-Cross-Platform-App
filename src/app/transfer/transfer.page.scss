@@ -28,3 +28,24 @@ ion-icon{
 .border{
     border : solid lightblue !important;
 }
+
+.current-selection{
+    width: 100%;
+    background: #e3e4e5;
+    // font-weight: bolder;
+    font-size: 0.85rem;
+    padding : 2%;
+    margin: unset;
+}
+
+.clear-selection{
+    text-align: center;
+    margin-top: 2%
+}
+
+.initiate-transfer-button{
+    --border-radius: 10px;
+    margin: unset;
+    margin-top: 3%;
+    font-weight: bolder;
+}
