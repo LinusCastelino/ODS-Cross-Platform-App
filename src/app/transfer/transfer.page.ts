@@ -116,7 +116,7 @@ export class TransferPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: 'Transfer Initiated!',
+      message: 'Transfer Initiated!\nPlease check Queue screen for progress.',
       position: 'bottom',
       duration: 2000
     });

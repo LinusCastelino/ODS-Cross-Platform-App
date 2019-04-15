@@ -111,16 +111,16 @@ export class BrowseComponentComponent implements OnInit {
 
     this.showProgressBar();
     this.checkIfCredentialsExist()
-      .then((exists) => {
-        if(exists){
+      .then((creds) => {
+        if(creds){
           console.log("Credential for " + endpoint + " already exists");
-          this.getCredentials()
-              .then(creds =>{
+          // this.getCredentials()
+          //     .then(creds =>{
                 console.log(creds);
                 this.mode = this.creds_exist_mode;
                 this.selectedEndpointCreds = creds;
                 this.hideProgressBar();
-              });
+              // });
         }
         else{
           this.startAuthentication();
@@ -176,10 +176,26 @@ export class BrowseComponentComponent implements OnInit {
       return new Promise<any>((resolve, reject) =>{
         this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
           console.log("Credentials list : " + JSON.stringify(credList));
+          
           var checker = (key) : boolean => {
             return credList[key].name.toLowerCase().indexOf(val) != -1;
           };
-          resolve(Object.keys(credList).some(checker));
+          if(Object.keys(credList).some(checker)){
+            let resultArr : any[] = [];
+          
+            var filter = (key) => {
+              if(credList[key].name.toLowerCase().indexOf(val) != -1){
+                let cred = credList[key];
+                cred["key"] = key;
+                resultArr.push(cred);
+              }
+            };
+
+            Object.keys(credList).map(filter);
+            resolve(resultArr);
+          }
+          else
+            resolve(false);
         },
         err =>{
           console.log("Error occurred while querying the credentials list");
@@ -193,10 +209,24 @@ export class BrowseComponentComponent implements OnInit {
       return new Promise<any>((resolve, reject) =>{
         this.apiService.getFTPCreds(this.userEmail,this.pwdHash).subscribe(credList => {
           console.log("Credentials list : " + JSON.stringify(credList));
+          
           var checker = (key) : boolean => {
             return key.toLowerCase().indexOf(val) != -1;
           };
-          resolve(credList.some(checker));
+
+          if(credList.some(checker)){
+            let resultArr : any[] = [];
+            var filter = (key) => {
+              if(key.toLowerCase().indexOf(val) != -1){
+                resultArr.push({'name' : key, 'key' : key});
+              }
+            };
+
+            credList.forEach(filter);
+            resolve(resultArr);
+          }
+          else
+            resolve(false);
         },
         err =>{
           console.log("Error occurred while querying the credentials list");
@@ -205,58 +235,6 @@ export class BrowseComponentComponent implements OnInit {
         });
       });
     }
-  }
-
-
-  public getCredentials() : Promise<any>{
-    return new Promise<any>((resolve, reject) =>{
-
-      let val = this.selectedEndpoint.toLowerCase();
-      if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
-                    || this.selectedEndpoint === "GridFTP"){
-        this.apiService.getCredList(this.userEmail,this.pwdHash).subscribe(credList => {
-          // console.log("Credentials list : " + JSON.stringify(credList));
-          
-          let resultArr : any[] = [];
-          
-            var filter = (key) => {
-              if(credList[key].name.toLowerCase().indexOf(val) != -1){
-                let cred = credList[key];
-                cred["key"] = key;
-                resultArr.push(cred);
-              }
-            };
-
-            Object.keys(credList).map(filter);
-          resolve(resultArr);
-        },
-        err =>{
-          console.log("Error occurred while querying the credentials list");
-          console.log(err.data);
-          return {};
-        });
-      }
-      else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-        this.apiService.getFTPCreds(this.userEmail,this.pwdHash).subscribe(credList => {
-          // console.log("Credentials list : " + JSON.stringify(credList));
-
-          let resultArr : any[] = [];
-          var filter = (key) => {
-            if(key.toLowerCase().indexOf(val) != -1){
-              resultArr.push({'name' : key, 'key' : key});
-            }
-          };
-
-          credList.forEach(filter);
-          resolve(resultArr);
-        },
-        err =>{
-          console.log("Error occurred while querying the credentials list");
-          console.log(err.data);
-          return {};
-        });
-      }
-    });
   }
 
   public oAuthInit(oAuthLink){
