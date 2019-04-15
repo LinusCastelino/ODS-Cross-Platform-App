@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../apicalls.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-transfer',
@@ -34,17 +35,40 @@ export class TransferPage implements OnInit {
 
   transferSettingsOpen : boolean = true;
 
-  constructor(private toastController : ToastController, 
-              private apiService : APICallsService, private storage : Storage) {
+  constructor(private toastController : ToastController, private apiService : APICallsService, 
+              private storage : Storage, private router : Router) {
     this.storage.get('email')
       .then(email=>{
-        this.userEmail = email;
+        if(email !== null)
+          this.userEmail = email;
+        else{
+          this.router.navigate(['/login']);
+          throw 'Email in storage is null';
+        }
+      })
+      .catch(err =>{
+        let msg = 'Error occurred while fetching email from storage';
+        console.log(msg);
+        this.presentToast(msg);
+        console.log(err);
+        this.router.navigate(['/login']);
       });
     this.storage.get('hash')
       .then(hash=>{
-        this.pwdHash = hash;
-      });
-
+        if(hash !== null)
+          this.pwdHash = hash;
+        else{
+          this.router.navigate(['/login']);
+          throw 'Hash in storage is null';
+        }
+      })
+      .catch(err =>{
+        let msg = 'Error occurred while fetching password hash from storage';
+        console.log(msg);
+        this.presentToast(msg);
+        console.log(err);
+        this.router.navigate(['/login']);
+      });;
    }
 
   ngOnInit() {
