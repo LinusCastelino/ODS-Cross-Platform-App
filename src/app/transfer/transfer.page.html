@@ -11,7 +11,7 @@
             </ion-item>
 
             <div id="srcEndpoint" [hidden]="srcEndpointOpen" class="dropdown">
-                <app-browse-component #source [componentType]="'source'" 
+                <app-browse-component #source [componentType]="'source'" [userEmail]="userEmail" [pwdHash]="pwdHash"
                     (selectionEmitter)="handleSrcSelection($event)" (typeEmitter)="handleSrcType($event)" 
                     (credentialEmitter)="handleSrcCredential($event)" (credHistoryEmitter)="handleSrcCredHistory($event)"
                     (driveIdHistoryEmitter)="handleSrcDriveIdHistory($event)">
@@ -37,7 +37,7 @@
             </ion-item>
 
             <div id="destEndpoint" [hidden]="destEndpointOpen" class="dropdown">
-                <app-browse-component #destination [componentType]="'destination'" 
+                <app-browse-component #destination [componentType]="'destination'" [userEmail]="userEmail" [pwdHash]="pwdHash"
                     (selectionEmitter)="handleDestSelection($event)" (typeEmitter)="handleDestType($event)"
                     (credentialEmitter)="handleDestCredential($event)" (credHistoryEmitter)="handleDestCredHistory($event)"
                     (driveIdHistoryEmitter)="handleDestDriveIdHistory($event)">

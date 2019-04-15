@@ -35,8 +35,6 @@ export class BrowseComponentComponent implements OnInit {
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
-  userEmail : string ;
-  pwdHash : string ;
   reloadTag : string = 'reload';
   displayProgressBar : boolean = false;
 
@@ -46,6 +44,8 @@ export class BrowseComponentComponent implements OnInit {
   googleDriveClientID : string = "1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com";
 
   @Input() componentType : string;
+  @Input() userEmail : string ;
+  @Input() pwdHash : string ;
 
   @Output() selectionEmitter : EventEmitter<string> = new EventEmitter<string>();
   @Output() credentialEmitter : EventEmitter<string> = new EventEmitter<string>();
@@ -54,15 +54,6 @@ export class BrowseComponentComponent implements OnInit {
   @Output() driveIdHistoryEmitter : EventEmitter<string[]> = new EventEmitter<string[]>();
 
   constructor(private apiService : APICallsService, private storage : Storage) { 
-    this.storage.get('email')
-        .then(email=>{
-          this.userEmail = email;
-        });
-    this.storage.get('hash')
-        .then(hash=>{
-          this.pwdHash = hash;
-        });
-
     // console.log('Mode : ' + this.mode);
   }
 
