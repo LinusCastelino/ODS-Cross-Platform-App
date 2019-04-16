@@ -20,6 +20,9 @@ export class LoginPage implements OnInit {
   verificationCodeFlag:boolean = false;
   resetPasswordFlag:boolean = false;
 
+  loginProgress : boolean = false;
+  signUpProgress : boolean = false;
+
   loginUsername:string;
   password:string;
   verificationCode:string;
@@ -40,12 +43,14 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {
   }
+
   logInBlock() {
     this.logInFlag = true;
     this.signUpFlag = false;
     this.loginBlockButtonFlag = false;
     this.signUpBlockButtonFlag = true;
   }
+
   signUpBlock() {
     this.logInFlag = false;
     this.signUpFlag = true;
@@ -53,8 +58,10 @@ export class LoginPage implements OnInit {
     this.signUpBlockButtonFlag = false;
     this.backTologinFlag = true;
   }
+
   public loginAPI(){
-    console.log("In LoginAPI");
+    console.log("Logging in user - " + this.loginUsername);
+    this.loginProgress = true;
     this.apiService.login(this.loginUsername,this.password).subscribe(
       resp => {
         this.cookieService.put('email',resp.email);
@@ -81,19 +88,20 @@ export class LoginPage implements OnInit {
               });
           }
         );
-        // this.username = "";
-        
-        // console.log("Cookie values - " + this.cookieService.get('email') + " " + this.cookieService.get('hash'));
+        this.loginProgress = false;
       },
       err => {
-        console.log("Fail");
+        console.log("Error occurred while logging in user " + this.loginUsername);
         this.raiseToast("Login Failed!");
         this.loginUsername="";
         this.password="";    
+        this.loginProgress = false;
       });
       
   }
+
   public signupApi(){
+    this.signUpProgress = true;
     console.log("In SignupAPI");
     this.apiService.registerUser(this.signupUsername,this.firstName,this.lastName,this.organization).subscribe(
       resp=>{
@@ -102,15 +110,16 @@ export class LoginPage implements OnInit {
       this.loginBlockButtonFlag = false;
       this.verificationCodeFlag = true;
       this.forgotUsername = this.signupUsername;
+      this.signUpProgress = false;
     },
     err=>
     {
-      console.log("Fail");
+      this.signUpProgress = false;
+      console.log("Error occurred during signup for " + this.signupUsername);
       this.raiseToast("Signup failed");
     })
-
-
   }
+
   //forgot password label
   public forgotPasswordLable(){ 
     console.log("In forgotPasswordLable");
@@ -137,8 +146,8 @@ export class LoginPage implements OnInit {
         this.raiseToast("Invalid Credentials!");
         this.forgotUsername="";
       });
-
   }
+
   public enterCodeApi(event){
     console.log("In enterCodeApi");
     this.apiService.resetPasswordVerifyCode(this.forgotUsername,this.verificationCode).subscribe(
@@ -152,8 +161,8 @@ export class LoginPage implements OnInit {
         console.log("Fail");
       }
     );
-
   }
+  
   public resetPasswordApi(event){
     console.log("In resetPasswordApi");
     this.apiService.resetPassword(this.forgotUsername,this.verificationCode,this.newPassword,this.confirmPassword).subscribe(
@@ -172,6 +181,7 @@ export class LoginPage implements OnInit {
       }
     );
   }
+
   public backTologin(){
     this.setAllNull();
     this.logInFlag = true;
@@ -197,6 +207,7 @@ export class LoginPage implements OnInit {
   public raiseToast(message:string){
     this.presentToast(message);
   }
+  
   async presentToast(message:string) {
     const toast = await this.toastController.create({
       message: message,

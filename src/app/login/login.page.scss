@@ -24,6 +24,7 @@ ion-header{
 ion-toolbar{
     height: 100%;
 }
+
 .center {
     padding-top: 20%;
     padding-left: 10px;
@@ -34,9 +35,17 @@ ion-toolbar{
     margin-right: auto;    
     text-align: center;
 }
+
 .images{
     padding : 10%;
     width: 65%;
     padding-left: 5%;
     padding-right: 5%;
+    position: relative;
+    top: 10%;
+}
+
+.progress-bar{
+    margin-left: 2%;
+    margin-right: 2%;
 }

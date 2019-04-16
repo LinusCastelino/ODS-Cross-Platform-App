@@ -13,5 +13,9 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
 ion-content{
-    --background: url('assets/background.png');
-  }
+  --background: url('assets/background.png');
+}
+
+body, ion-input, input, ion-item{
+  font-size: 1.2rem !important;
+}
