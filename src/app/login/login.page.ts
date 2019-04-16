@@ -20,8 +20,20 @@ export class LoginPage implements OnInit {
   verificationCodeFlag:boolean = false;
   resetPasswordFlag:boolean = false;
 
-  username:string;
-  code:string;
+  loginUsername:string;
+  password:string;
+  verificationCode:string;
+
+  signupUsername:string;
+  firstName:string;
+  lastName:string;
+  organization:string;
+
+  forgotUsername:string;
+
+  newPassword:string;
+  confirmPassword:string;
+
 
   constructor(private apiService:APICallsService, private storage : Storage, private router:Router,
               private cookieService: CookieService, private toastController : ToastController) { }
@@ -41,15 +53,10 @@ export class LoginPage implements OnInit {
     this.signUpBlockButtonFlag = false;
     this.backTologinFlag = true;
   }
-  public loginAPI(event){
+  public loginAPI(){
     console.log("In LoginAPI");
-    event.preventDefault();
-    var target = event.target;
-    var username  = target.querySelector('#loginEmail').value;
-    var password  = target.querySelector('#loginPassword').value;
-    this.apiService.login(username,password).subscribe(
+    this.apiService.login(this.loginUsername,this.password).subscribe(
       resp => {
-        // console.log("Success", resp);
         this.cookieService.put('email',resp.email);
         this.cookieService.put('hash', resp.hash);
         this.storage.set('email',resp.email)
@@ -58,11 +65,12 @@ export class LoginPage implements OnInit {
               .then(() => {
                 this.storage.set('loggedIn',true)
                   .then(() => {
-                    this.apiService.isAdmin(username,resp.hash).subscribe(
+                    this.apiService.isAdmin(this.loginUsername,resp.hash).subscribe(
                       resp=>{
                         console.log('isAdmin - ' + resp);
                         this.storage.set('isAdmin',resp).then(()=>{
                           this.router.navigate(['/tabs']);
+                          this.setAllNull();
                         });
                       },err=>{
                         console.log("Is Admin Fail");
@@ -73,32 +81,27 @@ export class LoginPage implements OnInit {
               });
           }
         );
-        this.username = "";
+        // this.username = "";
         
         // console.log("Cookie values - " + this.cookieService.get('email') + " " + this.cookieService.get('hash'));
       },
       err => {
         console.log("Fail");
         this.raiseToast("Login Failed!");
+        this.loginUsername="";
+        this.password="";    
       });
-
-    
+      
   }
-  public signupApi(event){
+  public signupApi(){
     console.log("In SignupAPI");
-    event.preventDefault();
-    var target = event.target;
-    var username  = target.querySelector('#signupEmail').value;
-    var firstName  = target.querySelector('#firstName').value;
-    var lastName  = target.querySelector('#lastName').value;
-    var organization = target.querySelector('#organization').value;
-    this.apiService.registerUser(username,firstName,lastName,organization).subscribe(
+    this.apiService.registerUser(this.signupUsername,this.firstName,this.lastName,this.organization).subscribe(
       resp=>{
       console.log("Success");
       this.signUpFlag=false;
       this.loginBlockButtonFlag = false;
       this.verificationCodeFlag = true;
-      this.username=username;
+      this.forgotUsername = this.signupUsername;
     },
     err=>
     {
@@ -120,12 +123,11 @@ export class LoginPage implements OnInit {
 
   public forgotPasswordApi(event){
     console.log("In ForgotPassword");
-    event.preventDefault();
-    var target = event.target;
-    var username  = target.querySelector('#forgotPasswordEmail').value;
-    this.apiService.resetPasswordSendCode(username).subscribe(
+    this.loginUsername="";
+    this.password="";
+    this.apiService.resetPasswordSendCode(this.forgotUsername).subscribe(
       resp => {
-        this.username = username;
+        // this.username = username;
         this.verificationCodeFlag=true;
         this.forgotPasswordFlag=false;
         console.log("Success");
@@ -133,20 +135,18 @@ export class LoginPage implements OnInit {
       err => {
         console.log("Fail");
         this.raiseToast("Invalid Credentials!");
+        this.forgotUsername="";
       });
 
   }
   public enterCodeApi(event){
     console.log("In enterCodeApi");
-    event.preventDefault();
-    var target = event.target;
-    var code  = target.querySelector('#verificationCode').value;
-    this.apiService.resetPasswordVerifyCode(this.username,code).subscribe(
+    this.apiService.resetPasswordVerifyCode(this.forgotUsername,this.verificationCode).subscribe(
       resp=> {
         console.log("Success");
         this.verificationCodeFlag=false;
         this.resetPasswordFlag = true;
-        this.code =code;
+        // this.code =code;
       },
       err=>{
         console.log("Fail");
@@ -156,29 +156,42 @@ export class LoginPage implements OnInit {
   }
   public resetPasswordApi(event){
     console.log("In resetPasswordApi");
-    event.preventDefault();
-    var target = event.target;
-    var password  = target.querySelector('#newPassword').value;
-    var cpassword  = target.querySelector('#confirmPassword').value;
-    this.apiService.resetPassword(this.username,this.code,password,cpassword).subscribe(
+    this.apiService.resetPassword(this.forgotUsername,this.verificationCode,this.newPassword,this.confirmPassword).subscribe(
       resp=>{
         console.log("Success");
         this.resetPasswordFlag = false;
         this.backTologinFlag = false;
         this.logInFlag = true;
         this.signUpBlockButtonFlag=true;
+        this.setAllNull();
       },
       err=>{
         console.log("Fail");
+        this.newPassword="";
+        this.confirmPassword="";
       }
     );
   }
   public backTologin(){
+    this.setAllNull();
     this.logInFlag = true;
     this.signUpBlockButtonFlag = true;
     this.backTologinFlag = false;
     this.forgotPasswordFlag = false;
     this.verificationCodeFlag = false;
+  }
+
+  public setAllNull(){
+    this.loginUsername="";
+    this.password="";
+    this.verificationCode="";
+    this.signupUsername="";
+    this.firstName="";
+    this.lastName="";
+    this.organization="";
+    this.forgotUsername="";
+    this.newPassword="";
+    this.confirmPassword="";
   }
 
   public raiseToast(message:string){

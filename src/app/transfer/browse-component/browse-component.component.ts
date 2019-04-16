@@ -31,7 +31,10 @@ export class BrowseComponentComponent implements OnInit {
   selectedCredHistory : string[] = [];
   driveItemIdHistory : string[] = [];
 
+  ftpUsername:string;
+  ftpPassword:string;
 
+  sftpFlag:boolean=false;
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
