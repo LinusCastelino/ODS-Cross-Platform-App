@@ -235,7 +235,7 @@ export class BrowseComponentComponent implements OnInit {
           let paramArr = oAuthResp.split("&"); 
           let state = paramArr[0].split("=")[1];
           let code = paramArr[1].split("=")[1];
-          this.completeOAuth(state, code);
+          this.completeOAuth("Dropbox", state, code);
           console.log("OAuth completed!!!");
         })
         .catch(err=>{
@@ -257,7 +257,7 @@ export class BrowseComponentComponent implements OnInit {
       },
       resp => {
         console.log("Google OAuth response - " + JSON.stringify(resp)); // do something useful instead of alerting
-        this.completeOAuth("GoogleDrive", resp["serverAuthCode"]);
+        this.completeOAuth("GoogleDrive", null, resp["serverAuthCode"]);
       },
       err => {
         console.log("Error occurred while performing Google OAuth " + err.data);
@@ -265,9 +265,9 @@ export class BrowseComponentComponent implements OnInit {
     );
   }
 
-  public completeOAuth(state, code){
+  public completeOAuth(protocol, state, code){
     try{
-      this.apiService.completeOAuth(state, code, this.userEmail, this.pwdHash).subscribe(() =>{
+      this.apiService.completeOAuth(protocol, state, code, this.userEmail, this.pwdHash).subscribe(() =>{
         this.mode = this.select_endpoint_mode;
       });
     }
