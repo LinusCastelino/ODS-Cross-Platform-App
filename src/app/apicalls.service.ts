@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import Axios from "axios";
-import {url, getTypeFromUri} from './constants';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -8,9 +6,8 @@ import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
 import { EmailValidator } from '@angular/forms';
-// import { IQueueResp } from './models/IQueueResp';
-// import { EmailValidator } from '@angular/forms';
-const endpoint = 'http://192.168.0.14:8080';
+// const endpoint = 'http://192.168.0.14:8080';
+const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
 
 
 const context = endpoint + '/api/stork';
@@ -280,8 +277,17 @@ export class APICallsService {
   }
 
 
-  public completeOAuth(state : string, code : string, email : string, hash : string) : Observable<any>{
+  public completeOAuth(protocol : string, state : string, code : string, 
+                       email : string, hash : string) : Observable<any>{
     let URL = context + "/oauth";
+
+    if(protocol === "Dropbox"){
+      URL += "/dropbox"
+    }
+    else if(protocol === "GoogleDrive"){
+      URL += "/googledrive";
+    }
+                    
     let reqParams = new HttpParams().set("state", state).set("code", code)
                                     .set("email", email).set("hash", hash);
     return this.httpService.get<any>(URL,{headers: this.headers, params: reqParams});
