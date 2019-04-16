@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
-const endpoint = 'http://10.84.27.57:8080';
+const endpoint = 'http://10.84.25.210:8080';
 
 
 const context = endpoint + '/api/stork';

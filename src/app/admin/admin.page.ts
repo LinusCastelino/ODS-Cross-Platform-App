@@ -20,8 +20,7 @@ export class AdminPage implements OnInit {
   rowsperPage : number = 10;
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController) {
-    interval(6000).subscribe(x => {
-      this.qResp = [];
+    interval(2000).subscribe(x => {
       this.queue();
     });
   }
@@ -81,11 +80,10 @@ export class AdminPage implements OnInit {
           }else{
             resp[x].progressbar = 0.0;
           }
-
+          this.qResp = this.qResp.filter( h => h.job_id !== resp[x].job_id);
           this.qResp.push(resp[x]);
       });
       this.qResp.sort((a, b) => { return b.job_id - a.job_id});
-      //console.log(this.qResp);
     },
     err => {
       console.log("Fail",err);
@@ -122,7 +120,7 @@ export class AdminPage implements OnInit {
 
   async infoJob(jobid) {
     var obj = this.qResp.find(x => x.job_id == jobid);
-    console.log(obj);
+    // console.log(obj);
     var duration = ((obj.times.completed - obj.times.started)/1000).toFixed(2);
     var scheduledDate = new Date(obj.times.scheduled);
 		var startedDate = new Date(obj.times.started);
