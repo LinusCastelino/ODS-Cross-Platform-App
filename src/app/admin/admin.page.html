@@ -21,12 +21,12 @@
       </ion-col>
       
       <ion-col align-self-center size="3">
-          <ion-icon *ngIf="x.validated" name="checkmark-circle-outline"></ion-icon>
-          <ion-icon *ngIf="!x.validated" name="close-circle-outline"></ion-icon>
+          <ion-icon *ngIf="x.validated" name="checkmark-circle-outline" style="color:green"></ion-icon>
+          <ion-icon *ngIf="!x.validated" name="close-circle-outline" style="color:red"></ion-icon> 
       </ion-col>
 
       <ion-col align-self-center size="2" justify-content-center style="text-align:center">
-          <ion-icon name="information-circle" ></ion-icon>
+          <ion-icon name="information-circle-outline" style="color:blue"></ion-icon>
       </ion-col>
 
     </ion-row>    

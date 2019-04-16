@@ -28,9 +28,8 @@ export class QueuePage implements OnInit {
   public innerHeight: any;
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController) {
-    interval(6000).subscribe(x => {
-      //this.qResp = [];
-      //this.queue();
+    interval(2000).subscribe(x => {
+      this.queue();
     });
   }
 
@@ -71,7 +70,8 @@ export class QueuePage implements OnInit {
       result = itemList;
     }else{
       itemList.forEach(element => {
-        if(element.job_id == this.searchQuery){
+        if(element.src.uri.toLowerCase().indexOf(this.searchQuery.toLowerCase()) !== -1 
+            || element.job_id == this.searchQuery){
           result.push(element);
         }
       });
@@ -87,25 +87,18 @@ export class QueuePage implements OnInit {
       //this.qResp = temp;
       temp.map((x)=>{
          //console.log(resp[x].job_id,resp[x])
-          if(resp[x].bytes.total !=0){
-            resp[x].progressbar = (resp[x].bytes.done/resp[x].bytes.total); 
-          }else{
-            resp[x].progressbar = 0.0;
-          }
-          //  var flag = false;
-          //  this.qResp.forEach(element => {
-          //    flag = _.isEqual(element, resp[x]);
-          //    console.log(flag);
-          //  });
-          // if(!flag){
-            this.qResp.push(resp[x]);
-          // }else{
-          //   console.log("Match");
-          // }
-          
+        if(resp[x].bytes.total !=0){
+          resp[x].progressbar = (resp[x].bytes.done/resp[x].bytes.total); 
+        }else{
+          resp[x].progressbar = 0.0;
+        }
+        this.qResp = this.qResp.filter( h => h.job_id !== resp[x].job_id);
+        this.qResp.push(resp[x]);
       });
       this.qResp.sort((a, b) => { return b.job_id - a.job_id});
-      //console.log(this.qResp);
+      // console.log(this.qResp);
+      // this.qResp = this.qResp.filter( h => h.job_id !== 50);
+      // console.log(this.qResp);
     },
     err => {
       console.log("Fail",err);
@@ -142,7 +135,7 @@ export class QueuePage implements OnInit {
 
   async infoJob(jobid) {
     var obj = this.qResp.find(x => x.job_id == jobid);
-    console.log(obj);
+    // console.log(obj);
     var duration = ((obj.times.completed - obj.times.started)/1000).toFixed(2);
     var scheduledDate = new Date(obj.times.scheduled);
 		var startedDate = new Date(obj.times.started);
