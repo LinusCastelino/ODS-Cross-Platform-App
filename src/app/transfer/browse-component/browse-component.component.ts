@@ -31,7 +31,10 @@ export class BrowseComponentComponent implements OnInit {
   selectedCredHistory : string[] = [];
   driveItemIdHistory : string[] = [];
 
+  ftpUsername:string;
+  ftpPassword:string;
 
+  sftpFlag:boolean=false;
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
@@ -235,7 +238,7 @@ export class BrowseComponentComponent implements OnInit {
           let paramArr = oAuthResp.split("&"); 
           let state = paramArr[0].split("=")[1];
           let code = paramArr[1].split("=")[1];
-          this.completeOAuth(state, code);
+          this.completeOAuth("Dropbox", state, code);
           console.log("OAuth completed!!!");
         })
         .catch(err=>{
@@ -257,7 +260,10 @@ export class BrowseComponentComponent implements OnInit {
       },
       resp => {
         console.log("Google OAuth response - " + JSON.stringify(resp)); // do something useful instead of alerting
-        this.completeOAuth("GoogleDrive", resp["serverAuthCode"]);
+        this.completeOAuth("GoogleDrive", null, resp["serverAuthCode"]);
+        window.plugins.googleplus.disconnect(()=>{
+          console.log("Google Oauth disconnected after successful token generation");
+        });
       },
       err => {
         console.log("Error occurred while performing Google OAuth " + err.data);
@@ -265,9 +271,9 @@ export class BrowseComponentComponent implements OnInit {
     );
   }
 
-  public completeOAuth(state, code){
+  public completeOAuth(protocol, state, code){
     try{
-      this.apiService.completeOAuth(state, code, this.userEmail, this.pwdHash).subscribe(() =>{
+      this.apiService.completeOAuth(protocol, state, code, this.userEmail, this.pwdHash).subscribe(() =>{
         this.mode = this.select_endpoint_mode;
       });
     }
@@ -286,7 +292,8 @@ export class BrowseComponentComponent implements OnInit {
     return new Promise((resolve, reject)=>{
       try{
         var browserRef :any= window.cordova.InAppBrowser.open(oauthLink 
-                          + "&email=" + this.userEmail + "&hash=" + this.pwdHash);
+                          + "&email=" + this.userEmail + "&hash=" + this.pwdHash,
+                          "_blank","location=no,clearsessioncache=yes,clearcache=yes");
         browserRef.addEventListener(this.startEvent, (event : any)=>{
           if((event.url).indexOf(this.dropboxOAuthRedirect) === 0){
             browserRef.removeEventListener(this.exitEvent, (event) => {});

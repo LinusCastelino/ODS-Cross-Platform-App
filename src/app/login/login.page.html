@@ -5,103 +5,93 @@
  </ion-header>
  <ion-content>
     <ion-grid id="logInBlock" class="center " *ngIf="logInFlag">
-       <form (ngSubmit)="loginAPI($event)">
-          <ion-row>
-             <ion-col>
-                <ion-input type="text" class="form-control" id="loginEmail" placeholder="Email Id"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col>
-                <ion-input type="password" class="form-control" id="loginPassword" placeholder="Password"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col>
-                <ion-button type="submit" >Log In</ion-button>
-             </ion-col>
-          </ion-row>
-       </form>
-       <ion-label (click)="forgotPasswordLable()">Forgot Password?</ion-label>
+      <ion-row>
+         <ion-col>
+            <ion-input type="text" [(ngModel)]="loginUsername" class="form-control" id="loginEmail" placeholder="Email Id"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col>
+            <ion-input type="password" [(ngModel)]="password" class="form-control" id="loginPassword" placeholder="Password"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col>
+            <ion-button (click)="loginAPI()" >Log In</ion-button>
+         </ion-col>
+      </ion-row>
+      <ion-label (click)="forgotPasswordLable()">Forgot Password?</ion-label>
     </ion-grid>
     <ion-grid id="signUpBlock" class="center" *ngIf="signUpFlag" >
-       <form (ngSubmit)="signupApi($event)">
-          <ion-row>
-             <ion-col>
-                <ion-input type="text" class="form-control" id="signupEmail" placeholder="Email Id"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col>
-                <ion-input type="text" class="form-control" id="firstName" placeholder="First Name"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col>
-                <ion-input type="text" class="form-control" id="lastName" placeholder="Last Name"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col>
-                <ion-input type="text" class="form-control" id="organization" placeholder="Organization Name"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col>
-                <ion-button type="submit">Sign Up</ion-button>
-             </ion-col>
-          </ion-row>
-       </form>
+      <ion-row>
+         <ion-col>
+            <ion-input type="text" [(ngModel)]="signupUsername" class="form-control" id="signupEmail" placeholder="Email Id"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col>
+            <ion-input type="text" [(ngModel)]="firstName" class="form-control" id="firstName" placeholder="First Name"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col>
+            <ion-input type="text" [(ngModel)]="lastName" class="form-control" id="lastName" placeholder="Last Name"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col>
+            <ion-input type="text" [(ngModel)]="organization" class="form-control" id="organization" placeholder="Organization Name"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col>
+            <ion-button (click)="signupApi()">Sign Up</ion-button>
+         </ion-col>
+      </ion-row>
     </ion-grid>
     <ion-grid id="forgotPassword" class="center" *ngIf="forgotPasswordFlag">
-       <form (ngSubmit)="forgotPasswordApi($event)">
-          <ion-row>
-             <ion-col>
-                <ion-input type="text" class="form-control" id="forgotPasswordEmail" placeholder="Email Id"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
-             <ion-col size="6">
-                <ion-button expand="block" type="submit" >Next</ion-button>
-             </ion-col>
-          </ion-row>
-       </form>
+      <ion-row>
+         <ion-col>
+            <ion-input type="text" [(ngModel)]="forgotUsername" class="form-control" id="forgotPasswordEmail" placeholder="Email Id"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
+         <ion-col size="6">
+            <ion-button expand="block" (click)="forgotPasswordApi()" >Next</ion-button>
+         </ion-col>
+      </ion-row>
     </ion-grid>
     <ion-grid id="verificationCodeBlock" class="center" *ngIf="verificationCodeFlag">
-       <form (submit)="enterCodeApi($event)">
-          <ion-row>
-             <ion-col>
-                <ion-input type="text" class="form-control" id="verificationCode" placeholder="Verification Code"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col size="6"><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
-             <ion-col size="6">
-                <ion-button expand="block" type="submit" >Submit Code</ion-button>
-             </ion-col>
-          </ion-row>
-       </form>
+      <ion-row>
+         <ion-col>
+            <ion-input type="text" [(ngModel)]="verificationCode" class="form-control" id="verificationCode" placeholder="Verification Code"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col size="6"><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
+         <ion-col size="6">
+            <ion-button expand="block" (click)="enterCodeApi()" >Submit Code</ion-button>
+         </ion-col>
+      </ion-row>
     </ion-grid>
     <ion-grid id="resetPasswordBlock" class="center" *ngIf="resetPasswordFlag">
-       <form (submit)="resetPasswordApi($event)">
-          <ion-row>
-             <ion-col>
-                <ion-input type="password" class="form-control" id="newPassword" placeholder="Enter new password"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col>
-                <ion-input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password"></ion-input>
-             </ion-col>
-          </ion-row>
-          <ion-row>
-             <ion-col size="6"><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
-             <ion-col size="6">
-                <ion-button expand="block" type="submit" >Reset Password</ion-button>
-             </ion-col>
-          </ion-row>
-       </form>
+      <ion-row>
+         <ion-col>
+            <ion-input type="password" class="form-control" [(ngModel)]="newPassword" id="newPassword" placeholder="Enter new password"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col>
+            <ion-input type="password" class="form-control" [(ngModel)]="confirmPassword" id="confirmPassword" placeholder="Confirm Password"></ion-input>
+         </ion-col>
+      </ion-row>
+      <ion-row>
+         <ion-col size="6"><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
+         <ion-col size="6">
+            <ion-button expand="block" (click)="resetPasswordApi()" >Reset Password</ion-button>
+         </ion-col>
+      </ion-row>
     </ion-grid>
     <ion-grid>
       <ion-row>

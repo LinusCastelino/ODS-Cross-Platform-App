@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { TabsPageRoutingModule } from './tabs.router.module';
 
 import { TabsPage } from './tabs.page';
-// import { ProfilePageModule } from '../profile/profile.module';
+import { ProfilePageModule } from '../profile/profile.module';
 
 @NgModule({
   imports: [
@@ -15,7 +15,7 @@ import { TabsPage } from './tabs.page';
     CommonModule,
     FormsModule,
     TabsPageRoutingModule,
-    // ProfilePageModule
+    ProfilePageModule
   ],
   declarations: [TabsPage]
 })
