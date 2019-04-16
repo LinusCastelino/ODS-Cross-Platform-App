@@ -261,6 +261,9 @@ export class BrowseComponentComponent implements OnInit {
       resp => {
         console.log("Google OAuth response - " + JSON.stringify(resp)); // do something useful instead of alerting
         this.completeOAuth("GoogleDrive", null, resp["serverAuthCode"]);
+        window.plugins.googleplus.disconnect(()=>{
+          console.log("Google Oauth disconnected after successful token generation");
+        });
       },
       err => {
         console.log("Error occurred while performing Google OAuth " + err.data);
@@ -289,7 +292,8 @@ export class BrowseComponentComponent implements OnInit {
     return new Promise((resolve, reject)=>{
       try{
         var browserRef :any= window.cordova.InAppBrowser.open(oauthLink 
-                          + "&email=" + this.userEmail + "&hash=" + this.pwdHash);
+                          + "&email=" + this.userEmail + "&hash=" + this.pwdHash,
+                          "_blank","location=no,clearsessioncache=yes,clearcache=yes");
         browserRef.addEventListener(this.startEvent, (event : any)=>{
           if((event.url).indexOf(this.dropboxOAuthRedirect) === 0){
             browserRef.removeEventListener(this.exitEvent, (event) => {});
