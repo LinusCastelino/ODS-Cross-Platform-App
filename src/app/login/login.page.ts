@@ -71,7 +71,7 @@ export class LoginPage implements OnInit {
             this.storage.set('hash',resp.hash)
               .then(() => {
                 this.storage.set('loggedIn',true)
-                  .then(() => {
+                  .then(() => { 
                     this.apiService.isAdmin(this.loginUsername,resp.hash).subscribe(
                       resp=>{
                         console.log('isAdmin - ' + resp);

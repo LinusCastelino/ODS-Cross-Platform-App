@@ -340,8 +340,8 @@ export class BrowseComponentComponent implements OnInit {
       });
   }
 
-  public loadCred(credential : string){
-    this.selectedCred = credential;
+  public loadCred(credential : any){
+    this.selectedCred = credential.key;
     this.selectedCredHistory = [];
     if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP')
       this.selectedCredHistory.push(this.selectedCred);
@@ -349,7 +349,7 @@ export class BrowseComponentComponent implements OnInit {
       this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
     this.loadContents();
 
-    this.credentialEmitter.emit(credential);
+    this.credentialEmitter.emit(credential.key);
     this.emitUpdate();
   }
 
