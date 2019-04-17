@@ -176,11 +176,12 @@ export class BrowseComponentComponent implements OnInit {
           };
           if(Object.keys(credList).some(checker)){
             let resultArr : any[] = [];
-          
+            let index : number = 0;
             var filter = (key) => {
               if(credList[key].name.toLowerCase().indexOf(val) != -1){
                 let cred = credList[key];
                 cred["key"] = key;
+                cred["index"] = index++;
                 resultArr.push(cred);
               }
             };
@@ -210,9 +211,10 @@ export class BrowseComponentComponent implements OnInit {
 
           if(credList.some(checker)){
             let resultArr : any[] = [];
+            let index : number = 0;
             var filter = (key) => {
               if(key.toLowerCase().indexOf(val) != -1){
-                resultArr.push({'name' : key, 'key' : key});
+                resultArr.push({'name' : key, 'key' : key, 'index' : index++});
               }
             };
 
@@ -385,6 +387,10 @@ export class BrowseComponentComponent implements OnInit {
 
   public listContentsSuccess(resp : any){
     console.log('Listing contents - ', resp);
+    let indexAddFn = (value, index) =>{
+      value["index"] = index;
+    };
+    resp["files"].forEach(indexAddFn);
     this.selectedCredContents = resp["files"];
     this.mode = this.browse_endpoint_contents;
   }
@@ -393,6 +399,7 @@ export class BrowseComponentComponent implements OnInit {
     if(this.componentType === 'source'){
       if(this.selectedFile !== item.name){
         console.log("File " + item.name + " selected");
+        this.highlightItem(item.index);
         this.selectedFile = item.name;
         this.selectedCredHistory.push(item.name);
         if(this.selectedEndpoint === 'GoogleDrive')
@@ -410,12 +417,18 @@ export class BrowseComponentComponent implements OnInit {
       this.selectedFolder = item.name;
       this.selectedFile = '';
       console.log("Folder " + item.name + " selected");
+      this.highlightItem(item.index);
       this.selectedCredHistory.push(item.name);
       if(this.selectedEndpoint === 'GoogleDrive')
         this.driveItemIdHistory.push(item.id);
       this.loadContents();
     }
     this.emitUpdate();
+  }
+
+  public highlightItem(index : number){
+    var elem = document.getElementById("item-" + index);
+    elem.classList.add('selected-item');
   }
 
   public contentWindowBack(){
