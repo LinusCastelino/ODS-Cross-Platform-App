@@ -7,7 +7,7 @@ import { ILoginResponse } from './models/ILoginResponse';
 import{ IUser } from './models/IUser';
 import { EmailValidator } from '@angular/forms';
 
-const endpoint = 'http://10.84.93.62:8080';
+const endpoint = 'http://192.168.0.14:8080';
 // const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
 
 
