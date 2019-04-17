@@ -37,6 +37,8 @@ export class TransferPage implements OnInit {
 
   constructor(private toastController : ToastController, private apiService : APICallsService, 
               private storage : Storage, private router : Router) {
+                
+    // security check if somehow user manages to get to transfer page bypassing AuthGuard
     this.storage.get('email')
       .then(email=>{
         if(email !== null)

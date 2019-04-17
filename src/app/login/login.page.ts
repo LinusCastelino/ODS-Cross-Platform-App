@@ -4,6 +4,7 @@ import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import { CookieService } from 'angular2-cookie/core';
 import { ToastController } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -38,9 +39,29 @@ export class LoginPage implements OnInit {
   confirmPassword:string;
 
   changePasswordButton:string;
+  subscription : any;
 
   constructor(private apiService:APICallsService, private storage : Storage, private router:Router,
-              private cookieService: CookieService, private toastController : ToastController) { }
+              private cookieService: CookieService, private toastController : ToastController,
+              private platform : Platform) {
+    
+    // route user to tabs page if back button is clicked on any of the transfer pages
+    this.storage.get('loggedIn').then(loggedIn=>{
+      if(loggedIn){
+        this.router.navigate(['/tabs'], {skipLocationChange : true});
+      }
+    });    
+  }
+
+  ionViewDidEnter(){
+    this.subscription = this.platform.backButton.subscribe(()=>{
+      navigator['app'].exitApp();
+    });
+  }
+
+  ionViewWillLeave(){
+    this.subscription.unsubscribe();
+  }
 
   ngOnInit() {
     this.setAllNull();
@@ -82,12 +103,12 @@ export class LoginPage implements OnInit {
                         resp=>{
                           console.log('isAdmin - ' + resp);
                           this.storage.set('isAdmin',resp).then(()=>{
-                            this.router.navigate(['/tabs']);
+                            this.router.navigate(['/tabs'], { skipLocationChange: true });
                             this.setAllNull();
                           });
                         },err=>{
                           console.log("Is Admin Fail");
-                          this.router.navigate(['/tabs']);
+                          this.router.navigate(['/tabs'], { skipLocationChange: true });
                         }
                       );
                     });
@@ -113,6 +134,7 @@ export class LoginPage implements OnInit {
     if(this.signupUsername==null || this.firstName==null || this.lastName==null || this.organization==null || 
       this.signupUsername=="" || this.firstName=="" || this.lastName=="" || this.organization==""){
         this.raiseToast("Input all mandatory fields.");
+        this.signUpProgress = false;
     }else{
       this.apiService.registerUser(this.signupUsername,this.firstName,this.lastName,this.organization).subscribe(
         resp=>{
@@ -121,9 +143,11 @@ export class LoginPage implements OnInit {
         this.verificationCodeFlag = true;
         this.forgotUsername = this.signupUsername;
         this.changePasswordButton="Set Password";
+        this.signUpProgress = false;
       },
       err=>
       {
+        this.signUpProgress = false;
         console.log("Error occurred during signup for " + this.signupUsername);
         this.raiseToast("Signup failed, please try again.");
       });

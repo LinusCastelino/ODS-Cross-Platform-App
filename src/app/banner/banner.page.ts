@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Router } from "@angular/router";
 import { splashTimeout } from '../constants';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-banner',
@@ -11,14 +12,16 @@ import { splashTimeout } from '../constants';
 export class BannerPage implements OnInit {
 
   navigateToNextPage;
+  subscription : any;
 
-  constructor(private storage : Storage, private router : Router) { 
+  constructor(private storage : Storage, private router : Router, private platform : Platform) { 
 
     this.navigateToNextPage = () =>{
       this.storage.get('firstLoad').then(firstLoad => {
         if(firstLoad === null){
-          this.storage.set('firstLoad', true);
-          this.router.navigate(['/first-load']);
+          this.storage.set('firstLoad', true).then( ()=>{
+            this.router.navigate(['/first-load']);
+          });  
         }
         else{
           if(firstLoad === true){
@@ -47,4 +50,13 @@ export class BannerPage implements OnInit {
     setTimeout(this.navigateToNextPage, splashTimeout);
   }
 
+  ionViewDidEnter(){
+    this.subscription = this.platform.backButton.subscribe(()=>{
+      navigator['app'].exitApp();
+    });
+  }
+
+  ionViewWillLeave(){
+    this.subscription.unsubscribe();
+  }
 }
