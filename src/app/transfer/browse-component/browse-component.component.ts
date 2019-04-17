@@ -26,6 +26,7 @@ export class BrowseComponentComponent implements OnInit {
   selectedEndpointType : string = '';
   selectedFolder : string;
   selectedFile : string;
+  selectedItem : number = -1;
   selectedEndpointCreds : [] = [];
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
@@ -79,6 +80,7 @@ export class BrowseComponentComponent implements OnInit {
     this.selectedEndpointType = '';
     this.selectedFolder = null;
     this.selectedFile = null;
+    this.selectedItem = -1;
     this.selectedEndpointCreds = [];
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
@@ -89,6 +91,7 @@ export class BrowseComponentComponent implements OnInit {
   public exitEndpoint(){
     this.ftpUrl = '';
     this.selectedCred = '';
+    this.selectedItem = -1;
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
     this.driveItemIdHistory = [];
@@ -361,6 +364,8 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public loadContents(){
+    this.selectedFolder = null;
+    this.selectedFile = null;
     this.showProgressBar();
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
@@ -405,9 +410,15 @@ export class BrowseComponentComponent implements OnInit {
   public fileSelected(item : any){
     if(this.componentType === 'source'){
       if(this.selectedFile !== item.name){
+        if(this.selectedFile !== null){
+          this.selectedCredHistory.pop();
+          if(this.selectedEndpoint === 'GoogleDrive')
+            this.driveItemIdHistory.pop();
+        }
+
         console.log("File " + item.name + " selected");
         this.highlightItem(item.index);
-        this.selectedFile = item.name;
+        this.selectedFile = item.name;  
         this.selectedCredHistory.push(item.name);
         if(this.selectedEndpoint === 'GoogleDrive')
           this.driveItemIdHistory.push(item.id);
@@ -420,7 +431,14 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public folderSelected(item : any){
-    if(this.selectedFolder !== item.name){
+    if(this.selectedFolder !== item.name && !this.displayProgressBar){
+
+      if(this.selectedFile !== null){
+        this.selectedCredHistory.pop();
+        if(this.selectedEndpoint === 'GoogleDrive')
+          this.driveItemIdHistory.pop();
+      }
+
       this.selectedFolder = item.name;
       this.selectedFile = '';
       console.log("Folder " + item.name + " selected");
@@ -434,15 +452,22 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public highlightItem(index : number){
-    var elem = document.getElementById("item-" + index);
+    let elem;
+    if(this.selectedItem !== -1){
+      elem = document.getElementById("item-" + this.selectedItem);
+      if(elem !== null)
+        elem.classList.remove('selected-item');
+    }
+    this.selectedItem = index;
+    elem = document.getElementById("item-" + this.selectedItem);
     elem.classList.add('selected-item');
   }
 
   public contentWindowBack(){
     this.selectedFolder = '';
-    this.selectedCredHistory.pop();
-    this.driveItemIdHistory.pop();
-    if(this.selectedFile !== ''){
+    // this.selectedCredHistory.pop();
+    // this.driveItemIdHistory.pop();
+    if(this.selectedFile !== null || this.selectedFile !== ''){
       this.selectedFile = '';
       this.selectedCredHistory.pop();
       this.driveItemIdHistory.pop();
