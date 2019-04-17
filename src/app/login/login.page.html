@@ -96,13 +96,11 @@
    <ion-row>
       <ion-col size="6"><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
       <ion-col size="6">
-         <ion-button expand="block" (click)="resetPasswordApi()" >Reset Password</ion-button>
+         <ion-button expand="block" (click)="resetPasswordApi()" >{{changePasswordButton}}</ion-button>
       </ion-col>
    </ion-row>
    </ion-grid>
-
    <hr />
-
    <ion-grid>
    <ion-row>
       <ion-col>
@@ -115,7 +113,6 @@
       </ion-col>
    </ion-row>
    </ion-grid>
-
    <ion-grid class="images">
       <ion-row>
          <ion-col size="6">
@@ -125,38 +122,5 @@
          <ion-img src="../../assets/UB_Logo.png"></ion-img>
          </ion-col>
       </ion-row>
-      <ion-row>
-         <ion-col>
-            <ion-input type="password" class="form-control" [(ngModel)]="confirmPassword" id="confirmPassword" placeholder="Confirm Password"></ion-input>
-         </ion-col>
-      </ion-row>
-      <ion-row>
-         <ion-col size="6"><ion-button expand="block" id="signUpBlockButton" *ngIf="backTologinFlag" (click)="backTologin()">Back</ion-button></ion-col>
-         <ion-col size="6">
-            <ion-button expand="block" (click)="resetPasswordApi()" >{{changePasswordButton}}</ion-button>
-         </ion-col>
-      </ion-row>
-    </ion-grid>
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-            <ion-button id="loginBlockButton" expand="block" *ngIf="loginBlockButtonFlag" (click)="logInBlock()">Log In</ion-button>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-            <ion-button id="signUpBlockButton" expand="block" *ngIf="signUpBlockButtonFlag" (click)="signUpBlock()">Sign Up</ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    <ion-grid class="images">
-       <ion-row>
-          <ion-col size="6">
-            <ion-img src="../../assets/NSF_Logo.png"></ion-img>   
-          </ion-col>
-          <ion-col size="6">
-            <ion-img src="../../assets/UB_Logo.png"></ion-img>
-          </ion-col>
-       </ion-row>
     </ion-grid>
  </ion-content>
