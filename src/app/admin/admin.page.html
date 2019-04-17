@@ -3,30 +3,33 @@
 <ion-grid>
     <ion-row class="queueHeader">
         <ion-col align-self-center size="6"> 
-            Users
-          </ion-col>
-      <ion-col align-self-center size="4"> 
+          Users
+        </ion-col>
+        <ion-col align-self-center size="2" style="text-align:center" > 
+          Admin 
+        </ion-col>
+        <ion-col align-self-center size="3" style="text-align:center" > 
           Validation
-      </ion-col>
-      
-      <ion-col align-self-center size="2" style="text-align:center">
-        Info
-      </ion-col>
+        </ion-col>
+        <ion-col align-self-center size="1" style="text-align:center">
+        </ion-col>
     </ion-row>
 
     <ion-row *ngFor="let x of clientList; let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'" >
 
-      <ion-col align-self-center size="7"> 
+      <ion-col align-self-center size="6"> 
         {{x.email}}
       </ion-col>
-      
-      <ion-col align-self-center size="3">
-          <ion-icon *ngIf="x.validated" name="checkmark-circle-outline" style="color:green"></ion-icon>
-          <ion-icon *ngIf="!x.validated" name="close-circle-outline" style="color:red"></ion-icon> 
+      <ion-col align-self-center size="2" style="text-align:center" >
+          <ion-icon *ngIf="x.isAdmin" name="checkmark-circle-outline" style="color:green; font-size: larger"></ion-icon>
+          <ion-icon *ngIf="!x.isAdmin" name="close-circle-outline" style="color:red; font-size: larger"></ion-icon> 
       </ion-col>
-
-      <ion-col align-self-center size="2" justify-content-center style="text-align:center">
-          <ion-icon name="information-circle-outline" style="color:blue"></ion-icon>
+      <ion-col align-self-center size="3" style="text-align:center" >
+          <ion-icon *ngIf="x.validated" name="checkmark-circle-outline" style="color:green; font-size: larger"></ion-icon>
+          <ion-icon *ngIf="!x.validated" name="close-circle-outline" style="color:red; font-size: larger"></ion-icon> 
+      </ion-col>
+      <ion-col align-self-center size="1" justify-content-center style="text-align:center" (click) = "infoUsers(x.email)">
+          <ion-icon name="information-circle-outline" style="color:rgb(24, 147, 168); font-size: larger"></ion-icon>
       </ion-col>
 
     </ion-row>    
@@ -37,23 +40,22 @@
 
     <ion-grid>
       <ion-row class="queueHeader">
-          <ion-col align-self-center size="4"> 
+          <ion-col align-self-center size="5"> 
               Owner
             </ion-col>
         <ion-col align-self-center size="2"> 
           JobId
         </ion-col>
-        <ion-col align-self-center size="4">
+        <ion-col align-self-center size="4" style="text-align:center" >
           Progress
         </ion-col>
-        <ion-col align-self-center size="2" style="text-align:center">
-          Action
+        <ion-col align-self-center size="1" style="text-align:center">
         </ion-col>
       </ion-row>
   
       <ion-row *ngFor="let x of qResp | paginate: { itemsPerPage: rowsperPage, currentPage: p }; let i = index;"  [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'" >
   
-        <ion-col align-self-center size="4"> 
+        <ion-col align-self-center size="5"> 
           {{x.owner}}
         </ion-col>
         <ion-col align-self-center size="2"> 
@@ -65,15 +67,12 @@
             <ion-progress-bar  *ngIf="x.progressbar == 0" color="danger" value="1"></ion-progress-bar>
         </ion-col>
   
-        <ion-col align-self-center size="2" justify-content-center style="text-align:center">
-            <ion-icon name="information-circle" (click)="infoJob(x.job_id)"></ion-icon>
-            <ion-icon *ngIf="x.status == processing" name="close-circle" (click)="cancelJob(x.job_id)"></ion-icon>
-            <ion-icon  *ngIf="x.status != processing" name="refresh" (click)="restartJob(x.job_id)"></ion-icon>
-            <ion-icon *ngIf="x.status != processing" name="trash" (click)="deleteJob(x.job_id)"></ion-icon>
-          </ion-col>
+        <ion-col align-self-center size="1" justify-content-center style="text-align:center">
+            <ion-icon name="information-circle-outline" (click)="infoJob(x.job_id)" style="color:rgb(24, 147, 168); font-size: larger"></ion-icon>
+        </ion-col>
   
       </ion-row>    
-    <ion-row><ion-col col-3><pagination-controls (pageChange)="p = $event" maxSize="3"></pagination-controls></ion-col></ion-row>
+    <ion-row><ion-col col-3><pagination-controls justify-content-center style="text-align:center" (pageChange)="p = $event" maxSize="3" previousLabel="" nextLabel=""></pagination-controls></ion-col></ion-row>
     </ion-grid>
 
   </ion-content>

@@ -2,11 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { APICallsService } from '../apicalls.service';
 import { Storage } from '@ionic/storage';
 //import { IQueueResp } from '../models/IQueueResp';
-//import { queryRefresh } from '@angular/core/src/render3';
 import { AlertController } from '@ionic/angular';
 import { interval } from 'rxjs';
-import * as _ from 'lodash';
-//import { Platform } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-queue',
@@ -26,11 +25,13 @@ export class QueuePage implements OnInit {
   hash :any = "";
   public innerWidth: any;
   public innerHeight: any;
+  public showInfoJobId: any = 0;
+  public showInfo: any = false;
+  private timer : any;
 
-  constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController) {
-    interval(2000).subscribe(x => {
-      this.queue();
-    });
+  constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController,
+    private toastController : ToastController) {
+    
   }
 
   ngOnInit() {
@@ -44,9 +45,16 @@ export class QueuePage implements OnInit {
       });
     });
 
+    this.timer= this.interval();
     this.innerWidth = window.innerWidth;
     this.innerHeight = window.innerHeight;
     this.getNumRows(this.innerHeight);
+  }
+
+  interval(){
+    return setInterval(()=>{
+      this.queue();
+    },2000)
   }
 
   getNumRows(height){
@@ -79,26 +87,23 @@ export class QueuePage implements OnInit {
     return result;
   }
   public queue(){
-    //var email = this.storage.get('email');
-    //var hash = this.storage.get('hash');
     this.apiService.queue(this.email,this.hash).subscribe(
     resp => {
       var temp : any[] = Object.keys(resp);
-      //this.qResp = temp;
       temp.map((x)=>{
-         //console.log(resp[x].job_id,resp[x])
         if(resp[x].bytes.total !=0){
           resp[x].progressbar = (resp[x].bytes.done/resp[x].bytes.total); 
         }else{
           resp[x].progressbar = 0.0;
         }
+        var source = resp[x].src.uri.split("/");
+        if(source.length >1)
+          resp[x].name = source[source.length-1]
+
         this.qResp = this.qResp.filter( h => h.job_id !== resp[x].job_id);
         this.qResp.push(resp[x]);
       });
       this.qResp.sort((a, b) => { return b.job_id - a.job_id});
-      // console.log(this.qResp);
-      // this.qResp = this.qResp.filter( h => h.job_id !== 50);
-      // console.log(this.qResp);
     },
     err => {
       console.log("Fail",err);
@@ -107,19 +112,33 @@ export class QueuePage implements OnInit {
 
   public restartJob(jobid){
     console.log("restart",jobid);
-    //var email = this.storage.get('email');
-    //var hash = this.storage.get('hash');
+    var email = this.storage.get('email');
     this.apiService.restartJob(jobid,this.email,this.hash).subscribe(
     resp => {
-      console.log("Success", resp);
+      var temp : any[] = Object.keys(resp);
+      temp.map((x)=>{
+        console.log("Success", resp[x]);
+        this.raiseToast("Job restarted with Id");
+      });
     },
     err => {
       console.log("Fail",err);
+      this.raiseToast("Job Restart Failed");
     });
   }
 
   public deleteJob(jobid){
     console.log("delete",jobid);
+    this.raiseToast("Job "+jobid+" delete in progress.");
+  }
+
+  public showJobInfo(jobid){
+    console.log("ShowJob",jobid+"~"+this.showInfoJobId);
+    if(this.showInfoJobId != jobid){
+      this.showInfoJobId = jobid;
+    }else{
+      this.showInfoJobId =0;
+    }
   }
 
   public cancelJob(jobid){
@@ -134,25 +153,28 @@ export class QueuePage implements OnInit {
   }
 
   async infoJob(jobid) {
-    var obj = this.qResp.find(x => x.job_id == jobid);
-    // console.log(obj);
-    var duration = ((obj.times.completed - obj.times.started)/1000).toFixed(2);
-    var scheduledDate = new Date(obj.times.scheduled);
-		var startedDate = new Date(obj.times.started);
-    var completedDate = new Date(obj.times.completed);
-    
-    var msg = "<div class='alertBox'><b>Source:</b> "+obj.src.uri+"</br><b>Destination:</b> "+obj.dest.uri
-              +"</br><b>Instant Speed:</b> "+this.renderSpeed(obj.bytes.inst)+"</br><b>Average Speed:</b> "+this.renderSpeed(obj.bytes.avg)
-              +"</br><b>Scheduled Time:</b> "+this.getFormattedDate(scheduledDate)+"</br><b>Started Time:</b> "+this.getFormattedDate(startedDate)
-              +"</br><b>Completed Time:</b> "+this.getFormattedDate(completedDate)+"</br><b>Time Duration:</b> "+duration
-              +"</br><b>Attempts:</b> "+obj.attempts+"</br><b>Status:</b> "+obj.status+"</div>";
-    const alert = await this.alertController.create({
-      header: 'Info of JobID ['+obj.job_id+']',
-      subHeader: 'User: '+obj.owner,
-      message: msg,
-      buttons: ['OK'],
-    });
-    await alert.present();
+    try {
+      var obj = this.qResp.find(x => x.job_id == jobid);
+      var duration = ((obj.times.completed - obj.times.started)/1000).toFixed(2);
+      var scheduledDate = new Date(obj.times.scheduled);
+      var startedDate = new Date(obj.times.started);
+      var completedDate = new Date(obj.times.completed);
+  
+      var msg = "<div class='alertBox'><b>Source:</b> "+obj.src.uri+"</br><b>Destination:</b> "+obj.dest.uri
+                +"</br><b>Instant Speed:</b> "+this.renderSpeed(obj.bytes.inst)+"</br><b>Average Speed:</b> "+this.renderSpeed(obj.bytes.avg)
+                +"</br><b>Scheduled Time:</b> "+this.getFormattedDate(scheduledDate)+"</br><b>Started Time:</b> "+this.getFormattedDate(startedDate)
+                +"</br><b>Completed Time:</b> "+this.getFormattedDate(completedDate)+"</br><b>Time Duration:</b> "+duration
+                +"</br><b>Attempts:</b> "+obj.attempts+"</br><b>Status:</b> "+obj.status+"</div>";
+      const alert = await this.alertController.create({
+        header: 'Info of JobID ['+obj.job_id+']',
+        subHeader: 'User: '+obj.owner,
+        message: msg,
+        buttons: ['OK'],
+      });
+      await alert.present();
+    } catch (error) {
+      this.raiseToast("No info available for this Job");
+    }
   }
 
   getFormattedDate(d){
@@ -172,8 +194,24 @@ export class QueuePage implements OnInit {
 		else{
 			displaySpeed = speedInBps + " B/s";
 		}
-
 		return displaySpeed;
-	}
+  }
+  
+  public raiseToast(message:string){
+    this.presentToast(message);
+  }
+  async presentToast(message:string) {
+    const toast = await this.toastController.create({
+      message: message,
+      position: 'bottom',
+      duration: 1200
+    });
+    toast.present();
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.timer);
+    console.log("Inside Destroy");
+  }
 }
 
