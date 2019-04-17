@@ -353,6 +353,13 @@ export class BrowseComponentComponent implements OnInit {
     this.emitUpdate();
   }
 
+  public mkdir(){
+    if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
+                    || this.selectedEndpoint === "GridFTP"){
+                      
+                    }
+  }
+
   public loadContents(){
     this.showProgressBar();
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
