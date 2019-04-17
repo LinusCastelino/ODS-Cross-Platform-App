@@ -20,6 +20,9 @@ export class LoginPage implements OnInit {
   verificationCodeFlag:boolean = false;
   resetPasswordFlag:boolean = false;
 
+  loginProgress : boolean = false;
+  signUpProgress : boolean = false;
+
   loginUsername:string;
   password:string;
   verificationCode:string;
@@ -42,6 +45,7 @@ export class LoginPage implements OnInit {
   ngOnInit() {
     this.setAllNull();
   }
+
   logInBlock() {
     this.logInFlag = true;
     this.signUpFlag = false;
@@ -49,6 +53,7 @@ export class LoginPage implements OnInit {
     this.signUpBlockButtonFlag = true;
     this.setAllNull();
   }
+
   signUpBlock() {
     this.logInFlag = false;
     this.signUpFlag = true;
@@ -57,6 +62,7 @@ export class LoginPage implements OnInit {
     this.backTologinFlag = true;
     this.setAllNull();
   }
+
   public loginAPI(){
     console.log("In LoginAPI");
     if(this.loginUsername==null || this.password==null || this.loginUsername=="" || this.password==""){
@@ -88,17 +94,21 @@ export class LoginPage implements OnInit {
                 });
             }
           );
+          this.loginProgress = false;
         },
         err => {
-          console.log("Fail");
+          console.log("Error occurred while logging in user " + this.loginUsername);
           this.raiseToast("Invalid login credentials.");
           this.loginUsername=null;
-          this.password=null;    
+          this.password=null;  
+          this.loginProgress = false;  
         });
     }
       
   }
+
   public signupApi(){
+    this.signUpProgress = true;
     console.log("In SignupAPI");
     if(this.signupUsername==null || this.firstName==null || this.lastName==null || this.organization==null || 
       this.signupUsername=="" || this.firstName=="" || this.lastName=="" || this.organization==""){
@@ -114,10 +124,12 @@ export class LoginPage implements OnInit {
       },
       err=>
       {
+        console.log("Error occurred during signup for " + this.signupUsername);
         this.raiseToast("Signup failed, please try again.");
       });
     }
   }
+
   //forgot password label
   public forgotPasswordLable(){ 
     console.log("In forgotPasswordLable");
@@ -186,6 +198,7 @@ export class LoginPage implements OnInit {
       );
     }
   }
+
   public backTologin(){
     this.setAllNull();
     this.logInFlag = true;
@@ -211,6 +224,7 @@ export class LoginPage implements OnInit {
   public raiseToast(message:string){
     this.presentToast(message);
   }
+  
   async presentToast(message:string) {
     const toast = await this.toastController.create({
       message: message,
