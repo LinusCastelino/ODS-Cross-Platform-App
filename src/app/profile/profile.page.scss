@@ -36,6 +36,16 @@ ion-toolbar{
     margin-top: auto;
     margin-bottom: auto;
     margin-left: auto;
-    margin-right: auto;    
-    text-align: left;
+    margin-right: auto;
+    
+    ion-col{
+        text-align: left;
+        display: inline;
+    }
+}
+.buttons{
+    --border-radius: 10px;
+    margin: unset;
+    margin-top: 3%;
+    font-weight: bolder;
 }

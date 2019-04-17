@@ -20,6 +20,9 @@ export class LoginPage implements OnInit {
   verificationCodeFlag:boolean = false;
   resetPasswordFlag:boolean = false;
 
+  loginProgress : boolean = false;
+  signUpProgress : boolean = false;
+
   loginUsername:string;
   password:string;
   verificationCode:string;
@@ -34,83 +37,99 @@ export class LoginPage implements OnInit {
   newPassword:string;
   confirmPassword:string;
 
+  changePasswordButton:string;
 
   constructor(private apiService:APICallsService, private storage : Storage, private router:Router,
               private cookieService: CookieService, private toastController : ToastController) { }
 
   ngOnInit() {
+    this.setAllNull();
   }
+
   logInBlock() {
     this.logInFlag = true;
     this.signUpFlag = false;
     this.loginBlockButtonFlag = false;
     this.signUpBlockButtonFlag = true;
+    this.setAllNull();
   }
+
   signUpBlock() {
     this.logInFlag = false;
     this.signUpFlag = true;
     this.loginBlockButtonFlag = true;
     this.signUpBlockButtonFlag = false;
     this.backTologinFlag = true;
+    this.setAllNull();
   }
+
   public loginAPI(){
     console.log("In LoginAPI");
-    this.apiService.login(this.loginUsername,this.password).subscribe(
-      resp => {
-        this.cookieService.put('email',resp.email);
-        this.cookieService.put('hash', resp.hash);
-        this.storage.set('email',resp.email)
-          .then(()=>{
-            this.storage.set('hash',resp.hash)
-              .then(() => {
-                this.storage.set('loggedIn',true)
-                  .then(() => {
-                    this.apiService.isAdmin(this.loginUsername,resp.hash).subscribe(
-                      resp=>{
-                        console.log('isAdmin - ' + resp);
-                        this.storage.set('isAdmin',resp).then(()=>{
+    if(this.loginUsername==null || this.password==null || this.loginUsername=="" || this.password==""){
+      this.raiseToast("Password or Email ID field is empty.");
+    }else{
+      this.apiService.login(this.loginUsername,this.password).subscribe(
+        resp => {
+          this.cookieService.put('email',resp.email);
+          this.cookieService.put('hash', resp.hash);
+          this.storage.set('email',resp.email)
+            .then(()=>{
+              this.storage.set('hash',resp.hash)
+                .then(() => {
+                  this.storage.set('loggedIn',true)
+                    .then(() => {
+                      this.apiService.isAdmin(this.loginUsername,resp.hash).subscribe(
+                        resp=>{
+                          console.log('isAdmin - ' + resp);
+                          this.storage.set('isAdmin',resp).then(()=>{
+                            this.router.navigate(['/tabs']);
+                            this.setAllNull();
+                          });
+                        },err=>{
+                          console.log("Is Admin Fail");
                           this.router.navigate(['/tabs']);
-                          this.setAllNull();
-                        });
-                      },err=>{
-                        console.log("Is Admin Fail");
-                        this.router.navigate(['/tabs']);
-                      }
-                    );
-                  });
-              });
-          }
-        );
-        // this.username = "";
-        
-        // console.log("Cookie values - " + this.cookieService.get('email') + " " + this.cookieService.get('hash'));
-      },
-      err => {
-        console.log("Fail");
-        this.raiseToast("Login Failed!");
-        this.loginUsername="";
-        this.password="";    
-      });
+                        }
+                      );
+                    });
+                });
+            }
+          );
+          this.loginProgress = false;
+        },
+        err => {
+          console.log("Error occurred while logging in user " + this.loginUsername);
+          this.raiseToast("Invalid login credentials.");
+          this.loginUsername=null;
+          this.password=null;  
+          this.loginProgress = false;  
+        });
+    }
       
   }
+
   public signupApi(){
+    this.signUpProgress = true;
     console.log("In SignupAPI");
-    this.apiService.registerUser(this.signupUsername,this.firstName,this.lastName,this.organization).subscribe(
-      resp=>{
-      console.log("Success");
-      this.signUpFlag=false;
-      this.loginBlockButtonFlag = false;
-      this.verificationCodeFlag = true;
-      this.forgotUsername = this.signupUsername;
-    },
-    err=>
-    {
-      console.log("Fail");
-      this.raiseToast("Signup failed");
-    })
-
-
+    if(this.signupUsername==null || this.firstName==null || this.lastName==null || this.organization==null || 
+      this.signupUsername=="" || this.firstName=="" || this.lastName=="" || this.organization==""){
+        this.raiseToast("Input all mandatory fields.");
+    }else{
+      this.apiService.registerUser(this.signupUsername,this.firstName,this.lastName,this.organization).subscribe(
+        resp=>{
+        this.signUpFlag=false;
+        this.loginBlockButtonFlag = false;
+        this.verificationCodeFlag = true;
+        this.forgotUsername = this.signupUsername;
+        this.changePasswordButton="Set Password";
+      },
+      err=>
+      {
+        console.log("Error occurred during signup for " + this.signupUsername);
+        this.raiseToast("Signup failed, please try again.");
+      });
+    }
   }
+
   //forgot password label
   public forgotPasswordLable(){ 
     console.log("In forgotPasswordLable");
@@ -119,59 +138,67 @@ export class LoginPage implements OnInit {
     this.signUpBlockButtonFlag = false;
     this.forgotPasswordFlag = true;
     this.backTologinFlag = true;
+    this.setAllNull();
   }
 
-  public forgotPasswordApi(event){
+  public forgotPasswordApi(){
     console.log("In ForgotPassword");
-    this.loginUsername="";
-    this.password="";
-    this.apiService.resetPasswordSendCode(this.forgotUsername).subscribe(
-      resp => {
-        // this.username = username;
-        this.verificationCodeFlag=true;
-        this.forgotPasswordFlag=false;
-        console.log("Success");
-      },
-      err => {
-        console.log("Fail");
-        this.raiseToast("Invalid Credentials!");
-        this.forgotUsername="";
-      });
+    if(this.forgotUsername==null || this.forgotUsername==""){
+      this.raiseToast("Email ID field is empty.");
+    }else{
+      this.apiService.resetPasswordSendCode(this.forgotUsername).subscribe(
+        resp => {
+          this.verificationCodeFlag=true;
+          this.forgotPasswordFlag=false;
+          this.changePasswordButton="Reset Password";
+        },
+        err => {
+          this.raiseToast("Invalid Credentials!");
+          this.forgotUsername=null;
+        });
+    }
 
   }
-  public enterCodeApi(event){
+  public enterCodeApi(){
     console.log("In enterCodeApi");
-    this.apiService.resetPasswordVerifyCode(this.forgotUsername,this.verificationCode).subscribe(
-      resp=> {
-        console.log("Success");
-        this.verificationCodeFlag=false;
-        this.resetPasswordFlag = true;
-        // this.code =code;
-      },
-      err=>{
-        console.log("Fail");
-      }
-    );
+    if(this.verificationCode==null || this.verificationCode==""){
+      this.raiseToast("Verification code field is empty.");
+    }else{
+      this.apiService.resetPasswordVerifyCode(this.forgotUsername,this.verificationCode).subscribe(
+        resp=> {
+          this.verificationCodeFlag=false;
+          this.resetPasswordFlag = true;
+        },
+        err=>{
+          this.raiseToast("Invalid verification code entered.");
+          this.verificationCode=null;
+        }
+      );
+    }
 
   }
-  public resetPasswordApi(event){
+  public resetPasswordApi(){
     console.log("In resetPasswordApi");
-    this.apiService.resetPassword(this.forgotUsername,this.verificationCode,this.newPassword,this.confirmPassword).subscribe(
-      resp=>{
-        console.log("Success");
-        this.resetPasswordFlag = false;
-        this.backTologinFlag = false;
-        this.logInFlag = true;
-        this.signUpBlockButtonFlag=true;
-        this.setAllNull();
-      },
-      err=>{
-        console.log("Fail");
-        this.newPassword="";
-        this.confirmPassword="";
-      }
-    );
+    if(this.confirmPassword==null || this.newPassword==null || this.confirmPassword=="" || this.newPassword==""){
+      this.raiseToast("Confirm Password or New Password field is empty.");
+    }else{
+      this.apiService.resetPassword(this.forgotUsername,this.verificationCode,this.newPassword,this.confirmPassword).subscribe(
+        resp=>{
+          this.resetPasswordFlag = false;
+          this.backTologinFlag = false;
+          this.logInFlag = true;
+          this.signUpBlockButtonFlag=true;
+          this.setAllNull();
+        },
+        err=>{
+          this.newPassword=null;
+          this.confirmPassword=null;
+          this.raiseToast("Confirm Password and New Password does not match.");
+        }
+      );
+    }
   }
+
   public backTologin(){
     this.setAllNull();
     this.logInFlag = true;
@@ -182,21 +209,22 @@ export class LoginPage implements OnInit {
   }
 
   public setAllNull(){
-    this.loginUsername="";
-    this.password="";
-    this.verificationCode="";
-    this.signupUsername="";
-    this.firstName="";
-    this.lastName="";
-    this.organization="";
-    this.forgotUsername="";
-    this.newPassword="";
-    this.confirmPassword="";
+    this.loginUsername=null;
+    this.password=null;
+    this.verificationCode=null;
+    this.signupUsername=null;
+    this.firstName=null;
+    this.lastName=null;
+    this.organization=null;
+    this.forgotUsername=null;
+    this.newPassword=null;
+    this.confirmPassword=null;
   }
 
   public raiseToast(message:string){
     this.presentToast(message);
   }
+  
   async presentToast(message:string) {
     const toast = await this.toastController.create({
       message: message,

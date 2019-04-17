@@ -12,6 +12,7 @@ export class ProfilePage implements OnInit {
   constructor(private storage : Storage,private apiService:APICallsService,private router:Router) { 
     
   }
+
   columnOneSize:number = 4;
   columnTwoSize:number = 8;
   email:any;
@@ -24,6 +25,7 @@ export class ProfilePage implements OnInit {
   profileOldPass:string;
   profileNewPass:string;
   profileConfirmNewPass:string;
+
   ngOnInit() {
     var self = this;
     this.getData('email').then(function(value){
@@ -36,10 +38,11 @@ export class ProfilePage implements OnInit {
     });
   });
   }
-getData(data):any{
-  return this.storage.get(data).then(function(value) {
-    return value;
-  });
+
+  getData(data):any{
+    return this.storage.get(data).then(function(value) {
+      return value;
+    });
   }
 
   public changePassword(){
@@ -48,19 +51,22 @@ getData(data):any{
       resp=>{
         this.logOut();
       },err=>{
-        console.log("Fail");
+        console.log("Error occurred during password reset");
       }
     )
   }
+
   public logOut(){
     this.storage.clear().then(()=>{
       this.router.navigate(['/login']);
     });
   }
+
   public resetPassword(){
     this.profileFlag=false;
     this.changePasswordFlag=true;
   }
+
   public backToProfile(){
     this.profileFlag=true;
     this.changePasswordFlag=false;
