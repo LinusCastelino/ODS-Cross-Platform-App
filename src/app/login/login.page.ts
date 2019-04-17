@@ -91,7 +91,7 @@ export class LoginPage implements OnInit {
         },
         err => {
           console.log("Fail");
-          this.raiseToast("Login Failed!");
+          this.raiseToast("Invalid login credentials.");
           this.loginUsername=null;
           this.password=null;    
         });
@@ -114,7 +114,7 @@ export class LoginPage implements OnInit {
       },
       err=>
       {
-        this.raiseToast("Signup failed");
+        this.raiseToast("Signup failed, please try again.");
       });
     }
   }
