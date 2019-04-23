@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
-import { EmailValidator } from '@angular/forms';
 const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
 
 const context = endpoint + '/api/stork';
@@ -83,15 +82,20 @@ export class APICallsService {
     return this.httpService.post(URL,body,{headers: this.headers});
   }
 
-  public getFTPCreds(email, hash) : Observable<any>{
+  public getFTPCreds(email, hash, uri : string = '') : Observable<any>{
     var URL = context+'/user';
-    let body = JSON.stringify({action: 'history',email: email,password: hash, uri : ''});
+    let body = JSON.stringify({action: 'history',email: email,password: hash, uri : uri});
     return this.httpService.post<any>(URL,body,{headers: this.headers});
   }
 
-  public deleteCredential(deleteAction, uri,email,hash){
+  public deleteCredential(deleteAction, identifier,email,hash){
     var URL = context+'/user';               
-    let body = JSON.stringify({action: deleteAction,uuid:uri,email: email,password: hash});
+    let body : any = {action: deleteAction, email: email, password: hash}
+    if(deleteAction === 'deleteCredential')
+      body['uuid'] = identifier;
+    else if(deleteAction === 'deleteHistory')
+      body['uri'] = identifier;
+    body = JSON.stringify(body);
     return this.httpService.post(URL,body,{headers: this.headers});
   }
 

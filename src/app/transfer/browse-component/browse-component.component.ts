@@ -95,7 +95,7 @@ export class BrowseComponentComponent implements OnInit {
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
     this.driveItemIdHistory = [];
-    this.mode = this.creds_exist_mode;
+    this.mode = this.select_endpoint_mode;
   }
 
   public click(endpoint){
@@ -346,8 +346,13 @@ export class BrowseComponentComponent implements OnInit {
   public loadCred(credential : any){
     this.selectedCred = credential.key;
     this.selectedCredHistory = [];
-    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP')
+    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP'){
+      if(this.selectedCred === undefined){
+        this.selectedCred = credential;    // fix for first time load of ftp URL
+        this.apiService.getFTPCreds(this.userEmail,this.pwdHash, this.selectedCred).subscribe();
+      }
       this.selectedCredHistory.push(this.selectedCred);
+    }
     else
       this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
     this.loadContents();
