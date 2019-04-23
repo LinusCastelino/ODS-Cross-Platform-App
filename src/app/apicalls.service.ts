@@ -8,7 +8,6 @@ import{ IUser } from './models/IUser';
 import { EmailValidator } from '@angular/forms';
 const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
 
-
 const context = endpoint + '/api/stork';
 
 @Injectable({

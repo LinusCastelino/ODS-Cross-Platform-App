@@ -8,39 +8,39 @@
        </ion-row>
 
     <ion-row class="queueHeader" style="margin-top: 5px; ">
-      <ion-col align-self-center size="3"> 
+      <ion-col align-self-center size="2"> 
         JobId
       </ion-col>
       <ion-col align-self-center size="7" style="text-align:center">
         Progress
       </ion-col>
-      <ion-col align-self-center size="2">
+      <ion-col align-self-center size="3">
       </ion-col>
     </ion-row>
 
     <ion-grid *ngFor="let x of filterList(qResp) | paginate: { itemsPerPage: rowsperPage, currentPage: p }; let i = index;"  
                           [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'" >
       <ion-row>
-        <ion-col align-self-center size="3"> 
+        <ion-col align-self-center size="2"> 
           {{x.job_id}}
         </ion-col>
 
         <ion-col align-self-center size="7">
-          <ion-progress-bar  *ngIf="x.progressbar > 0 && x.progressbar < 1" color="primary" value={{x.progressbar}}></ion-progress-bar>
-          <ion-progress-bar  *ngIf="x.progressbar == 1" color="success" value={{x.progressbar}}></ion-progress-bar>
-          <ion-progress-bar  *ngIf="x.progressbar == 0" color="danger" value="1"></ion-progress-bar>
+          <ion-progress-bar  *ngIf="x.progressbar > 0 && x.progressbar < 1 && x.status !='removed' && x.status != 'failed'" color="primary" value={{x.progressbar}} style="height: 10px; border-radius: 5px"></ion-progress-bar>
+          <ion-progress-bar  *ngIf="x.progressbar == 1 && x.status == 'complete'" color="success" value={{x.progressbar}} width="2" style="height: 10px; border-radius: 5px"></ion-progress-bar>
+          <ion-progress-bar  *ngIf="x.progressbar == 0 || x.status =='removed' || x.status == 'failed'" color="danger" value="1" style="height: 10px; border-radius: 5px"></ion-progress-bar>
         </ion-col>
 
-        <ion-col align-self-center size="2" justify-content-center style="text-align:center" (click)="showJobInfo(x.job_id)">
-            {{x.progressbar*100}}%
+        <ion-col align-self-center size="3" justify-content-center style="text-align:center" (click)="showJobInfo(x.job_id)">
+            {{x.progressPercent}}%
             <ion-icon name="arrow-dropdown" *ngIf="x.job_id != showInfoJobId"></ion-icon>
             <ion-icon name="arrow-dropup" *ngIf="x.job_id == showInfoJobId"></ion-icon>
         </ion-col>
     </ion-row>
 
     <ion-row *ngIf="x.job_id == showInfoJobId">
-      <ion-col justify-content-left style="text-align:left">{{x.name}}</ion-col>
-      <ion-col col-2 justify-content-right style="text-align:right">
+      <ion-col justify-content-left style="text-align:left" size ="8">{{x.name}}</ion-col>
+      <ion-col col-2 justify-content-right style="text-align:center" size ="4">
           <ion-icon name="information-circle-outline" (click)="infoJob(x.job_id)" style="color:rgb(24, 147, 168); font-size: larger"></ion-icon>
           &nbsp;
           <ion-icon  *ngIf="x.status != processing" name="refresh" (click)="restartJob(x.job_id)" style="color:green; font-size: larger"></ion-icon>
@@ -50,6 +50,7 @@
       </ion-col>
     </ion-row>
     </ion-grid>
-    <ion-row ><ion-col col-3 ><pagination-controls justify-content-center style="text-align:center" (pageChange)="p = $event" maxSize="3" previousLabel="" nextLabel="" ></pagination-controls></ion-col></ion-row>
+    <ion-row ><ion-col col-3 ><pagination-controls justify-content-center style="text-align:center" (pageChange)="p = $event" autoHide="true" previousLabel="" responsive="true" nextLabel="" ></pagination-controls></ion-col></ion-row>
     </ion-grid>
 </ion-content>
+

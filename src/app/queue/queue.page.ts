@@ -58,7 +58,7 @@ export class QueuePage implements OnInit {
   }
 
   getNumRows(height){
-    this.rowsperPage = (height-225)/40;
+    this.rowsperPage = (height-225)/50;
   }
   
   getData(data):any{
@@ -93,15 +93,19 @@ export class QueuePage implements OnInit {
       temp.map((x)=>{
         if(resp[x].bytes.total !=0){
           resp[x].progressbar = (resp[x].bytes.done/resp[x].bytes.total); 
+          resp[x].progressPercent = Math.floor(resp[x].progressbar*100);
         }else{
           resp[x].progressbar = 0.0;
+          resp[x].progressPercent = 0;
         }
         var source = resp[x].src.uri.split("/");
         if(source.length >1)
           resp[x].name = source[source.length-1]
 
         this.qResp = this.qResp.filter( h => h.job_id !== resp[x].job_id);
-        this.qResp.push(resp[x]);
+        //if(resp[x].status != "removed"){
+          this.qResp.push(resp[x]);
+        //}
       });
       this.qResp.sort((a, b) => { return b.job_id - a.job_id});
     },

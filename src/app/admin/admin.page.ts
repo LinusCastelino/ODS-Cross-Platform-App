@@ -16,10 +16,11 @@ export class AdminPage implements OnInit {
   private clientList : any[] = [];
   email = "";
   hash = "";
+  searchQuery = "";
   public innerWidth: any;
   public innerHeight: any;
   rowsperPage : number = 10;
-
+  clientsPerPage : number = 4;
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController, 
       private toastController : ToastController) {
 
@@ -41,7 +42,7 @@ export class AdminPage implements OnInit {
 
     this.innerWidth = window.innerWidth;
     this.innerHeight = window.innerHeight;
-    console.log(this.innerWidth,this.innerHeight);
+    //console.log(this.innerWidth,this.innerHeight);
     this.getNumRows(this.innerHeight);
   }
   getData(data):any{
@@ -50,8 +51,39 @@ export class AdminPage implements OnInit {
       });
     }
   getNumRows(height){
-    this.rowsperPage = (height-270)/50;
+    this.rowsperPage = (height-270)/70;
   }
+
+  public filterClientList(itemList: any[]): any[] {
+    let result: any[] = [];
+    if(this.searchQuery == ""){
+      result = itemList;
+    }else{
+      itemList.forEach(element => {
+        if(element.email.toLowerCase().indexOf(this.searchQuery.toLowerCase()) !== -1){
+          result.push(element);
+        }
+      });
+    }
+    return result;
+  }
+
+  public filterList(itemList: any[]): any[] {
+    let result: any[] = [];
+    if(this.searchQuery == ""){
+      result = itemList;
+    }else{
+      itemList.forEach(element => {
+        if(element.job_id == this.searchQuery || element.owner.toLowerCase().indexOf(this.searchQuery.toLowerCase()) !== -1){
+          result.push(element);
+        }
+      });
+    }
+    return result;
+  }
+
+
+
   public getClientInfo(){
     this.apiService.getClientInfo(this.email,this.hash).subscribe(
       resp => {
@@ -133,7 +165,7 @@ export class AdminPage implements OnInit {
         lName ="";
       }
       var msg = "<div class='alertBox'><b>First Name:</b> "+fName+"</br><b>Last Name:</b> "+lName
-                +"</br><b>Sign Up:</b> "+signUp+"</br><b>Last Activity:</b> "+lastActivity;
+                +"</br><b>Last Activity:</b> "+lastActivity;
 
       const alert = await this.alertController.create({
         header: 'User Info',
