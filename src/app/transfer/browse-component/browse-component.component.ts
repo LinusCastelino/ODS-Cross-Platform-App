@@ -81,6 +81,7 @@ export class BrowseComponentComponent implements OnInit {
     this.selectedFolder = null;
     this.selectedFile = null;
     this.selectedItem = -1;
+    this.sftpFlag = false;
     this.selectedEndpointCreds = [];
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
@@ -92,14 +93,16 @@ export class BrowseComponentComponent implements OnInit {
     this.ftpUrl = '';
     this.selectedCred = '';
     this.selectedItem = -1;
+    this.sftpFlag = false;
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
     this.driveItemIdHistory = [];
     this.mode = this.select_endpoint_mode;
   }
 
-  public click(endpoint){
+  public selectEndpoint(endpoint){
     if(endpoint !== this.reloadTag){
+      this.clearSelection();
       console.log(endpoint + " selected.");
       this.selectedEndpoint = endpoint;
       this.selectedEndpointType = protocolToUriMap[this.selectedEndpoint];
@@ -229,7 +232,8 @@ export class BrowseComponentComponent implements OnInit {
         },
         err =>{
           console.log("Error occurred while querying the credentials list");
-          console.log(err.data);
+          console.log(err);
+          this.hideProgressBar();
           return false;
         });
       });
@@ -333,7 +337,7 @@ export class BrowseComponentComponent implements OnInit {
           if(this.selectedEndpointCreds.length-1 === 0)
             this.mode = this.select_endpoint_mode;
           else
-            this.click(this.reloadTag);    
+            this.selectEndpoint(this.reloadTag);    
           this.hideProgressBar();
         },
         err => {
@@ -393,10 +397,13 @@ export class BrowseComponentComponent implements OnInit {
       },
       err => {
         this.hideProgressBar();
+        if(this.selectedEndpoint === "FTP")
+          this.sftpFlag = true;
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
   }
+
   public ftpNext(){
     console.log('Listing FTP server contents - '+ this.ftpUrl);
     this.loadCred(this.ftpUrl);

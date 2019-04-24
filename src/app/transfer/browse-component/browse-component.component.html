@@ -5,7 +5,7 @@
     <ion-grid *ngIf="mode === select_endpoint_mode">
       <ion-row *ngFor="let supportedProtocol of supportedProtocols">
         <ion-item>
-          <ion-label class="protocol-label" (click)="click(supportedProtocol)">
+          <ion-label class="protocol-label" (click)="selectEndpoint(supportedProtocol)">
             <ion-icon name="{{ ionicLogoMap[supportedProtocol] }}"></ion-icon> &nbsp; &nbsp; {{supportedProtocol}}
           </ion-label>
         </ion-item>
@@ -52,7 +52,7 @@
         <ion-input type="text" *ngIf="sftpFlag" [(ngModel)]="ftpUsername" class="form-control" placeholder="Username"></ion-input>
       </ion-row>
       <ion-row>
-        <ion-input type="text" *ngIf="sftpFlag" [(ngModel)]="ftpPassword" class="form-control" placeholder="Password"></ion-input>
+        <ion-input type="password" *ngIf="sftpFlag" [(ngModel)]="ftpPassword" class="form-control" placeholder="Password"></ion-input>
       </ion-row>
       <ion-row>
         <ion-label (click)="ftpNext()"  class="back-label">
