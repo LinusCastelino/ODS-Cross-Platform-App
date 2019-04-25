@@ -132,7 +132,7 @@ export class APICallsService {
   }
 
   public listFiles(email, hash, uri, type, credential, id) : Observable<any>{
-    var URL = context+'/ls';              
+    var URL = context+'/ls';
     let body = {
       "email": email,
       "password" : hash,

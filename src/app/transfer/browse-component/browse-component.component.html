@@ -61,6 +61,28 @@
       </ion-row>
     </div>
 
+    <div *ngIf="mode === 'sftp-auth'" class="center ">
+      <ion-row>
+          <ion-label (click)="toggleMode()" class="back-label">
+              <b>&lt; Back</b>
+          </ion-label>
+        </ion-row>
+      <ion-row>
+        <ion-input type="text" [(ngModel)]="sftpUrl" class="form-control"  value="sftp://"></ion-input>
+      </ion-row>
+      <ion-row>
+        <ion-input type="text"  [(ngModel)]="sftpUsername" class="form-control" placeholder="Username"></ion-input>
+      </ion-row>
+      <ion-row>
+        <ion-input type="password"  [(ngModel)]="sftpPassword" class="form-control" placeholder="Password"></ion-input>
+      </ion-row>
+      <ion-row>
+        <ion-label (click)="sftpNext()"  class="back-label">
+            <b>Next &gt;</b>
+        </ion-label>
+      </ion-row>
+    </div>
+
     <div *ngIf="mode === browse_endpoint_contents">
       <ion-grid>
         <ion-row>
