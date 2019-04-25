@@ -7,6 +7,7 @@ import { ILoginResponse } from './models/ILoginResponse';
 import{ IUser } from './models/IUser';
 import { EmailValidator } from '@angular/forms';
 const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
+// const endpoint = 'http://10.84.5.89:8080';
 
 const context = endpoint + '/api/stork';
 
@@ -136,7 +137,6 @@ export class APICallsService {
       "depth" : 1,
       "id" : null
     };
-  
     if(id !== null && id !== undefined)
       body["id"] = id;
     
@@ -167,45 +167,50 @@ export class APICallsService {
     //   });
   }
 
-  public mkdir(uri,type, endpoint,  accept, fail){
-    var callback = accept;
-    // const id = getIdsFromEndpoint(endpoint);       ################ TODO
-    // this.axios.post(url+'mkdir', {
-    //     credential: endpoint.credential,
-    //     uri: encodeURI(uri),
-    //     // id: id,                                  ################3333
-    //     type: type,
-    //     // map: getMapFromEndpoint(endpoint),       ################ TODO
-    // })
-    // .then((response) => {
-    //   if(!(response.status === 200))
-    //     callback = fail;
-    //   // this.statusHandle(response, callback);
-    // })
-    // .catch((error) => {
-    //     // this.statusHandle(error, fail);
-    //   });
+  public mkdir(email, hash, uri, type, credential, id, idMap): Observable<any>{
+
+    var URL = context+'/mkdir';              
+    let body = {
+      "email": email,
+      "password" : hash,
+      "uri" : encodeURI(uri),
+      "type" : encodeURI(type),
+      "depth" : 1,
+      "id" : null,
+      "map" : idMap
+    };
+    console.log(body);
+
+    if(id !== null && id !== undefined)
+      body["id"] = id;
+    
+    if(credential !== null && credential !== undefined)
+      body["credential"] = credential;
+
+    return this.httpService.post<any>(URL,body,{headers: this.headers});
+
   }
 
-  public deleteCall(uri, endpoint, id, accept, fail){
-    console.log("screw")
-    var callback = accept;
-    // this.axios.post(url+'delete', {
-    //     credential: endpoint.credential,
-    //     uri: encodeURI(uri),
-    //     id: id,
-    //     type: getTypeFromUri(uri),
-    //     // map: getMapFromEndpoint(endpoint)               ################ TODO
-    // })
-    // .then((response) => {
-    //   if(!(response.status === 200))
-    //     callback = fail;
-    //   // this.statusHandle(response, callback);
-    // })
-    // .catch((error) => {
-        
-    //     // this.statusHandle(error, fail);
-    //   });
+  public deleteCall(email, hash, uri, type, credential, id, idMap){
+    var URL = context+'/delete';              
+    let body = {
+      "email": email,
+      "password" : hash,
+      "uri" : encodeURI(uri),
+      "type" : encodeURI(type),
+      "depth" : 1,
+      "id" : null,
+      "map" : idMap
+    };
+    console.log(body);
+
+    if(id !== null && id !== undefined)
+      body["id"] = id;
+    
+    if(credential !== null && credential !== undefined)
+      body["credential"] = credential;
+
+    return this.httpService.post<any>(URL,body,{headers: this.headers});
   }
 
 

@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../constants';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
-
+import { ToastController,AlertController } from '@ionic/angular';
 declare var window: any;
 
 @Component({
@@ -31,10 +31,10 @@ export class BrowseComponentComponent implements OnInit {
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
   driveItemIdHistory : string[] = [];
-
+  driveItemHistory : any =[];
   ftpUsername:string;
   ftpPassword:string;
-
+  newFolderName: string;
   sftpFlag:boolean=false;
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
@@ -57,12 +57,14 @@ export class BrowseComponentComponent implements OnInit {
   @Output() credHistoryEmitter : EventEmitter<string[]> = new EventEmitter<string[]>();
   @Output() driveIdHistoryEmitter : EventEmitter<string[]> = new EventEmitter<string[]>();
 
-  constructor(private apiService : APICallsService, private storage : Storage) { 
+  constructor(private apiService : APICallsService, private storage : Storage, public alertController: AlertController,
+    private toastController : ToastController ) { 
     // console.log('Mode : ' + this.mode);
   }
 
   ngOnInit() {
     console.log('Component Type : ' + this.componentType);
+    this.driveItemHistory.push({id:null,path:"googledrive:/"});
   }
 
   public showProgressBar(){
@@ -356,17 +358,109 @@ export class BrowseComponentComponent implements OnInit {
     this.emitUpdate();
   }
 
-  public mkdir(){
-    if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
-                    || this.selectedEndpoint === "GridFTP"){
-                      
-                    }
+  async mkdirAlertBox(){
+    const alert = await this.alertController.create({
+      header: 'Name',
+      //message: msg,
+      inputs: [
+        {
+          name: 'folderName',
+          type: 'text',
+          placeholder: 'Folder Name'
+        }],
+      buttons: [{
+        text: 'OK',
+        handler: data => {
+          console.log('Confirm OK: '+data.folderName);
+          this.newFolderName = data.folderName;
+          this.mkdir();
+        }
+      }],
+    });
+    await alert.present();
   }
+
+  public mkdir(){
+    this.showProgressBar();
+    if( this.selectedEndpoint === "GoogleDrive"){
+      this.apiService.mkdir(this.userEmail, this.pwdHash,  this.newFolderName, this.selectedEndpointType, 
+      {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], this.driveItemHistory)
+      .subscribe(resp =>{
+        console.log(resp)
+        this.loadContents();
+        this.hideProgressBar();
+      },
+      err => {
+        this.hideProgressBar();
+        console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
+      });            
+    }else if(this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
+        || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+
+        this.apiService.mkdir(this.userEmail, this.pwdHash, this.getDirURI()+"/"+this.newFolderName, this.selectedEndpointType, 
+        {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], this.driveItemHistory)
+        .subscribe(resp =>{
+          console.log(resp)
+          this.loadContents();
+          this.hideProgressBar();
+        },
+        err => {
+          this.hideProgressBar();
+          console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
+        }); 
+    }
+  }
+
+
+  async deleteAlertBox(){
+    const alert = await this.alertController.create({
+      header: 'Name',
+      message: "Are you sure, You want to delete?",
+      buttons: [{
+        text: 'Cancel',
+        role: 'cancel',
+      },
+      {
+        text: 'Yes',
+        handler: data => {
+          this.delete();
+        }
+      }],
+    });
+    await alert.present();
+  }
+
+  public delete(){
+    this.showProgressBar();
+    if( this.selectedEndpoint === "GoogleDrive" || this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
+        || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+      this.apiService.deleteCall(this.userEmail, this.pwdHash,  this.getDirURI(), this.selectedEndpointType, 
+      {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], this.driveItemHistory)
+      .subscribe(resp =>{
+        console.log(resp)
+        this.driveItemIdHistory.pop();
+        this.selectedCredHistory.pop();
+        this.driveItemHistory.pop();
+        this.loadContents();
+        this.hideProgressBar();
+      },
+      err => {
+        this.hideProgressBar();
+        console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
+      });            
+    }else{
+
+    }
+  }
+
 
   public loadContents(){
     this.selectedFolder = null;
     this.selectedFile = null;
     this.showProgressBar();
+    console.log(this.driveItemIdHistory)
+    console.log(this.driveItemHistory)
+
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
       this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType, 
@@ -398,7 +492,7 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public listContentsSuccess(resp : any){
-    console.log('Listing contents - ', resp);
+    // console.log('Listing contents - ', resp);
     let indexAddFn = (value, index) =>{
       value["index"] = index;
     };
@@ -408,35 +502,40 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public fileSelected(item : any){
+    console.log("ITEM1: "+item);
     if(this.componentType === 'source'){
       if(this.selectedFile !== item.name){
         if(this.selectedFile !== null){
           this.selectedCredHistory.pop();
-          if(this.selectedEndpoint === 'GoogleDrive')
+          if(this.selectedEndpoint === 'GoogleDrive'){
             this.driveItemIdHistory.pop();
+          }
+            
         }
 
         console.log("File " + item.name + " selected");
         this.highlightItem(item.index);
         this.selectedFile = item.name;  
         this.selectedCredHistory.push(item.name);
-        if(this.selectedEndpoint === 'GoogleDrive')
+        if(this.selectedEndpoint === 'GoogleDrive'){
           this.driveItemIdHistory.push(item.id);
+        }
+          
   
         this.selectedFolder = '';
       }
       this.emitUpdate();
     }
-    
   }
 
   public folderSelected(item : any){
     if(this.selectedFolder !== item.name && !this.displayProgressBar){
-
       if(this.selectedFile !== null){
         this.selectedCredHistory.pop();
-        if(this.selectedEndpoint === 'GoogleDrive')
+        if(this.selectedEndpoint === 'GoogleDrive'){
           this.driveItemIdHistory.pop();
+          this.driveItemHistory.pop();
+        }
       }
 
       this.selectedFolder = item.name;
@@ -444,8 +543,12 @@ export class BrowseComponentComponent implements OnInit {
       console.log("Folder " + item.name + " selected");
       this.highlightItem(item.index);
       this.selectedCredHistory.push(item.name);
-      if(this.selectedEndpoint === 'GoogleDrive')
+      if(this.selectedEndpoint === 'GoogleDrive'){
         this.driveItemIdHistory.push(item.id);
+        let name = this.driveItemHistory[this.driveItemHistory.length-1].path;
+        let obj = {id: item.id, path: name+item.name+"/"}
+        this.driveItemHistory.push(obj);
+      }
       this.loadContents();
     }
     this.emitUpdate();
