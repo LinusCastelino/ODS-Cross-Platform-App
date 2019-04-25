@@ -83,6 +83,7 @@ export class BrowseComponentComponent implements OnInit {
     this.selectedFolder = null;
     this.selectedFile = null;
     this.selectedItem = -1;
+    this.sftpFlag = false;
     this.selectedEndpointCreds = [];
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
@@ -94,14 +95,16 @@ export class BrowseComponentComponent implements OnInit {
     this.ftpUrl = '';
     this.selectedCred = '';
     this.selectedItem = -1;
+    this.sftpFlag = false;
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
     this.driveItemIdHistory = [];
-    this.mode = this.creds_exist_mode;
+    this.mode = this.select_endpoint_mode;
   }
 
-  public click(endpoint){
+  public selectEndpoint(endpoint){
     if(endpoint !== this.reloadTag){
+      this.clearSelection();
       console.log(endpoint + " selected.");
       this.selectedEndpoint = endpoint;
       this.selectedEndpointType = protocolToUriMap[this.selectedEndpoint];
@@ -231,7 +234,8 @@ export class BrowseComponentComponent implements OnInit {
         },
         err =>{
           console.log("Error occurred while querying the credentials list");
-          console.log(err.data);
+          console.log(err);
+          this.hideProgressBar();
           return false;
         });
       });
@@ -335,7 +339,7 @@ export class BrowseComponentComponent implements OnInit {
           if(this.selectedEndpointCreds.length-1 === 0)
             this.mode = this.select_endpoint_mode;
           else
-            this.click(this.reloadTag);    
+            this.selectEndpoint(this.reloadTag);    
           this.hideProgressBar();
         },
         err => {
@@ -348,8 +352,13 @@ export class BrowseComponentComponent implements OnInit {
   public loadCred(credential : any){
     this.selectedCred = credential.key;
     this.selectedCredHistory = [];
-    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP')
+    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP'){
+      if(this.selectedCred === undefined){
+        this.selectedCred = credential;    // fix for first time load of ftp URL
+        this.apiService.getFTPCreds(this.userEmail,this.pwdHash, this.selectedCred).subscribe();
+      }
       this.selectedCredHistory.push(this.selectedCred);
+    }
     else
       this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
     this.loadContents();
@@ -482,10 +491,13 @@ export class BrowseComponentComponent implements OnInit {
       },
       err => {
         this.hideProgressBar();
+        if(this.selectedEndpoint === "FTP")
+          this.sftpFlag = true;
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
   }
+
   public ftpNext(){
     console.log('Listing FTP server contents - '+ this.ftpUrl);
     this.loadCred(this.ftpUrl);
