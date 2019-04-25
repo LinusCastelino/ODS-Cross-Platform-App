@@ -505,6 +505,8 @@ export class BrowseComponentComponent implements OnInit {
         if(this.selectedEndpoint === "FTP")
           this.sftpFlag = true;
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
+        this.raiseToast("Login Failed.");
+        
       });
     }
   }
@@ -638,4 +640,16 @@ export class BrowseComponentComponent implements OnInit {
     this.driveIdHistoryEmitter.emit(this.driveItemIdHistory);
   }
 
+  public raiseToast(message:string){
+    this.presentToast(message);
+  }
+  
+  async presentToast(message:string) {
+    const toast = await this.toastController.create({
+      message: message,
+      position: 'bottom',
+      duration: 2000
+    });
+    toast.present();
+  }
 }    //class
