@@ -21,12 +21,11 @@ export class AdminPage implements OnInit {
   public innerHeight: any;
   rowsperPage : number = 10;
   clientsPerPage : number = 4;
+  private timer : any;
+
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController, 
       private toastController : ToastController) {
 
-    interval(2000).subscribe(x => {
-      this.queue();
-    });
   }
 
   ngOnInit() {
@@ -42,16 +41,27 @@ export class AdminPage implements OnInit {
 
     this.innerWidth = window.innerWidth;
     this.innerHeight = window.innerHeight;
-    //console.log(this.innerWidth,this.innerHeight);
     this.getNumRows(this.innerHeight);
   }
+
+  ionViewWillEnter(){
+    this.timer= this.interval();
+  }
+
+
+  interval(){
+    return setInterval(()=>{
+      this.queue();
+    },2000)
+  }
+
   getData(data):any{
       return this.storage.get(data).then(function(value) {
       return value;
       });
     }
   getNumRows(height){
-    this.rowsperPage = (height-270)/70;
+    this.rowsperPage = (height-270)/70-1;
   }
 
   public filterClientList(itemList: any[]): any[] {
@@ -211,5 +221,10 @@ export class AdminPage implements OnInit {
       duration: 1200
     });
     toast.present();
+  }
+
+  ionViewDidLeave(){
+    clearInterval(this.timer);
+    console.log("Inside Leave");
   }
 }
