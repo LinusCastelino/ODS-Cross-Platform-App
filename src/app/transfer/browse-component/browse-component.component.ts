@@ -21,6 +21,8 @@ export class BrowseComponentComponent implements OnInit {
   mode : string = this.select_endpoint_mode;
 
   ftpUrl:string = '';
+  sftpUrl:string = '';
+  credential: any = { };
   selectedEndpoint : string = '';
   selectedCred : string = '';
   selectedEndpointType : string = '';
@@ -34,6 +36,8 @@ export class BrowseComponentComponent implements OnInit {
   driveItemHistory : any =[];
   ftpUsername:string;
   ftpPassword:string;
+  sftpUsername:string;
+  sftpPassword:string;
   newFolderName: string;
   sftpFlag:boolean=false;
   startEvent : string = "loadstart";
@@ -77,6 +81,7 @@ export class BrowseComponentComponent implements OnInit {
 
   public clearSelection(){
     this.ftpUrl = '';
+    this.sftpUrl = '';
     this.selectedEndpoint = '';
     this.selectedCred = '';
     this.selectedEndpointType = '';
@@ -93,6 +98,7 @@ export class BrowseComponentComponent implements OnInit {
 
   public exitEndpoint(){
     this.ftpUrl = '';
+    this.sftpUrl = '';
     this.selectedCred = '';
     this.selectedItem = -1;
     this.sftpFlag = false;
@@ -145,7 +151,8 @@ export class BrowseComponentComponent implements OnInit {
         this.googleOAuthInit();
       }
       else if(this.selectedEndpoint === "SFTP"){
-  
+        console.log("In SFTP");
+        this.mode = 'sftp-auth';
       }
       else if(this.selectedEndpoint === "FTP"){
         console.log("In FTP");
@@ -484,8 +491,12 @@ export class BrowseComponentComponent implements OnInit {
       });
     }
     else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+      this.credential=null;
+      if(this.selectedEndpoint === "SFTP"){
+        this.credential = {type: "userinfo", username: this.sftpUsername, password: this.sftpPassword}
+      }
       this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
-        null, null).subscribe(resp =>{
+        this.credential, null).subscribe(resp =>{
           this.listContentsSuccess(resp);
           this.hideProgressBar();
       },
@@ -501,6 +512,11 @@ export class BrowseComponentComponent implements OnInit {
   public ftpNext(){
     console.log('Listing FTP server contents - '+ this.ftpUrl);
     this.loadCred(this.ftpUrl);
+  }
+
+  public sftpNext(){
+    console.log('Listing SFTP server contents - '+ this.ftpUrl);
+    this.loadCred(this.sftpUrl);
   }
 
   public listContentsSuccess(resp : any){

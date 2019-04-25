@@ -36,7 +36,8 @@ export const supportedProtocols = ["Dropbox", "GoogleDrive", "SFTP", "FTP", "Gri
 export const protocolToUriMap = {
 	"Dropbox" : "dropbox:///",
 	"GoogleDrive" : "googledrive:/",
-	"FTP" : "ftp://" 
+	"FTP" : "ftp://",
+	"SFTP" : "sftp://" 
 }
 export const ionicLogoMap ={
 	"Dropbox" : "logo-dropbox",
