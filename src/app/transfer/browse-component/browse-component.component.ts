@@ -3,6 +3,7 @@ import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../consta
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
 import { ToastController,AlertController } from '@ionic/angular';
+import { LoginPage } from 'src/app/login/login.page';
 declare var window: any;
 
 @Component({
@@ -490,11 +491,8 @@ export class BrowseComponentComponent implements OnInit {
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
-    else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+    else if(this.selectedEndpoint === "FTP"){
       this.credential=null;
-      if(this.selectedEndpoint === "SFTP"){
-        this.credential = {type: "userinfo", username: this.sftpUsername, password: this.sftpPassword}
-      }
       this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
         this.credential, null).subscribe(resp =>{
           this.listContentsSuccess(resp);
@@ -506,8 +504,27 @@ export class BrowseComponentComponent implements OnInit {
           this.sftpFlag = true;
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
         this.raiseToast("Login Failed.");
-        
       });
+    } else if(this.selectedEndpoint === "SFTP"){
+      if(this.sftpUsername!=null && this.sftpUsername!="" && this.sftpPassword!=null && this.sftpPassword!=""){
+        this.credential = {type: "userinfo", username: this.sftpUsername, password: this.sftpPassword}
+        this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
+        this.credential, null).subscribe(resp =>{
+          this.listContentsSuccess(resp);
+          this.hideProgressBar();
+        },
+        err => {
+          this.hideProgressBar();
+          console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
+          this.raiseToast("Login Failed.");
+        });
+        this.sftpUsername=null;
+        this.sftpPassword=null;
+      }else{
+        this.sftpUrl = this.selectedCred;
+        this.mode = 'sftp-auth';
+        this.hideProgressBar();
+      }
     }
   }
 
