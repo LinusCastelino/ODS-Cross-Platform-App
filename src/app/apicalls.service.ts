@@ -6,7 +6,7 @@ import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
 const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
-// const endpoint = 'http://192.168.1.196:8080';
+// const endpoint = 'http://10.84.20.158:8080';
 
 const context = endpoint + '/api/stork';
 
@@ -270,12 +270,16 @@ export class APICallsService {
   }
 
   public restartJob(jobID, email, hash){
-    console.log(jobID,email,hash);
     var URL = context+'/restart';
     let body = JSON.stringify({job_id: jobID,email: email,password: hash});
     return this.httpService.post(URL,body,{headers: this.headers});
   }
 
+  public deleteJob(jobID, email, hash){
+    var URL = context+'/deleteJob';
+    let body = JSON.stringify({job_id: jobID,email: email,password: hash});
+    return this.httpService.post(URL,body,{headers: this.headers});
+  }
   public getClientInfo(email, hash){
     console.log(email,hash);
     var URL = context+'/user';

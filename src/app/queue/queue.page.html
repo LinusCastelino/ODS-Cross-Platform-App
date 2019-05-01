@@ -20,7 +20,7 @@
 
     <ion-grid *ngFor="let x of filterList(qResp) | paginate: { itemsPerPage: rowsperPage, currentPage: p }; let i = index;"  
                           [ngClass]="(i % 2 == 0) ? 'oddRowClass' : 'evenRowClass'" >
-      <ion-row>
+      <ion-row (click)="showJobInfo(x.job_id)">
         <ion-col align-self-center size="2"> 
           {{x.job_id}}
         </ion-col>
@@ -31,7 +31,7 @@
           <ion-progress-bar  *ngIf="x.progressbar == 0 || x.status =='removed' || x.status == 'failed'" color="danger" value="1" style="height: 10px; border-radius: 5px"></ion-progress-bar>
         </ion-col>
 
-        <ion-col align-self-center size="3" justify-content-center style="text-align:center" (click)="showJobInfo(x.job_id)">
+        <ion-col align-self-center size="3" justify-content-center style="text-align:center" >
             {{x.progressPercent}}%
             <ion-icon name="arrow-dropdown" *ngIf="x.job_id != showInfoJobId"></ion-icon>
             <ion-icon name="arrow-dropup" *ngIf="x.job_id == showInfoJobId"></ion-icon>

@@ -377,7 +377,7 @@ export class BrowseComponentComponent implements OnInit {
 
   async mkdirAlertBox(){
     const alert = await this.alertController.create({
-      header: 'Name',
+      header: 'Create Directory',
       //message: msg,
       inputs: [
         {
@@ -386,6 +386,9 @@ export class BrowseComponentComponent implements OnInit {
           placeholder: 'Folder Name'
         }],
       buttons: [{
+        text: 'Cancel',
+        role: 'cancel',
+        },{
         text: 'OK',
         handler: data => {
           console.log('Confirm OK: '+data.folderName);
@@ -430,21 +433,46 @@ export class BrowseComponentComponent implements OnInit {
 
 
   async deleteAlertBox(){
-    const alert = await this.alertController.create({
-      header: 'Name',
-      message: "Are you sure, You want to delete?",
-      buttons: [{
-        text: 'Cancel',
-        role: 'cancel',
-      },
-      {
-        text: 'Yes',
-        handler: data => {
-          this.delete();
-        }
-      }],
-    });
-    await alert.present();
+    var msg;
+    var head;
+    if(this.selectedFile !=null && this.selectedFile != ""){
+      msg = "Are you sure, You want to delete File <b>"+this.selectedFile+"</b>?";
+      head = "Delete File";
+    }else if(this.selectedCredHistory.length == 1 || this.selectedCredHistory.length == 0){
+      msg = null;
+      head = "Delete Folder";
+    }else{
+      var folder = this.selectedCredHistory[this.selectedCredHistory.length-1]
+      msg = "Are you sure, You want to delete Folder <b>"+folder+"</b>?";
+      head = "Delete Folder";
+    }
+    if(msg!=null){
+      const alert = await this.alertController.create({
+        header: head,
+        message: msg,
+        buttons: [{
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Yes',
+          handler: data => {
+            this.delete();
+          }
+        }],
+      });
+      await alert.present();
+    }else{
+      const alert = await this.alertController.create({
+        header: head,
+        message: "You can not delete the root folder",
+        buttons: [{
+          text: 'OK',
+          role: 'OK',
+        }],
+      });
+      await alert.present();
+    }
   }
 
   public delete(){

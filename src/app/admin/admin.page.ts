@@ -48,7 +48,6 @@ export class AdminPage implements OnInit {
     this.timer= this.interval();
   }
 
-
   interval(){
     return setInterval(()=>{
       this.queue();

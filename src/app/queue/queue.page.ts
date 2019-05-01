@@ -31,8 +31,6 @@ export class QueuePage implements OnInit {
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController,
     private toastController : ToastController) {
-      if(!this.timer)
-        this.timer= this.interval();
   }
 
   ngOnInit() {
@@ -72,7 +70,6 @@ export class QueuePage implements OnInit {
       });
   }
 
-  
   public searchJob(){
     console.log(this.searchQuery)
   }
@@ -91,6 +88,7 @@ export class QueuePage implements OnInit {
     }
     return result;
   }
+
   public queue(){
     this.apiService.queue(this.email,this.hash).subscribe(
     resp => {
@@ -105,12 +103,12 @@ export class QueuePage implements OnInit {
         }
         var source = resp[x].src.uri.split("/");
         if(source.length >1)
-          resp[x].name = source[source.length-1]
+          resp[x].name = decodeURI(source[source.length-1])
 
         this.qResp = this.qResp.filter( h => h.job_id !== resp[x].job_id);
-        //if(resp[x].status != "removed"){
+        if(!resp[x].deleted){
           this.qResp.push(resp[x]);
-        //}
+        }
       });
       this.qResp.sort((a, b) => { return b.job_id - a.job_id});
     },
@@ -121,24 +119,33 @@ export class QueuePage implements OnInit {
 
   public restartJob(jobid){
     console.log("restart",jobid);
-    var email = this.storage.get('email');
     this.apiService.restartJob(jobid,this.email,this.hash).subscribe(
     resp => {
       var temp : any[] = Object.keys(resp);
       temp.map((x)=>{
-        console.log("Success", resp[x]);
-        this.raiseToast("Job restarted with Id");
+        this.raiseToast("Job ["+jobid+"] restarted.");
       });
     },
     err => {
       console.log("Fail",err);
-      this.raiseToast("Job Restart Failed");
+      this.raiseToast("Job Restart Failed. Please check credentials.");
     });
   }
 
   public deleteJob(jobid){
     console.log("delete",jobid);
-    this.raiseToast("Job "+jobid+" delete in progress.");
+    this.apiService.deleteJob(jobid,this.email,this.hash).subscribe(
+    resp => {
+      var temp : any[] = Object.keys(resp);
+      temp.map((x)=>{
+        this.queue();
+        this.raiseToast("Job ["+jobid+"] deleted.");
+      });
+    },
+    err => {
+      console.log("Fail",err);
+      this.raiseToast("Job Delete Failed.");
+    });
   }
 
   public showJobInfo(jobid){
@@ -169,7 +176,7 @@ export class QueuePage implements OnInit {
       var startedDate = new Date(obj.times.started);
       var completedDate = new Date(obj.times.completed);
   
-      var msg = "<div class='alertBox'><b>Source:</b> "+obj.src.uri+"</br><b>Destination:</b> "+obj.dest.uri
+      var msg = "<div class='alertBox'><b>Source:</b> "+decodeURI(obj.src.uri)+"</br><b>Destination:</b> "+decodeURI(obj.dest.uri)
                 +"</br><b>Instant Speed:</b> "+this.renderSpeed(obj.bytes.inst)+"</br><b>Average Speed:</b> "+this.renderSpeed(obj.bytes.avg)
                 +"</br><b>Scheduled Time:</b> "+this.getFormattedDate(scheduledDate)+"</br><b>Started Time:</b> "+this.getFormattedDate(startedDate)
                 +"</br><b>Completed Time:</b> "+this.getFormattedDate(completedDate)+"</br><b>Time Duration:</b> "+duration
