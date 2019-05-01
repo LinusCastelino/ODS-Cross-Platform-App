@@ -3,7 +3,7 @@
   <ion-grid>
       <ion-row>
           <ion-col size="12" col-3 style="padding: unset; border-radius: 4px;">
-              <ion-searchbar style="padding: unset;" color="dark" [(ngModel)]="searchQuery" (change)="searchJob()" autocorrect="off" placeholder="Search by JobId"></ion-searchbar>
+              <ion-searchbar style="padding: unset;" color="dark" [(ngModel)]="searchQuery" (change)="searchJob()" autocorrect="off" placeholder="Search by JobId / File Name"></ion-searchbar>
           </ion-col>
        </ion-row>
 
@@ -43,10 +43,10 @@
       <ion-col col-2 justify-content-right style="text-align:center" size ="4">
           <ion-icon name="information-circle-outline" (click)="infoJob(x.job_id)" style="color:rgb(24, 147, 168); font-size: larger"></ion-icon>
           &nbsp;
-          <ion-icon  *ngIf="x.status != processing" name="refresh" (click)="restartJob(x.job_id)" style="color:green; font-size: larger"></ion-icon>
+          <ion-icon  *ngIf="x.status != 'processing'" name="refresh" (click)="restartJob(x.job_id)" style="color:green; font-size: larger"></ion-icon>
           &nbsp;
-          <ion-icon *ngIf="x.status != processing" name="trash" (click)="deleteJob(x.job_id)" style="color:rgb(231, 95, 95); font-size: larger"></ion-icon>
-          <ion-icon *ngIf="x.status == processing" name="close-circle" (click)="cancelJob(x.job_id)" style="color:red; font-size: larger"></ion-icon>
+          <ion-icon *ngIf="x.status != 'processing'" name="trash" (click)="deleteJob(x.job_id)" style="color:rgb(231, 95, 95); font-size: larger"></ion-icon>
+          <ion-icon *ngIf="x.status == 'processing'" name="close-circle" (click)="cancelJob(x.job_id)" style="color:red; font-size: larger"></ion-icon>
       </ion-col>
     </ion-row>
     </ion-grid>

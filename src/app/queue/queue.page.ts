@@ -31,7 +31,8 @@ export class QueuePage implements OnInit {
 
   constructor(private apiService:APICallsService, private storage: Storage, public alertController: AlertController,
     private toastController : ToastController) {
-    
+      if(!this.timer)
+        this.timer= this.interval();
   }
 
   ngOnInit() {
@@ -44,8 +45,7 @@ export class QueuePage implements OnInit {
         self.queue();
       });
     });
-
-    this.timer= this.interval();
+    
     this.innerWidth = window.innerWidth;
     this.innerHeight = window.innerHeight;
     this.getNumRows(this.innerHeight);
