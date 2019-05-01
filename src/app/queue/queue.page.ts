@@ -51,6 +51,11 @@ export class QueuePage implements OnInit {
     this.getNumRows(this.innerHeight);
   }
 
+  ionViewWillEnter(){
+    this.timer= this.interval();
+  }
+
+
   interval(){
     return setInterval(()=>{
       this.queue();
@@ -58,7 +63,7 @@ export class QueuePage implements OnInit {
   }
 
   getNumRows(height){
-    this.rowsperPage = (height-225)/50;
+    this.rowsperPage = (height-225)/50-1;
   }
   
   getData(data):any{
@@ -213,9 +218,9 @@ export class QueuePage implements OnInit {
     toast.present();
   }
 
-  ngOnDestroy(){
+  ionViewDidLeave(){
     clearInterval(this.timer);
-    console.log("Inside Destroy");
+    console.log("Inside Leave");
   }
 }
 

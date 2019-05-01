@@ -6,7 +6,7 @@ import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
 const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
-// const endpoint = 'http://10.84.5.89:8080';
+// const endpoint = 'http://192.168.1.196:8080';
 
 const context = endpoint + '/api/stork';
 
@@ -132,7 +132,7 @@ export class APICallsService {
   }
 
   public listFiles(email, hash, uri, type, credential, id) : Observable<any>{
-    var URL = context+'/ls';              
+    var URL = context+'/ls';
     let body = {
       "email": email,
       "password" : hash,

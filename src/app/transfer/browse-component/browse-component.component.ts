@@ -3,6 +3,7 @@ import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../consta
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
 import { ToastController,AlertController } from '@ionic/angular';
+import { LoginPage } from 'src/app/login/login.page';
 declare var window: any;
 
 @Component({
@@ -21,6 +22,8 @@ export class BrowseComponentComponent implements OnInit {
   mode : string = this.select_endpoint_mode;
 
   ftpUrl:string = '';
+  sftpUrl:string = '';
+  credential: any = { };
   selectedEndpoint : string = '';
   selectedCred : string = '';
   selectedEndpointType : string = '';
@@ -34,6 +37,8 @@ export class BrowseComponentComponent implements OnInit {
   driveItemHistory : any =[];
   ftpUsername:string;
   ftpPassword:string;
+  sftpUsername:string;
+  sftpPassword:string;
   newFolderName: string;
   sftpFlag:boolean=false;
   startEvent : string = "loadstart";
@@ -77,6 +82,7 @@ export class BrowseComponentComponent implements OnInit {
 
   public clearSelection(){
     this.ftpUrl = '';
+    this.sftpUrl = '';
     this.selectedEndpoint = '';
     this.selectedCred = '';
     this.selectedEndpointType = '';
@@ -93,6 +99,7 @@ export class BrowseComponentComponent implements OnInit {
 
   public exitEndpoint(){
     this.ftpUrl = '';
+    this.sftpUrl = '';
     this.selectedCred = '';
     this.selectedItem = -1;
     this.sftpFlag = false;
@@ -145,7 +152,8 @@ export class BrowseComponentComponent implements OnInit {
         this.googleOAuthInit();
       }
       else if(this.selectedEndpoint === "SFTP"){
-  
+        console.log("In SFTP");
+        this.mode = 'sftp-auth';
       }
       else if(this.selectedEndpoint === "FTP"){
         console.log("In FTP");
@@ -483,9 +491,10 @@ export class BrowseComponentComponent implements OnInit {
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
-    else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+    else if(this.selectedEndpoint === "FTP"){
+      this.credential=null;
       this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
-        null, null).subscribe(resp =>{
+        this.credential, null).subscribe(resp =>{
           this.listContentsSuccess(resp);
           this.hideProgressBar();
       },
@@ -494,13 +503,39 @@ export class BrowseComponentComponent implements OnInit {
         if(this.selectedEndpoint === "FTP")
           this.sftpFlag = true;
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
+        this.raiseToast("Login Failed.");
       });
+    } else if(this.selectedEndpoint === "SFTP"){
+      if(this.sftpUsername!=null && this.sftpUsername!="" && this.sftpPassword!=null && this.sftpPassword!=""){
+        this.credential = {type: "userinfo", username: this.sftpUsername, password: this.sftpPassword}
+        this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
+        this.credential, null).subscribe(resp =>{
+          this.listContentsSuccess(resp);
+          this.hideProgressBar();
+        },
+        err => {
+          this.hideProgressBar();
+          console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
+          this.raiseToast("Login Failed.");
+        });
+        this.sftpUsername=null;
+        this.sftpPassword=null;
+      }else{
+        this.sftpUrl = this.selectedCred;
+        this.mode = 'sftp-auth';
+        this.hideProgressBar();
+      }
     }
   }
 
   public ftpNext(){
     console.log('Listing FTP server contents - '+ this.ftpUrl);
     this.loadCred(this.ftpUrl);
+  }
+
+  public sftpNext(){
+    console.log('Listing SFTP server contents - '+ this.ftpUrl);
+    this.loadCred(this.sftpUrl);
   }
 
   public listContentsSuccess(resp : any){
@@ -622,4 +657,16 @@ export class BrowseComponentComponent implements OnInit {
     this.driveIdHistoryEmitter.emit(this.driveItemIdHistory);
   }
 
+  public raiseToast(message:string){
+    this.presentToast(message);
+  }
+  
+  async presentToast(message:string) {
+    const toast = await this.toastController.create({
+      message: message,
+      position: 'bottom',
+      duration: 2000
+    });
+    toast.present();
+  }
 }    //class
