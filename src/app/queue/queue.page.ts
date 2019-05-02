@@ -138,6 +138,7 @@ export class QueuePage implements OnInit {
     resp => {
       var temp : any[] = Object.keys(resp);
       temp.map((x)=>{
+        this.qResp = this.qResp.filter( h => h.job_id !== jobid);
         this.queue();
         this.raiseToast("Job ["+jobid+"] deleted.");
       });
