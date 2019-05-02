@@ -6,7 +6,6 @@ import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
 const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
-// const endpoint = 'http://10.84.20.158:8080';
 
 const context = endpoint + '/api/stork';
 

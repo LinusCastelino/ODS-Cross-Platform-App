@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { APICallsService } from '../apicalls.service';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
-import { CookieService } from 'angular2-cookie/core';
 import { ToastController } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
 
@@ -42,8 +41,7 @@ export class LoginPage implements OnInit {
   subscription : any;
 
   constructor(private apiService:APICallsService, private storage : Storage, private router:Router,
-              private cookieService: CookieService, private toastController : ToastController,
-              private platform : Platform) {
+              private toastController : ToastController, private platform : Platform) {
     
     // route user to tabs page if back button is clicked on any of the transfer pages
     this.storage.get('loggedIn').then(loggedIn=>{
@@ -91,8 +89,6 @@ export class LoginPage implements OnInit {
     }else{
       this.apiService.login(this.loginUsername,this.password).subscribe(
         resp => {
-          this.cookieService.put('email',resp.email);
-          this.cookieService.put('hash', resp.hash);
           this.storage.set('email',resp.email)
             .then(()=>{
               this.storage.set('hash',resp.hash)
