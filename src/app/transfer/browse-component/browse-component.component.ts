@@ -3,7 +3,6 @@ import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../consta
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
 import { ToastController,AlertController } from '@ionic/angular';
-import { LoginPage } from 'src/app/login/login.page';
 declare var window: any;
 
 @Component({
@@ -23,7 +22,7 @@ export class BrowseComponentComponent implements OnInit {
 
   ftpUrl:string = '';
   sftpUrl:string = '';
-  credential: any = { };
+  credential: any = null;
   selectedEndpoint : string = '';
   selectedCred : string = '';
   selectedEndpointType : string = '';
@@ -38,9 +37,9 @@ export class BrowseComponentComponent implements OnInit {
   ftpUsername:string;
   ftpPassword:string;
   sftpUsername:string;
-  sftpPassword:string;
-  newFolderName: string;
-  sftpFlag:boolean=false;
+  sftpPassword:string;     // placeholder for user's sftp password
+  newFolderName: string;    // placeholder for new folder name on click of new folder button
+  sftpFlag:boolean=false;    // a flag to toggle credentials text boxes if the ftp server is a secure ftp
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
 
@@ -90,6 +89,9 @@ export class BrowseComponentComponent implements OnInit {
     this.selectedFile = null;
     this.selectedItem = -1;
     this.sftpFlag = false;
+    this.sftpUsername = null;
+    this.sftpPassword = null;
+    this.credential = null;
     this.selectedEndpointCreds = [];
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
@@ -101,8 +103,11 @@ export class BrowseComponentComponent implements OnInit {
     this.ftpUrl = '';
     this.sftpUrl = '';
     this.selectedCred = '';
+    this.credential = null;
     this.selectedItem = -1;
     this.sftpFlag = false;
+    this.sftpUsername = null;
+    this.sftpPassword = null;
     this.selectedCredContents = [];
     this.selectedCredHistory = [];
     this.driveItemIdHistory = [];
@@ -123,13 +128,10 @@ export class BrowseComponentComponent implements OnInit {
       .then((creds) => {
         if(creds){
           console.log("Credential for " + endpoint + " already exists");
-          // this.getCredentials()
-          //     .then(creds =>{
-                console.log(creds);
-                this.mode = this.creds_exist_mode;
-                this.selectedEndpointCreds = creds;
-                this.hideProgressBar();
-              // });
+            console.log(creds);
+            this.mode = this.creds_exist_mode;
+            this.selectedEndpointCreds = creds;
+            this.hideProgressBar();
         }
         else{
           this.startAuthentication();
@@ -152,11 +154,14 @@ export class BrowseComponentComponent implements OnInit {
         this.googleOAuthInit();
       }
       else if(this.selectedEndpoint === "SFTP"){
-        console.log("In SFTP");
+        this.sftpUrl = null;
+        this.sftpUsername=null;
+        this.sftpPassword=null;
         this.mode = 'sftp-auth';
+        this.hideProgressBar();
       }
       else if(this.selectedEndpoint === "FTP"){
-        console.log("In FTP");
+        this.ftpUrl = null;
         this.mode = 'ftp-auth';
       }
       else if(this.selectedEndpoint === "GridFTP"){
@@ -222,14 +227,14 @@ export class BrowseComponentComponent implements OnInit {
           console.log("Credentials list : " + JSON.stringify(credList));
           
           var checker = (key) : boolean => {
-            return key.toLowerCase().indexOf(val) != -1;
+            return key.toLowerCase().startsWith(val);
           };
 
           if(credList.some(checker)){
             let resultArr : any[] = [];
             let index : number = 0;
             var filter = (key) => {
-              if(key.toLowerCase().indexOf(val) != -1){
+              if(key.toLowerCase().startsWith(val)){
                 resultArr.push({'name' : key, 'key' : key, 'index' : index++});
               }
             };
@@ -357,21 +362,35 @@ export class BrowseComponentComponent implements OnInit {
       });
   }
 
-  public loadCred(credential : any){
-    this.selectedCred = credential.key;
+  public loadCred(cred : any){
+    this.selectedCred = cred.key;
     this.selectedCredHistory = [];
-    if(this.selectedEndpoint === 'FTP' || this.selectedEndpoint === 'SFTP'){
-      if(this.selectedCred === undefined){
-        this.selectedCred = credential;    // fix for first time load of ftp URL
-        this.apiService.getFTPCreds(this.userEmail,this.pwdHash, this.selectedCred).subscribe();
-      }
+
+    if(this.selectedEndpoint === 'FTP' && this.selectedCred === undefined){ 
+      // fix for first time load of ftp by entering URL
+      this.selectedCred = cred;    
+      // making a call to API so that the newly entered cred gets saved in database
+      this.apiService.getFTPCreds(this.userEmail,this.pwdHash, this.selectedCred).subscribe();
       this.selectedCredHistory.push(this.selectedCred);
     }
-    else
+    else if(this.selectedEndpoint === 'SFTP' && (this.sftpUsername === null || this.sftpPassword === null)){
+      this.sftpUrl = this.selectedCred;
+      this.mode = 'sftp-auth';
+      this.hideProgressBar();
+    }
+    else if(this.selectedEndpoint === 'SFTP' && this.sftpUsername !== null && this.sftpPassword !== null){
+      this.selectedCredHistory.push(cred);
+    }
+    else{
       this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
-    this.loadContents();
 
-    this.credentialEmitter.emit(credential.key);
+      //for Dropbox and Drive create credential object and send to parent
+      // for sftp credential is set in sftpNext()
+      this.credential = {"uuid" : cred.key, "name" : cred.name};
+      this.credentialEmitter.emit(this.credential);
+    }
+
+    this.loadContents();
     this.emitUpdate();
   }
 
@@ -416,7 +435,6 @@ export class BrowseComponentComponent implements OnInit {
       });            
     }else if(this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
         || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-
         this.apiService.mkdir(this.userEmail, this.pwdHash, this.getDirURI()+"/"+this.newFolderName, this.selectedEndpointType, 
         {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], this.driveItemHistory)
         .subscribe(resp =>{
@@ -519,8 +537,7 @@ export class BrowseComponentComponent implements OnInit {
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
       });
     }
-    else if(this.selectedEndpoint === "FTP"){
-      this.credential=null;
+    else if(this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
       this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
         this.credential, null).subscribe(resp =>{
           this.listContentsSuccess(resp);
@@ -533,36 +550,19 @@ export class BrowseComponentComponent implements OnInit {
         console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
         this.raiseToast("Login Failed.");
       });
-    } else if(this.selectedEndpoint === "SFTP"){
-      if(this.sftpUsername!=null && this.sftpUsername!="" && this.sftpPassword!=null && this.sftpPassword!=""){
-        this.credential = {type: "userinfo", username: this.sftpUsername, password: this.sftpPassword}
-        this.apiService.listFiles(this.userEmail, this.pwdHash, this.getDirURI(), this.selectedEndpointType,
-        this.credential, null).subscribe(resp =>{
-          this.listContentsSuccess(resp);
-          this.hideProgressBar();
-        },
-        err => {
-          this.hideProgressBar();
-          console.log("Error occurred while executing ls for " + this.select_endpoint_mode);
-          this.raiseToast("Login Failed.");
-        });
-        this.sftpUsername=null;
-        this.sftpPassword=null;
-      }else{
-        this.sftpUrl = this.selectedCred;
-        this.mode = 'sftp-auth';
-        this.hideProgressBar();
-      }
-    }
+    } 
   }
 
   public ftpNext(){
     console.log('Listing FTP server contents - '+ this.ftpUrl);
+    this.credential = null;
     this.loadCred(this.ftpUrl);
   }
 
   public sftpNext(){
-    console.log('Listing SFTP server contents - '+ this.ftpUrl);
+    console.log('Listing SFTP server contents - '+ this.sftpUrl);
+    this.credential = {type: "userinfo", username: this.sftpUsername, password: this.sftpPassword};
+    this.credentialEmitter.emit(this.credential);
     this.loadCred(this.sftpUrl);
   }
 
@@ -643,8 +643,6 @@ export class BrowseComponentComponent implements OnInit {
 
   public contentWindowBack(){
     this.selectedFolder = '';
-    // this.selectedCredHistory.pop();
-    // this.driveItemIdHistory.pop();
     if(this.selectedFile !== null || this.selectedFile !== ''){
       this.selectedFile = '';
       this.selectedCredHistory.pop();
@@ -653,6 +651,7 @@ export class BrowseComponentComponent implements OnInit {
     if(this.selectedCredHistory.length === 0){
       this.mode = this.creds_exist_mode;
       this.driveItemIdHistory = [];
+      this.credential = null;
     } 
     else
       this.loadContents(); 

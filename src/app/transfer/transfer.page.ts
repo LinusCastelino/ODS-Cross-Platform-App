@@ -22,14 +22,14 @@ export class TransferPage implements OnInit {
   srcEndpointOpen : boolean = true;
   srcSelection : string = null;
   srcEndpointType : string = null;
-  srcCredential : string = null;
+  srcCredential : any = null;
   srcCredHistory : string[] = [];
   srcDriveIdHistory : string[] = [];
 
   destEndpointOpen : boolean = true;
   destSelection : string = null;
   destEndpointType : string = null;
-  destCredential : string = null;
+  destCredential : any = null;
   destCredHistory : string[] = [];
   destDriveIdHistory : string[] = [];
 
@@ -98,8 +98,7 @@ export class TransferPage implements OnInit {
   public initiateTransfer(){
     if(this.srcSelection === null || this.srcSelection === '' ||
        this.destSelection === null || this.destSelection === '' ||
-       this.srcCredential === null || this.destCredential === '' ||
-       this.destCredential === null || this.destCredential === ''){
+       this.srcCredential === null || this.destCredential === null){
       // if initiate transfer button is clicked without selecting endpoints
       this.presentToast('Please select valid source and destination endpoints.');
     }
@@ -108,8 +107,8 @@ export class TransferPage implements OnInit {
       let src = {};
       let dest = {};
 
-      src["credential"] = {"uuid" : this.srcCredential}; 
-      dest["credential"] = {"uuid" : this.destCredential};
+      src["credential"] = this.srcCredential; 
+      dest["credential"] = this.destCredential;
 
       src["type"] = this.srcEndpointType;
       dest["type"] = this.destEndpointType;
