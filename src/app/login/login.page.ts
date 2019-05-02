@@ -99,8 +99,8 @@ export class LoginPage implements OnInit {
                         resp=>{
                           console.log('isAdmin - ' + resp);
                           this.storage.set('isAdmin',resp).then(()=>{
-                            this.router.navigate(['/tabs'], { skipLocationChange: true });
                             this.setAllNull();
+                            this.router.navigate(['/tabs'], { skipLocationChange: true });
                           });
                         },err=>{
                           console.log("Is Admin Fail");
