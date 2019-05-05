@@ -97,9 +97,12 @@ export class TransferPage implements OnInit {
 
   public initiateTransfer(){
     if(this.srcSelection === null || this.srcSelection === '' ||
-       this.destSelection === null || this.destSelection === '' ||
-       this.srcCredential === null || this.destCredential === null){
+       this.destSelection === null || this.destSelection === ''){
       // if initiate transfer button is clicked without selecting endpoints
+      console.log("Error in triggering transfer");
+      console.log(this.srcSelection);
+      console.log(this.destSelection);
+
       this.presentToast('Please select valid source and destination endpoints.');
     }
     else{
@@ -107,8 +110,11 @@ export class TransferPage implements OnInit {
       let src = {};
       let dest = {};
 
-      src["credential"] = this.srcCredential; 
-      dest["credential"] = this.destCredential;
+      if(!(this.srcCredential ===null || this.srcCredential === undefined))
+        src["credential"] = this.srcCredential; 
+
+      if(!(this.destCredential ===null || this.destCredential === undefined))
+        dest["credential"] = this.destCredential;
 
       src["type"] = this.srcEndpointType;
       dest["type"] = this.destEndpointType;
