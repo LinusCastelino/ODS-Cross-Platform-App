@@ -366,12 +366,19 @@ export class BrowseComponentComponent implements OnInit {
     this.selectedCred = cred.key;
     this.selectedCredHistory = [];
 
-    if(this.selectedEndpoint === 'FTP' && this.selectedCred === undefined){ 
-      // fix for first time load of ftp by entering URL
-      this.selectedCred = cred;    
-      // making a call to API so that the newly entered cred gets saved in database
-      this.apiService.getFTPCreds(this.userEmail,this.pwdHash, this.selectedCred).subscribe();
-      this.selectedCredHistory.push(this.selectedCred);
+    if(this.selectedEndpoint === 'FTP'){
+      if(this.selectedCred === undefined){
+        // fix for first time load of ftp by entering URL
+        this.selectedCred = cred;    
+        // making a call to API so that the newly entered cred gets saved in database
+        this.apiService.getFTPCreds(this.userEmail,this.pwdHash, this.selectedCred).subscribe();
+        this.selectedCredHistory.push(this.selectedCred);
+      }
+      else{
+        this.selectedCredHistory.push(this.selectedCred);
+        this.credential = {};
+        this.credentialEmitter.emit(this.credential);
+      }
     }
     else if(this.selectedEndpoint === 'SFTP' && (this.sftpUsername === null || this.sftpPassword === null)){
       this.sftpUrl = this.selectedCred;
