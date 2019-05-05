@@ -122,16 +122,19 @@ export class BrowseComponentComponent implements OnInit {
       this.selectedEndpointType = protocolToUriMap[this.selectedEndpoint];
       this.typeEmitter.emit(this.selectedEndpointType);
     }
+    else{
+      console.log('Reloading....')
+    }
 
     this.showProgressBar();
     this.checkIfCredentialsExist()
       .then((creds) => {
         if(creds){
           console.log("Credential for " + endpoint + " already exists");
-            console.log(creds);
-            this.mode = this.creds_exist_mode;
-            this.selectedEndpointCreds = creds;
-            this.hideProgressBar();
+          console.log(JSON.stringify(creds));
+          this.selectedEndpointCreds = creds;
+          this.mode = this.creds_exist_mode;
+          this.hideProgressBar();
         }
         else{
           this.startAuthentication();
@@ -306,10 +309,15 @@ export class BrowseComponentComponent implements OnInit {
       this.hideProgressBar();
       console.log("Expected error occurred");
     }
+
+    this.showProgressBar();
+    setTimeout(()=>{
+      this.selectEndpoint(this.reloadTag)}
+      , 1000); // wait for 1 second so that the redirection error occurs before sending the creds request.
   }
   
   /***
-   * This method opens the OAuth window for Dropbox, Google Drive and Globus
+   * This method opens the OAuth window for Dropbox and Globus
    * Reference - https://www.thepolyglotdeveloper.com/2016/01/using-an-oauth-2-0-service-within-an-ionic-2-mobile-app/
    */
   public performOAuth(oauthLink : string) : Promise<any>{
@@ -346,20 +354,20 @@ export class BrowseComponentComponent implements OnInit {
         deleteAction = 'deleteHistory';
       }
 
-      this.apiService.deleteCredential(deleteAction, deleteKey,this.userEmail,this.pwdHash).subscribe(
-        resp=>{
-          console.log(deleteKey + " deleted successfully");
-          if(this.selectedEndpointCreds.length-1 === 0)
-            this.mode = this.select_endpoint_mode;
-          else
-            this.selectEndpoint(this.reloadTag);    
-          this.hideProgressBar();
-        },
-        err => {
-          this.hideProgressBar();
-          console.log("Error encountered while deleting " + deleteKey);
-          console.log(err);
-      });
+    this.apiService.deleteCredential(deleteAction, deleteKey,this.userEmail,this.pwdHash).subscribe(
+      resp=>{
+        console.log(deleteKey + " deleted successfully");
+        if(this.selectedEndpointCreds.length-1 === 0)
+          this.mode = this.select_endpoint_mode;
+        else
+          this.selectEndpoint(this.reloadTag);    
+        this.hideProgressBar();
+      },
+      err => {
+        this.hideProgressBar();
+        console.log("Error encountered while deleting " + deleteKey);
+        console.log(err);
+    });
   }
 
   public loadCred(cred : any){
