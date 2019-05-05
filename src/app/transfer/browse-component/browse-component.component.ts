@@ -440,10 +440,9 @@ export class BrowseComponentComponent implements OnInit {
         .subscribe(resp =>{
           console.log(resp)
           this.loadContents();
-          this.hideProgressBar();
         },
         err => {
-          this.hideProgressBar();
+          this.raiseToast("Error occurred while creating folder.");
           console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
         }); 
     }
@@ -494,7 +493,6 @@ export class BrowseComponentComponent implements OnInit {
   }
 
   public delete(){
-    this.showProgressBar();
     if( this.selectedEndpoint === "GoogleDrive" || this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
         || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
       this.apiService.deleteCall(this.userEmail, this.pwdHash,  this.getDirURI(), this.selectedEndpointType, 
@@ -505,14 +503,12 @@ export class BrowseComponentComponent implements OnInit {
         this.selectedCredHistory.pop();
         this.driveItemHistory.pop();
         this.loadContents();
-        this.hideProgressBar();
+        this.raiseToast("Deleted successfully.");
       },
       err => {
-        this.hideProgressBar();
-        console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
+        this.raiseToast("Error occurred while deleting.");
+        console.log("Error occurred while executing delete for" );
       });            
-    }else{
-
     }
   }
 
