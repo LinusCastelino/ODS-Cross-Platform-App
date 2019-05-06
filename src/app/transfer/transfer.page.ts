@@ -127,8 +127,8 @@ export class TransferPage implements OnInit {
       else
         dest["uri"] = encodeURI(this.destSelection + "/" + this.destCredHistory[this.destCredHistory.length - 1]);
 
-      src["map"] = this.helperService.createIdMap(this.srcCredHistory, this.srcDriveIdHistory);
-      dest["map"] = this.helperService.createIdMap(this.destCredHistory, this.destDriveIdHistory);
+      src["map"] = this.helperService.createIdMap(this.srcCredHistory, this.srcDriveIdHistory, "submit");
+      dest["map"] = this.helperService.createIdMap(this.destCredHistory, this.destDriveIdHistory, "submit");
 
       if(this.srcDriveIdHistory.length > 0)
         src["id"] = this.srcDriveIdHistory[this.srcDriveIdHistory.length - 1];

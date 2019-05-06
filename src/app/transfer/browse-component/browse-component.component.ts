@@ -39,7 +39,7 @@ export class BrowseComponentComponent implements OnInit {
   ftpPassword:string;
   sftpUsername:string;
   sftpPassword:string;     // placeholder for user's sftp password
-  newFolderName: string;    // placeholder for new folder name on click of new folder button
+  // newFolderName: string;    // placeholder for new folder name on click of new folder button
   sftpFlag:boolean=false;    // a flag to toggle credentials text boxes if the ftp server is a secure ftp
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
@@ -427,20 +427,20 @@ export class BrowseComponentComponent implements OnInit {
         text: 'OK',
         handler: data => {
           console.log('Confirm OK: '+data.folderName);
-          this.newFolderName = data.folderName;
-          this.mkdir();
+          // this.newFolderName = data.folderName;
+          this.mkdir(data.folderName);
         }
       }],
     });
     await alert.present();
   }
 
-  public mkdir(){
+  public mkdir(newFolderName : string){
     this.showProgressBar();
-    if( this.selectedEndpoint === "GoogleDrive"){
-      this.apiService.mkdir(this.userEmail, this.pwdHash,  this.newFolderName, this.selectedEndpointType, 
+    //if( this.selectedEndpoint === "GoogleDrive"){
+      this.apiService.mkdir(this.userEmail, this.pwdHash,  this.getFormattedNewFolderName(newFolderName), this.selectedEndpointType, 
                             {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
-                            this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory))
+                            this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory, "mkdir"))
       .subscribe(resp =>{
         console.log(resp)
         this.loadContents();
@@ -450,21 +450,31 @@ export class BrowseComponentComponent implements OnInit {
         this.hideProgressBar();
         console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
       });            
-    }else if(this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
-        || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-        this.apiService.mkdir(this.userEmail, this.pwdHash, this.getDirURI()+"/"+this.newFolderName, 
-                              this.selectedEndpointType, {"uuid" : this.selectedCred}, 
-                              this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
-                              this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory))
-        .subscribe(resp =>{
-          console.log(resp)
-          this.loadContents();
-        },
-        err => {
-          this.raiseToast("Error occurred while creating folder.");
-          console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
-        }); 
+    // }else if(this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
+    //     || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
+    //     this.apiService.mkdir(this.userEmail, this.pwdHash, this.getDirURI()+"/"+newFolderName, 
+    //                           this.selectedEndpointType, {"uuid" : this.selectedCred}, 
+    //                           this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
+    //                           this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory))
+    //     .subscribe(resp =>{
+    //       console.log(resp)
+    //       this.loadContents();
+    //     },
+    //     err => {
+    //       this.raiseToast("Error occurred while creating folder.");
+    //       console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
+    //     }); 
+    // }
+  }
+
+  public getFormattedNewFolderName(newFolderName : string) : string{
+    if( this.selectedEndpoint === "GoogleDrive")
+      return newFolderName;
+    else if(this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" || 
+            this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP") {
+      return this.getDirURI()+"/"+newFolderName
     }
+
   }
 
 
@@ -516,7 +526,7 @@ export class BrowseComponentComponent implements OnInit {
         || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
       this.apiService.deleteCall(this.userEmail, this.pwdHash,  this.getDirURI(), this.selectedEndpointType, 
                                 {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
-                                this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory))
+                                this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory, "delete"))
       .subscribe(resp =>{
         console.log(resp)
         this.driveItemIdHistory.pop();
