@@ -3,6 +3,7 @@ import { ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../apicalls.service';
 import { Router } from '@angular/router';
+import { HelperService } from '../helper.service';
 
 @Component({
   selector: 'app-transfer',
@@ -36,7 +37,7 @@ export class TransferPage implements OnInit {
   transferSettingsOpen : boolean = true;
 
   constructor(private toastController : ToastController, private apiService : APICallsService, 
-              private storage : Storage, private router : Router) {
+              private storage : Storage, private router : Router, private helperService : HelperService) {
                 
     // security check if somehow user manages to get to transfer page bypassing AuthGuard
     this.storage.get('email')
@@ -126,8 +127,8 @@ export class TransferPage implements OnInit {
       else
         dest["uri"] = encodeURI(this.destSelection + "/" + this.destCredHistory[this.destCredHistory.length - 1]);
 
-      src["map"] = this.createIdMap(this.srcCredHistory, this.srcDriveIdHistory);
-      dest["map"] = this.createIdMap(this.destCredHistory, this.destDriveIdHistory);
+      src["map"] = this.helperService.createIdMap(this.srcCredHistory, this.srcDriveIdHistory);
+      dest["map"] = this.helperService.createIdMap(this.destCredHistory, this.destDriveIdHistory);
 
       if(this.srcDriveIdHistory.length > 0)
         src["id"] = this.srcDriveIdHistory[this.srcDriveIdHistory.length - 1];
@@ -166,25 +167,25 @@ export class TransferPage implements OnInit {
     toast.present();
   }
 
-  public createIdMap(credHistory : string[], driveIdHistory : string[]) : Object[]{
-    let idMap : Object[] = [];
-    let path = credHistory[0];
-    let id = null;
-    let i : number = 0;
-    let arrLength = credHistory.length;
-    do{
-      idMap.push({"id" : id, "path" : path});
-      i++;
-      if(i === 1)
-        path += credHistory[i];
-      else
-        path += "/" + credHistory[i];
-      id = driveIdHistory[i-1];
-      id = (id === undefined)? null : id;
-    }while(i < arrLength-1);
+  // public createIdMap(credHistory : string[], driveIdHistory : string[]) : Object[]{
+  //   let idMap : Object[] = [];
+  //   let path = credHistory[0];
+  //   let id = null;
+  //   let i : number = 0;
+  //   let arrLength = credHistory.length;
+  //   do{
+  //     idMap.push({"id" : id, "path" : path});
+  //     i++;
+  //     if(i === 1)
+  //       path += credHistory[i];
+  //     else
+  //       path += "/" + credHistory[i];
+  //     id = driveIdHistory[i-1];
+  //     id = (id === undefined)? null : id;
+  //   }while(i < arrLength-1);
 
-    return idMap;
-  }
+  //   return idMap;
+  // }
 
   public handleSrcSelection(selection : string){
     console.log(this.TAG + " : Source uri - " + selection);

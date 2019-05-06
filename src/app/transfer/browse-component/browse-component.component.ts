@@ -3,6 +3,7 @@ import { supportedProtocols, protocolToUriMap, ionicLogoMap } from '../../consta
 import { Storage } from '@ionic/storage';
 import { APICallsService } from '../../apicalls.service';
 import { ToastController,AlertController } from '@ionic/angular';
+import { HelperService } from 'src/app/helper.service';
 declare var window: any;
 
 @Component({
@@ -33,7 +34,7 @@ export class BrowseComponentComponent implements OnInit {
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
   driveItemIdHistory : string[] = [];
-  driveItemHistory : any =[];
+  // driveItemHistory : any =[];
   ftpUsername:string;
   ftpPassword:string;
   sftpUsername:string;
@@ -62,13 +63,13 @@ export class BrowseComponentComponent implements OnInit {
   @Output() driveIdHistoryEmitter : EventEmitter<string[]> = new EventEmitter<string[]>();
 
   constructor(private apiService : APICallsService, private storage : Storage, public alertController: AlertController,
-    private toastController : ToastController ) { 
+              private toastController : ToastController, private helperService : HelperService ) { 
     // console.log('Mode : ' + this.mode);
   }
 
   ngOnInit() {
     console.log('Component Type : ' + this.componentType);
-    this.driveItemHistory.push({id:null,path:"googledrive:/"});
+    // this.driveItemHistory.push({id:null,path:"googledrive:/"});
   }
 
   public showProgressBar(){
@@ -438,7 +439,8 @@ export class BrowseComponentComponent implements OnInit {
     this.showProgressBar();
     if( this.selectedEndpoint === "GoogleDrive"){
       this.apiService.mkdir(this.userEmail, this.pwdHash,  this.newFolderName, this.selectedEndpointType, 
-      {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], this.driveItemHistory)
+                            {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
+                            this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory))
       .subscribe(resp =>{
         console.log(resp)
         this.loadContents();
@@ -450,8 +452,10 @@ export class BrowseComponentComponent implements OnInit {
       });            
     }else if(this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
         || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-        this.apiService.mkdir(this.userEmail, this.pwdHash, this.getDirURI()+"/"+this.newFolderName, this.selectedEndpointType, 
-        {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], this.driveItemHistory)
+        this.apiService.mkdir(this.userEmail, this.pwdHash, this.getDirURI()+"/"+this.newFolderName, 
+                              this.selectedEndpointType, {"uuid" : this.selectedCred}, 
+                              this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
+                              this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory))
         .subscribe(resp =>{
           console.log(resp)
           this.loadContents();
@@ -511,12 +515,13 @@ export class BrowseComponentComponent implements OnInit {
     if( this.selectedEndpoint === "GoogleDrive" || this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
         || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
       this.apiService.deleteCall(this.userEmail, this.pwdHash,  this.getDirURI(), this.selectedEndpointType, 
-      {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], this.driveItemHistory)
+                                {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
+                                this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory))
       .subscribe(resp =>{
         console.log(resp)
         this.driveItemIdHistory.pop();
         this.selectedCredHistory.pop();
-        this.driveItemHistory.pop();
+        // this.driveItemHistory.pop();
         this.loadContents();
         this.raiseToast("Deleted successfully.");
       },
@@ -533,7 +538,7 @@ export class BrowseComponentComponent implements OnInit {
     this.selectedFile = null;
     this.showProgressBar();
     console.log(this.driveItemIdHistory)
-    console.log(this.driveItemHistory)
+    // console.log(this.driveItemHistory)
 
     if(this.selectedEndpoint === "Dropbox" || this.selectedEndpoint === "GoogleDrive" 
                     || this.selectedEndpoint === "GridFTP"){
@@ -620,7 +625,7 @@ export class BrowseComponentComponent implements OnInit {
         this.selectedCredHistory.pop();
         if(this.selectedEndpoint === 'GoogleDrive'){
           this.driveItemIdHistory.pop();
-          this.driveItemHistory.pop();
+          // this.driveItemHistory.pop();
         }
       }
 
@@ -631,9 +636,9 @@ export class BrowseComponentComponent implements OnInit {
       this.selectedCredHistory.push(item.name);
       if(this.selectedEndpoint === 'GoogleDrive'){
         this.driveItemIdHistory.push(item.id);
-        let name = this.driveItemHistory[this.driveItemHistory.length-1].path;
-        let obj = {id: item.id, path: name+item.name+"/"}
-        this.driveItemHistory.push(obj);
+        // let name = this.driveItemHistory[this.driveItemHistory.length-1].path;
+        // let obj = {id: item.id, path: name+item.name+"/"}
+        // this.driveItemHistory.push(obj);
       }
       this.loadContents();
     }
