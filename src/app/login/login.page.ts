@@ -87,6 +87,7 @@ export class LoginPage implements OnInit {
     if(this.loginUsername==null || this.password==null || this.loginUsername=="" || this.password==""){
       this.raiseToast("Password or Email ID field is empty.");
     }else{
+      this.loginUsername = this.loginUsername.trim();
       this.apiService.login(this.loginUsername,this.password).subscribe(
         resp => {
           this.storage.set('email',resp.email)
@@ -132,6 +133,7 @@ export class LoginPage implements OnInit {
         this.raiseToast("Input all mandatory fields.");
         this.signUpProgress = false;
     }else{
+      this.signupUsername = this.signupUsername.trim();
       this.apiService.registerUser(this.signupUsername,this.firstName,this.lastName,this.organization).subscribe(
         resp=>{
         this.signUpFlag=false;
@@ -166,6 +168,7 @@ export class LoginPage implements OnInit {
     if(this.forgotUsername==null || this.forgotUsername==""){
       this.raiseToast("Email ID field is empty.");
     }else{
+      this.forgotUsername = this.forgotUsername.trim();
       this.apiService.resetPasswordSendCode(this.forgotUsername).subscribe(
         resp => {
           this.verificationCodeFlag=true;
@@ -184,6 +187,7 @@ export class LoginPage implements OnInit {
     if(this.verificationCode==null || this.verificationCode==""){
       this.raiseToast("Verification code field is empty.");
     }else{
+      this.verificationCode = this.verificationCode.trim();
       this.apiService.resetPasswordVerifyCode(this.forgotUsername,this.verificationCode).subscribe(
         resp=> {
           this.verificationCodeFlag=false;
@@ -202,6 +206,8 @@ export class LoginPage implements OnInit {
     if(this.confirmPassword==null || this.newPassword==null || this.confirmPassword=="" || this.newPassword==""){
       this.raiseToast("Confirm Password or New Password field is empty.");
     }else{
+      this.forgotUsername = this.forgotUsername.trim();
+      this.verificationCode = this.verificationCode.trim();
       this.apiService.resetPassword(this.forgotUsername,this.verificationCode,this.newPassword,this.confirmPassword).subscribe(
         resp=>{
           this.resetPasswordFlag = false;
