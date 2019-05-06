@@ -34,12 +34,10 @@ export class BrowseComponentComponent implements OnInit {
   selectedCredContents : [] = [];
   selectedCredHistory : string[] = [];
   driveItemIdHistory : string[] = [];
-  // driveItemHistory : any =[];
   ftpUsername:string;
   ftpPassword:string;
   sftpUsername:string;
   sftpPassword:string;     // placeholder for user's sftp password
-  // newFolderName: string;    // placeholder for new folder name on click of new folder button
   sftpFlag:boolean=false;    // a flag to toggle credentials text boxes if the ftp server is a secure ftp
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
@@ -69,7 +67,6 @@ export class BrowseComponentComponent implements OnInit {
 
   ngOnInit() {
     console.log('Component Type : ' + this.componentType);
-    // this.driveItemHistory.push({id:null,path:"googledrive:/"});
   }
 
   public showProgressBar(){
@@ -413,7 +410,6 @@ export class BrowseComponentComponent implements OnInit {
   async mkdirAlertBox(){
     const alert = await this.alertController.create({
       header: 'Create Directory',
-      //message: msg,
       inputs: [
         {
           name: 'folderName',
@@ -427,7 +423,6 @@ export class BrowseComponentComponent implements OnInit {
         text: 'OK',
         handler: data => {
           console.log('Confirm OK: '+data.folderName);
-          // this.newFolderName = data.folderName;
           this.mkdir(data.folderName);
         }
       }],
@@ -437,34 +432,19 @@ export class BrowseComponentComponent implements OnInit {
 
   public mkdir(newFolderName : string){
     this.showProgressBar();
-    //if( this.selectedEndpoint === "GoogleDrive"){
-      this.apiService.mkdir(this.userEmail, this.pwdHash,  this.getFormattedNewFolderName(newFolderName), this.selectedEndpointType, 
-                            {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
-                            this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory, "mkdir"))
-      .subscribe(resp =>{
-        console.log(resp)
-        this.loadContents();
-        this.hideProgressBar();
-      },
-      err => {
-        this.hideProgressBar();
-        console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
-      });            
-    // }else if(this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" 
-    //     || this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP"){
-    //     this.apiService.mkdir(this.userEmail, this.pwdHash, this.getDirURI()+"/"+newFolderName, 
-    //                           this.selectedEndpointType, {"uuid" : this.selectedCred}, 
-    //                           this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
-    //                           this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory))
-    //     .subscribe(resp =>{
-    //       console.log(resp)
-    //       this.loadContents();
-    //     },
-    //     err => {
-    //       this.raiseToast("Error occurred while creating folder.");
-    //       console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
-    //     }); 
-    // }
+    this.apiService.mkdir(this.userEmail, this.pwdHash,  this.getFormattedNewFolderName(newFolderName), this.selectedEndpointType, 
+                          {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
+                          this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory, "mkdir"))
+    .subscribe(resp =>{
+      console.log(resp)
+      this.loadContents();
+      this.hideProgressBar();
+    },
+    err => {
+      this.hideProgressBar();
+      console.log("Error occurred while executing mkdir for " + this.select_endpoint_mode);
+    });            
+
   }
 
   public getFormattedNewFolderName(newFolderName : string) : string{
@@ -531,7 +511,6 @@ export class BrowseComponentComponent implements OnInit {
         console.log(resp)
         this.driveItemIdHistory.pop();
         this.selectedCredHistory.pop();
-        // this.driveItemHistory.pop();
         this.loadContents();
         this.raiseToast("Deleted successfully.");
       },
