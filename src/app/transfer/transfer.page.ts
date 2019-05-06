@@ -20,21 +20,21 @@ export class TransferPage implements OnInit {
   userEmail : string ;
   pwdHash : string ;
 
-  srcEndpointOpen : boolean = true;
-  srcSelection : string = null;
-  srcEndpointType : string = null;
-  srcCredential : any = null;
-  srcCredHistory : string[] = [];
-  srcDriveIdHistory : string[] = [];
+  srcEndpointOpen : boolean = true;    // toggle flag for source dropdown
+  srcSelection : string = null;    // holds the uri of the entity selected in src window
+  srcEndpointType : string = null;    // holds the type of endpoint
+  srcCredential : any = null;    // credential object (usually contians uuid and name)
+  srcCredHistory : string[] = [];    // selection history of the user for the endpoint
+  srcDriveIdHistory : string[] = [];    // Google drive specific selection history
 
-  destEndpointOpen : boolean = true;
-  destSelection : string = null;
+  destEndpointOpen : boolean = true;    // toggle flag for destination dropdown
+  destSelection : string = null;    // holds the uri of the entity selected in destination window
   destEndpointType : string = null;
   destCredential : any = null;
   destCredHistory : string[] = [];
   destDriveIdHistory : string[] = [];
 
-  transferSettingsOpen : boolean = true;
+  transferSettingsOpen : boolean = true;    // toggle flag for transfer settings dropdown
 
   constructor(private toastController : ToastController, private apiService : APICallsService, 
               private storage : Storage, private router : Router, private helperService : HelperService) {
@@ -166,26 +166,6 @@ export class TransferPage implements OnInit {
     });
     toast.present();
   }
-
-  // public createIdMap(credHistory : string[], driveIdHistory : string[]) : Object[]{
-  //   let idMap : Object[] = [];
-  //   let path = credHistory[0];
-  //   let id = null;
-  //   let i : number = 0;
-  //   let arrLength = credHistory.length;
-  //   do{
-  //     idMap.push({"id" : id, "path" : path});
-  //     i++;
-  //     if(i === 1)
-  //       path += credHistory[i];
-  //     else
-  //       path += "/" + credHistory[i];
-  //     id = driveIdHistory[i-1];
-  //     id = (id === undefined)? null : id;
-  //   }while(i < arrLength-1);
-
-  //   return idMap;
-  // }
 
   public handleSrcSelection(selection : string){
     console.log(this.TAG + " : Source uri - " + selection);

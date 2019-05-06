@@ -21,34 +21,34 @@ export class BrowseComponentComponent implements OnInit {
   browse_endpoint_contents : string = 'browse-contents';
   mode : string = this.select_endpoint_mode;
 
-  ftpUrl:string = '';
-  sftpUrl:string = '';
-  credential: any = null;
-  selectedEndpoint : string = '';
-  selectedCred : string = '';
-  selectedEndpointType : string = '';
-  selectedFolder : string;
-  selectedFile : string;
-  selectedItem : number = -1;
-  selectedEndpointCreds : [] = [];
-  selectedCredContents : [] = [];
-  selectedCredHistory : string[] = [];
-  driveItemIdHistory : string[] = [];
-  ftpUsername:string;
-  ftpPassword:string;
-  sftpUsername:string;
-  sftpPassword:string;     // placeholder for user's sftp password
+  ftpUrl:string = '';    // FTP server url entered by user
+  sftpUrl:string = '';    // SFTP URL entered by user
+  credential: any = null;    // object containing the uuid and name of the selected credential. is passed to transfer component
+  selectedEndpoint : string = '';    // holds the protocol selected by the user
+  selectedEndpointCreds : [] = [];    // holds the credentials list sent by the server for the endpoint selected by the user
+  selectedCred : string = '';    // holds the credential (sent by the server) for the endpoint (protocol) selected by the user
+  selectedEndpointType : string = '';    // stores the type value for the protocol selected by the user.
+  selectedFolder : string;    // holds the name of current the folder the user is in.
+  selectedFile : string;    // holds the name of the file selected by the user
+  selectedItem : number = -1;    // temporary variable used to add and remove highlight classes when user selects an item in the browse window
+  selectedCredContents : [] = [];    // holds the items (files/folders) for the current selection
+  selectedCredHistory : string[] = [];    // maintains a history of all user selections for the current browse window
+  driveItemIdHistory : string[] = [];    // maintians the history of all user selection in the browse window specifically for Google Drive
+  ftpUsername:string;    // stores the username entered by user for FTP endpoint with passwords
+  ftpPassword:string;    // stores the password entered by user for FTP endpoint with passwords
+  sftpUsername:string;    // stores the username entered by user for SFTP endpoint
+  sftpPassword:string;     // stores the password entered by user for SFTP endpoint
   sftpFlag:boolean=false;    // a flag to toggle credentials text boxes if the ftp server is a secure ftp
+
+  // constants used for OAuth
   startEvent : string = "loadstart";
   exitEvent : string = "exit";
+  dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
+  globusOAuthRedirect : string = "";
+  googleDriveClientID : string = "1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com";
 
   reloadTag : string = 'reload';
   displayProgressBar : boolean = false;
-
-  dropboxOAuthRedirect : string = "https://onedatashare.org/api/stork/oauth";
-  globusOAuthRedirect : string = "";
-
-  googleDriveClientID : string = "1093251746493-hga9ltfasf35q9daqrf00rgcu1ocj3os.apps.googleusercontent.com";
 
   @Input() componentType : string;
   @Input() userEmail : string ;

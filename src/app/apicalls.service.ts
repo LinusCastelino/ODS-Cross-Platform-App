@@ -149,27 +149,6 @@ export class APICallsService {
     return this.httpService.post<any>(URL,body,{headers: this.headers});
   }
 
-  public share(uri, endpoint, accept, fail){
-    var callback = accept;
-
-    // this.axios.post(url+'share', {
-    //     credential: endpoint.credential,
-    //     uri: encodeURI(uri),
-    //     type: getTypeFromUri(uri),
-    //     // map: getMapFromEndpoint(endpoint),                    ################ TODO
-
-    // })
-    // .then((response) => {
-    //   if(!(response.status === 200))
-    //     callback = fail;
-    //   // this.statusHandle(response, callback);
-    // })
-    // .catch((error) => {
-        
-    //     // this.statusHandle(error, fail);
-    //   });
-  }
-
   public mkdir(email, hash, uri, type, credential, id, idMap): Observable<any>{
 
     var URL = context+'/mkdir';              
@@ -214,35 +193,6 @@ export class APICallsService {
       body["credential"] = credential;
 
     return this.httpService.post<any>(URL,body,{headers: this.headers});
-  }
-
-
-  // public download(uri, credential){
-  //   // no download functionality on mobile app
-  // }
-
-  // public upload(uri, credential, accept, fail){
-  //   // no upload functionality on mobile app
-  // }
-
-  /*
-    Desc: Retrieve all the available users
-  */
-  public getUsers(type, accept, fail){
-    var callback = accept;
-
-    // this.axios.post(url+'user', {
-    //     action: type
-    // })
-    // .then((response) => {
-    //   if(!(response.status === 200))
-    //     callback = fail;
-    //   // this.statusHandle(response, callback);
-    // })
-    // .catch((error) => {
-        
-    //     // this.statusHandle(error, fail);
-    //   });
   }
 
   public getUser(email):Observable<IUser>{
@@ -321,46 +271,6 @@ export class APICallsService {
     var URL = context+'/user';
     let body = JSON.stringify({action: 'register',email: email,firstName:firstName,lastName: lastName,organization: organization});    
     return this.httpService.post(URL,body,{headers: this.headers});
-  }
-
-
-  public verifyRegistraionCode(emailId, code) {
-    // return this.axios.post(url+'user', {
-    //     action: "verifyCode",
-    //     email : emailId,
-    //     code : code
-    //   })
-    //   .then((response) => {
-    //     return response;
-    //     //this.statusHandle(response, callback);
-    //   })
-    //   .catch((error) => {
-    //     //this.statusHandle(error, fail);
-    //     console.error("Error while verifying the registration code")
-    //     return {status : 500}
-    //   });
-  }
-
-  public setPassword(emailId, code, password, confirmPassword) {
-    // return this.axios.post(url+'user', {
-    //     action: "setPassword",
-    //     email : emailId,
-    //     code : code,
-    //     password : password,
-    //     confirmPassword : confirmPassword
-    // })
-    // .then((response) => {
-    //   if(!(response.status === 200))
-    //     throw new Error("Failed to set password for users account")
-    //   else {
-    //     return response;
-    //   }
-    //   //this.statusHandle(response, callback);
-    // })
-    // .catch((error) => {
-    //   //this.statusHandle(error, fail);
-    //   return {status : 500}
-    // });
   }
 
 }    //APICallsService
