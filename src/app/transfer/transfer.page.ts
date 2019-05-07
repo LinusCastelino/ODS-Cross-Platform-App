@@ -122,8 +122,12 @@ export class TransferPage implements OnInit {
 
       this.destCredHistory.push(this.srcCredHistory[this.srcCredHistory.length - 1])
       src["uri"] = encodeURI(this.srcSelection);
-      if(this.destCredHistory.length === 2)
-        dest["uri"] = encodeURI(this.destSelection + this.destCredHistory[1]);
+      if(this.destCredHistory.length === 2){
+        if(this.destSelection.endsWith("/"))
+          dest["uri"] = encodeURI(this.destSelection + this.destCredHistory[1]);
+        else
+          dest["uri"] = encodeURI(this.destSelection + "/" + this.destCredHistory[1]);    // for ftp and sftp
+      }
       else
         dest["uri"] = encodeURI(this.destSelection + "/" + this.destCredHistory[this.destCredHistory.length - 1]);
 
