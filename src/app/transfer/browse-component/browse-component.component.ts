@@ -452,7 +452,11 @@ export class BrowseComponentComponent implements OnInit {
       return newFolderName;
     else if(this.selectedEndpoint === "Dropbox"  || this.selectedEndpoint === "GridFTP" || 
             this.selectedEndpoint === "FTP" || this.selectedEndpoint === "SFTP") {
-      return this.getDirURI()+"/"+newFolderName
+      var curUri = this.getDirURI();
+      if(curUri.endsWith("/"))    // mkdir in root dir
+      return this.getDirURI()+newFolderName;
+      else
+        return this.getDirURI()+"/"+newFolderName;
     }
 
   }
