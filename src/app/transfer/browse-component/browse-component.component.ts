@@ -382,7 +382,7 @@ export class BrowseComponentComponent implements OnInit {
       }
       else{
         this.selectedCredHistory.push(this.selectedCred);
-        this.credential = {};
+        this.credential = null;
         this.credentialEmitter.emit(this.credential);
       }
     }
@@ -433,7 +433,7 @@ export class BrowseComponentComponent implements OnInit {
   public mkdir(newFolderName : string){
     this.showProgressBar();
     this.apiService.mkdir(this.userEmail, this.pwdHash,  this.getFormattedNewFolderName(newFolderName), this.selectedEndpointType, 
-                          {"uuid" : this.selectedCred}, this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
+                          this.credential, this.driveItemIdHistory[this.driveItemIdHistory.length-1], 
                           this.helperService.createIdMap(this.selectedCredHistory, this.driveItemIdHistory, "mkdir"))
     .subscribe(resp =>{
       console.log(resp)
