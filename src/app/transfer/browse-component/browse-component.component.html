@@ -27,7 +27,9 @@
         <ion-row *ngFor="let cred of selectedEndpointCreds">
           <ion-col size="10">
             <ion-item class="font-style" (click)="loadCred(cred)">
-                <ion-icon name="laptop"></ion-icon> &nbsp; &nbsp; {{ cred.name }}
+                <ion-icon name="laptop"></ion-icon> 
+                &nbsp; &nbsp; 
+                <span style="width:85%"> {{ cred.name }} </span>
             </ion-item>
           </ion-col>
           <ion-col size="2">

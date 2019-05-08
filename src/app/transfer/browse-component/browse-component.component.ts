@@ -392,7 +392,9 @@ export class BrowseComponentComponent implements OnInit {
       this.hideProgressBar();
     }
     else if(this.selectedEndpoint === 'SFTP' && this.sftpUsername !== null && this.sftpPassword !== null){
-      this.selectedCredHistory.push(cred);
+      this.selectedCred = cred;
+      this.selectedCredHistory.push(this.selectedCred);
+      this.apiService.getFTPCreds(this.userEmail,this.pwdHash, this.selectedCred).subscribe();
     }
     else{
       this.selectedCredHistory.push(protocolToUriMap[this.selectedEndpoint]);
