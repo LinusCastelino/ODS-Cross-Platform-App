@@ -6,7 +6,7 @@ import { ILoginResponse } from './models/ILoginResponse';
 
 import{ IUser } from './models/IUser';
 const endpoint = 'http://ec2-34-217-107-14.us-west-2.compute.amazonaws.com:8080';
-// const endpoint = 'http://192.168.1.226:8080';
+// const endpoint = 'http://10.84.56.43:8080';
 
 const context = endpoint + '/api/stork';
 
@@ -207,9 +207,9 @@ export class APICallsService {
   */
   public changePassword(oldPassword, newPassword,confirmPassword,email,hash){
     var URL = context+'/user';
-    let body = JSON.stringify({action: 'resetPassword',password: oldPassword,
+    let body = JSON.stringify({action: 'resetPassword',oldPassword: oldPassword,
                               newPassword:newPassword,confirmPassword: confirmPassword,
-                              email:email,hash:hash});    
+                              email:email,password:hash});    
     return this.httpService.post(URL,body,{headers: this.headers});
   }
 
